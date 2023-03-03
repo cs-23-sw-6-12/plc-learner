@@ -35,6 +35,7 @@ import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.commons.util.collections.CollectionsUtil;
 import net.automatalib.words.Word;
+import org.cs_23_sw_6_12.Interfaces.SULTimed;
 
 /**
  * Finds transitions with uncertain clock guards and "trims" them to smallest equivalent.

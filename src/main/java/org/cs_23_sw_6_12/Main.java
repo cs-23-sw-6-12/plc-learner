@@ -1,16 +1,14 @@
 package org.cs_23_sw_6_12;
 import de.learnlib.algorithms.dhc.mealy.MealyDHC;
-import de.learnlib.api.SUL;
 import de.learnlib.api.oracle.EquivalenceOracle;
-import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.Alphabets;
+import org.cs_23_sw_6_12.Interfaces.SULTimed;
 
-import java.util.Random;
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,6 +18,13 @@ public class Main {
 
         // System under learning.
         SULTimed<String, String> sul = null;
+        try {
+            sul = SULClient.createStringClient(
+                    new SULClientConfiguration("localhost",3000));
+        } catch (IOException e) {
+            // If the connection to SULClient fails.
+            throw new RuntimeException(e);
+        }
 
         // Standard mealy membership oracle.
         SULOracle<String, String> membershipOracle = new SULOracle<>(sul);
