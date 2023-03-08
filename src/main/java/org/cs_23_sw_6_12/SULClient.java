@@ -1,16 +1,17 @@
 package org.cs_23_sw_6_12;
 
 import de.learnlib.api.exception.SULException;
-import org.cs_23_sw_6_12.InputAdapters.ByteArrayInputAdapter;
-import org.cs_23_sw_6_12.InputAdapters.ByteArrayOutputAdapter;
-import org.cs_23_sw_6_12.InputAdapters.StringInputAdapter;
-import org.cs_23_sw_6_12.InputAdapters.StringOutputAdapter;
+import org.cs_23_sw_6_12.InputAdapters.*;
 import org.cs_23_sw_6_12.Interfaces.InputAdapter;
 import org.cs_23_sw_6_12.Interfaces.OutputAdapter;
 import org.cs_23_sw_6_12.Interfaces.SULTimed;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> implements SULTimed<I, O> {
 
@@ -19,52 +20,11 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     private BufferedReader in;
     private IA inputAdapter;
     private OA outputAdapter;
-    private int bytesToRead = 3;
-
-    @Override
-    public O step(I input, long stepClockLimit) throws SULException {
-        return null;
-    }
-
-    @Override
-    public long getClockLimit() {
-        return 0;
-    }
-
-    @Override
-    public void pre() {
-        // Reset SUL
-    }
-
-    @Override
-    public void post() {
-
-    }
-
-    @Override
-    public O step(I input) {
-        // Send input.
-        out.println(new String(inputAdapter.toBytes(input)));
-        out.flush();
-
-        // Return output.
-        try {
-            byte[] bytes = new byte[bytesToRead];
-
-            for (int i = 0; i < bytes.length; i++) {
-                int value = in.read(); // Maybe check that the stream has not ended?
-                bytes[i] = (byte) value;
-            }
-
-            return outputAdapter.fromBytes(bytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    public int numberofoutputs = 2;
+    public int numberofinputs = 2;
 
     public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(SULClientConfiguration configuration, IA inputAdapter, OA outputAdapter) throws IOException {
-        var client = new SULClient<I,IA,O,OA>();
+        var client = new SULClient<I, IA, O, OA>();
 
         // Configure socket.
         Socket socket = new Socket(configuration.address(), configuration.port());
@@ -89,6 +49,110 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         var outputAdapter = new ByteArrayOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
+    }
+
+    public static SULClient<Boolean[],InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> createBooleanArrayClient(SULClientConfiguration configuration) throws IOException {
+        var inputAdapter = new BooleanArrayInputAdapter();
+        var outputAdapter = new BooleanArrayOutputAdapter();
+
+        return createClient(configuration, inputAdapter, outputAdapter);
+    }
+
+    @Override
+    public O step(I input, long stepClockLimit) throws SULException {
+        return null;
+    }
+
+    @Override
+    public long getClockLimit() {
+        return 0;
+    }
+
+    @Override
+    public void pre() {
+        // Reset SUL
+        var resetCode = BAjER.resetCode;
+        out.write(resetCode);
+        out.flush();
+        System.out.println("Sent: " + charArrayToString(resetCode));
+
+        try {
+            int response = in.read();
+            System.out.println("SUL Reset, response from server: { " +response+" }");
+            if (response != 0) {
+                throw new RuntimeException("AAAAAAH, COULD NOT RESET");
+            }
+
+            // Send [2] Setup, number of inputs, number of outputs.
+            var setupCode = BAjER.setup(numberofinputs, numberofoutputs);
+            out.write(setupCode);
+            out.flush();
+            System.out.println("Sent: " + charArrayToString(setupCode));
+
+            response = in.read();
+            System.out.println("SUL Setup, response from server: { " +response+" }");
+            if (response != 0) {
+                throw new RuntimeException("AAAAAAH, COULD NOT SETUP");
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public void post() {
+
+    }
+
+    private String byteArrayToString(byte[] bytes){
+        StringBuilder result = new StringBuilder("[ ");
+        for (byte b:
+             bytes) {
+            result.append(b);
+            result.append(", ");
+        }
+        return result + "]";
+    }
+    private String charArrayToString(char[] chars){
+        StringBuilder result = new StringBuilder("[ ");
+        for (char c:
+                chars) {
+            result.append((int) c);
+            result.append(", ");
+        }
+        return result + "]";
+    }
+
+    @Override
+    public O step(I input) {
+        // Send input.
+        var stepCode = BAjER.step(inputAdapter.toBytes(input));
+        out.print(stepCode);
+        out.flush();
+
+        System.out.println("Sent: " + charArrayToString(stepCode));
+
+        // Return output.
+        try {
+            byte[] bytes = new byte[numberofoutputs];
+            int code = in.read();
+            if (code != 0)
+                throw new RuntimeException("AAAAAAAAAAAAAAAH. STEP RETURNED: " + code);
+
+            for (int i = 0; i < bytes.length; i++) {
+                int value = in.read(); // Maybe check that the stream has not ended?
+                bytes[i] = (byte) value;
+            }
+
+            System.out.println("SUL Step, response from server: { " + byteArrayToString(bytes) +" }");
+
+            return outputAdapter.fromBytes(bytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

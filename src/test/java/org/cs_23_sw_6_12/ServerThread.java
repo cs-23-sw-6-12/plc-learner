@@ -10,39 +10,33 @@ import java.util.Arrays;
 
 public class ServerThread extends Thread {
     int port;
-    int bytesToRead = 3;
+
+    byte[] outbytes = new byte[]{0,1};
+
     // The inputBytes that will be sent if inbytes are received
-    byte[] outbytes = new byte[]{0,0,1};
     byte[] inbytes = new byte[]{0,1,0};
 
-    public ServerThread(int port){
+    public ServerThread(int port, byte[] inBytes, byte[] outBytes){
         this.port = port;
+        this.inbytes = inBytes;
+        this.outbytes = outBytes;
     }
 
     public void run(){
-        ServerSocket ss = null;
-        Socket s = null;
+        ServerSocket serverSocket = null;
+        Socket clientSocket = null;
         try {
-            ss = new ServerSocket(port);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            s = ss.accept();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            var out = new PrintWriter(s.getOutputStream());
-            var in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            serverSocket = new ServerSocket(port);
+            clientSocket = serverSocket.accept();
 
-            byte[] inputBytes = new byte[bytesToRead];
+            var out = new PrintWriter(clientSocket.getOutputStream());
+            var in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+            byte[] inputBytes = new byte[inbytes.length];
             for (int i = 0; i < inputBytes.length; i++) {
                 int value = in.read();
                 inputBytes[i] = (byte) value;
             }
-
 
             if (Arrays.equals(inputBytes, inbytes)){
 
@@ -51,12 +45,11 @@ public class ServerThread extends Thread {
                 }
                 out.flush();
             }
+            else{
+                serverSocket.close();
+            }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            ss.close();
+            serverSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

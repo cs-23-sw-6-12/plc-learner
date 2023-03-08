@@ -2,6 +2,8 @@ package org.cs_23_sw_6_12;
 
 import org.cs_23_sw_6_12.InputAdapters.ByteArrayInputAdapter;
 import org.cs_23_sw_6_12.InputAdapters.ByteArrayOutputAdapter;
+import org.cs_23_sw_6_12.Interfaces.InputAdapter;
+import org.cs_23_sw_6_12.Interfaces.OutputAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +15,10 @@ public class SULClientTest {
 
     @Test
     public void testClientConnection() throws IOException {
-        ServerThread serverThread = new ServerThread(port);
+        byte[] inBytes = new byte[]{0,1};
+        byte[] outBytes = new byte[]{0,1,0};
+
+        ServerThread serverThread = new ServerThread(port, inBytes, outBytes);
         serverThread.start();
 
         var connectionConfig = new SULClientConfiguration(address, port);
@@ -21,10 +26,27 @@ public class SULClientTest {
 
         sul = SULClient.createByteArrayClient(connectionConfig);
 
-        byte[] input = new byte[]{0,1,0};
+        var output = sul.step(inBytes);
+
+        Assertions.assertArrayEquals(output, outBytes);
+    }
+
+    @Test
+    public void testBooleanArraySentUsingBAjER() throws IOException {
+        byte[] inBytes = new byte[]{0,1};
+        byte[] outBytes = new byte[]{0,1,0};
+        ServerThread serverThread = new ServerThread(port, inBytes, outBytes);
+        serverThread.start();
+
+        var connectionConfig = new SULClientConfiguration(address, port);
+        SULClient<Boolean[], InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> sul = null;
+
+        sul = SULClient.createBooleanArrayClient(connectionConfig);
+
+        Boolean[] input = new Boolean[]{true, false,};
         var output = sul.step(input);
 
-        Assertions.assertArrayEquals(output, new byte[]{0,0,1});
+        Assertions.assertArrayEquals(output, new Boolean[]{false, true});
     }
 
 }
