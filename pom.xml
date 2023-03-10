@@ -21,6 +21,11 @@
             <version>RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.cs_23_sw_6_12</groupId>
+            <artifactId>plc-learner</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <properties>

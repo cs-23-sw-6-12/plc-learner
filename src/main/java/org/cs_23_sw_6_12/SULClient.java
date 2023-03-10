@@ -24,10 +24,10 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     public int numberofinputs = 2;
 
     public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(SULClientConfiguration configuration, IA inputAdapter, OA outputAdapter) throws IOException {
-        var client = new SULClient<I, IA, O, OA>();
+        SULClient<I, IA, O, OA> client = new SULClient();
 
         // Configure socket.
-        Socket socket = new Socket(configuration.address(), configuration.port());
+        Socket socket = new Socket(configuration.address, configuration.port);
         client.out = new PrintWriter(socket.getOutputStream());
         client.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         client.socket = socket;
@@ -38,22 +38,22 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     }
 
     public static SULClient<String, StringInputAdapter, String, StringOutputAdapter> createStringClient(SULClientConfiguration configuration) throws IOException {
-        var inputAdapter = new StringInputAdapter();
-        var outputAdapter = new StringOutputAdapter();
+        StringInputAdapter inputAdapter = new StringInputAdapter();
+        StringOutputAdapter outputAdapter = new StringOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
 
     public static SULClient<byte[], ByteArrayInputAdapter, byte[], ByteArrayOutputAdapter> createByteArrayClient(SULClientConfiguration configuration) throws IOException {
-        var inputAdapter = new ByteArrayInputAdapter();
-        var outputAdapter = new ByteArrayOutputAdapter();
+        ByteArrayInputAdapter inputAdapter = new ByteArrayInputAdapter();
+        ByteArrayOutputAdapter outputAdapter = new ByteArrayOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
 
     public static SULClient<Boolean[],InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> createBooleanArrayClient(SULClientConfiguration configuration) throws IOException {
-        var inputAdapter = new BooleanArrayInputAdapter();
-        var outputAdapter = new BooleanArrayOutputAdapter();
+        BooleanArrayInputAdapter inputAdapter = new BooleanArrayInputAdapter();
+        BooleanArrayOutputAdapter outputAdapter = new BooleanArrayOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
@@ -71,7 +71,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     @Override
     public void pre() {
         // Reset SUL
-        var resetCode = BAjER.resetCode;
+        char[] resetCode = BAjER.resetCode;
         out.write(resetCode);
         out.flush();
         System.out.println("Sent: " + charArrayToString(resetCode));
@@ -84,7 +84,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
             }
 
             // Send [2] Setup, number of inputs, number of outputs.
-            var setupCode = BAjER.setup(numberofinputs, numberofoutputs);
+            char[] setupCode = BAjER.setup(numberofinputs, numberofoutputs);
             out.write(setupCode);
             out.flush();
             System.out.println("Sent: " + charArrayToString(setupCode));
@@ -129,7 +129,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     @Override
     public O step(I input) {
         // Send input.
-        var stepCode = BAjER.step(inputAdapter.toBytes(input));
+        char[] stepCode = BAjER.step(inputAdapter.toBytes(input));
         out.print(stepCode);
         out.flush();
 
