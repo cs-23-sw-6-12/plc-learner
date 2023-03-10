@@ -32,8 +32,8 @@ public class TestServer<I, O> extends Thread{
         ServerSocket serverSocket = new ServerSocket(port);
         Socket clientSocket = serverSocket.accept();
 
-        var out = new PrintWriter(clientSocket.getOutputStream());
-        var in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         int value;
         int inputSize = -1;
@@ -43,12 +43,12 @@ public class TestServer<I, O> extends Thread{
                 case 0 -> { // Step
                     if (inputSize < 0 || outputSize < 0)
                         throw new IOException("Step was run before Pre");
-                    var concreteInput = new byte[inputSize];
+                    byte[] concreteInput = new byte[inputSize];
                     for (int i = 0; i < inputSize; i++) {
                         concreteInput[i] = (byte) in.read();
                     }
-                    var abstractOutput = sul.step(outputAdapter.fromBytes(concreteInput));
-                    var concreteOutput = inputAdapter.toBytes(abstractOutput);
+                    O abstractOutput = sul.step(outputAdapter.fromBytes(concreteInput));
+                    byte[] concreteOutput = inputAdapter.toBytes(abstractOutput);
                     out.write(BAjER.step(concreteOutput));
                     out.flush();
                 }

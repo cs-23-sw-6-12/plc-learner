@@ -26,7 +26,6 @@ public class SULWrapper<I, O> implements SUL<I, O> {
 
     @Override
     public O step(I i) {
-        var out = sul.step(i);
-        return out;
+        return sul.step(i);
     }
 }

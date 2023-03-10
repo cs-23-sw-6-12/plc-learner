@@ -5,6 +5,7 @@ import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
+import net.automatalib.automata.concepts.Output;
 import net.automatalib.words.Word;
 import org.cs_23_sw_6_12.Adapters.Input.BooleanWordInputAdapter;
 import org.cs_23_sw_6_12.Adapters.Output.BooleanWordOutputAdapter;
@@ -46,19 +47,19 @@ public class SULClientTest {
         ts.port=1337;
         ts.start();
 
-        var client = SULClient.createClient(new SULClientConfiguration("localhost", ts.port),
+        SULClient<Word<Boolean>, BooleanWordInputAdapter, Word<Boolean>, BooleanWordOutputAdapter> client = SULClient.createClient(new SULClientConfiguration("localhost", ts.port),
                 new BooleanWordInputAdapter(), new BooleanWordOutputAdapter());
 
-        var wrapper = new SULWrapper<>(client);
+        SULWrapper<Word<Boolean>, Word<Boolean>> wrapper = new SULWrapper<>(client);
         // Standard mealy membership oracle.
-        var cache = SULCache.createTreeCache(ExampleSUL.alphabet, wrapper);
-        var membershipOracle = new SULOracle<>(cache);
+        SULCache<Word<Boolean>, Word<Boolean>> cache = SULCache.createTreeCache(ExampleSUL.alphabet, wrapper);
+        SULOracle<Word<Boolean>, Word<Boolean>> membershipOracle = new SULOracle<>(cache);
 
-        var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
+        CompleteExplorationEQOracle<Output<Word<Boolean>, Word<Word<Boolean>>>, Word<Boolean>, Word<Word<Boolean>>> equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
 
-        var learner = new MealyDHC<>(ExampleSUL.alphabet, membershipOracle);
+        MealyDHC<Word<Boolean>, Word<Boolean>> learner = new MealyDHC<>(ExampleSUL.alphabet, membershipOracle);
 
-        var experiment =
+        Experiment.MealyExperiment<Word<Boolean>, Word<Boolean>> experiment =
                 new Experiment.MealyExperiment<>(learner, equivalenceOracle,ExampleSUL.alphabet);
 
         experiment.run();

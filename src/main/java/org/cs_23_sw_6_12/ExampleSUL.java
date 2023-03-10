@@ -17,7 +17,7 @@ public class ExampleSUL {
 
     public static MealySimulatorSUL<Word<Boolean>, Object> createExample(){
 
-        var machine = AutomatonBuilders.newMealy(alphabet).withInitial("s0")
+        net.automatalib.automata.transducers.impl.compact.CompactMealy<Word<Boolean>, Object> machine = AutomatonBuilders.newMealy(alphabet).withInitial("s0")
                 .from("s0").on(Word.fromSymbols(false, false)).withOutput(Word.fromSymbols(true,false)).to("s0")
                 .from("s0").on(Word.fromSymbols(false, true)).withOutput(Word.fromSymbols(true,false)).to("s0")
                 .from("s0").on(Word.fromSymbols(true, true)).withOutput(Word.fromSymbols(false, false)).to("s0")

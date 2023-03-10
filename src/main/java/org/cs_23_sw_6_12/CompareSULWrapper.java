@@ -30,8 +30,8 @@ public class CompareSULWrapper<I, O> implements SUL<I,O> {
 
     @Override
     public O step(I i) {
-        var output1 = sul1.step(i);
-        var output2 = sul2.step(i);
+        O output1 = sul1.step(i);
+        Object output2 = sul2.step(i);
 
         if (Objects.equals(output1.toString(), output2.toString())){
             logger.log(LogEntrySeverity.INFO, "{%s} is equal to {%s}", output1,output2);

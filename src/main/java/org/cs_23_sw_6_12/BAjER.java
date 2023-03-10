@@ -8,6 +8,7 @@ public class BAjER {
         return new char[]{2, (char) inputSize, (char) outputSize};
     }
 
+
     public static char[] step(byte[] input){
         String s = new String(new byte[]{0}) + new String(input);
         return s.toCharArray();
