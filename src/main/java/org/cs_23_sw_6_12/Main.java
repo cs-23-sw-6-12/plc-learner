@@ -1,12 +1,10 @@
 package org.cs_23_sw_6_12;
 import de.learnlib.algorithms.dhc.mealy.MealyDHC;
 import de.learnlib.filter.cache.sul.SULCache;
-import de.learnlib.filter.statistic.oracle.MealyCounterOracle;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.visualization.Visualization;
-import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
 
@@ -32,14 +30,13 @@ public class Main {
                 Word.fromSymbols(false, false)
         );
 
-
         //var esul = ExampleSUL.createExample();
         //var compare = new CompareSULWrapper<>(sul, esul);
         var wrapper = new SULWrapper<>(sul);
 
         // Standard mealy membership oracle.
-        //var cache = SULCache.createTreeCache(alphabet,wrapper);
-        var membershipOracle = new SULOracle<>(wrapper);
+        var cache = SULCache.createTreeCache(alphabet,wrapper);
+        var membershipOracle = new SULOracle<>(cache);
 
         var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
         /*

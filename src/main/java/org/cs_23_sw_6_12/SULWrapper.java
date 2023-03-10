@@ -26,9 +26,7 @@ public class SULWrapper<I, O> implements SUL<I, O> {
 
     @Override
     public O step(I i) {
-        System.out.println("Sent "+i);
         var out = sul.step(i);
-        System.out.println("Received "+i);
         return out;
     }
 }

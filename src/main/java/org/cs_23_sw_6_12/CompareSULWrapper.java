@@ -1,17 +1,18 @@
 package org.cs_23_sw_6_12;
 
 import de.learnlib.api.SUL;
-import de.learnlib.driver.util.MealySimulatorSUL;
-import net.automatalib.words.Word;
-import org.cs_23_sw_6_12.Adapters.InputAdapter;
-import org.cs_23_sw_6_12.Adapters.OutputAdapter;
+import org.cs_23_sw_6_12.Interfaces.Logger;
+
+import java.util.Objects;
 
 public class CompareSULWrapper<I, O> implements SUL<I,O> {
 
     private SUL<I,O> sul1;
-    private SUL<I,Object> sul2;
+    private SUL sul2;
+    private Logger logger;
 
-    public CompareSULWrapper(SUL<I,O> sul1, SUL<I,Object> sul2){
+    public CompareSULWrapper(SUL<I,O> sul1, SUL sul2){
+        logger = new StreamLogger(System.out);
         this.sul1 = sul1;
         this.sul2 = sul2;
     }
@@ -32,8 +33,12 @@ public class CompareSULWrapper<I, O> implements SUL<I,O> {
         var output1 = sul1.step(i);
         var output2 = sul2.step(i);
 
-        if (output1 == output2){
+        if (Objects.equals(output1.toString(), output2.toString())){
+            logger.log(LogEntrySeverity.INFO, "{%s} is equal to {%s}", output1,output2);
             return output1;
-        }else throw new RuntimeException("AAAAAH, NOT THE SAME");
+        }else{
+            logger.log(LogEntrySeverity.ERROR, "{%s} was not equal to {%s}", output1, output2);
+            throw new RuntimeException("Outputs were not equal");
+        }
     }
 }

@@ -37,37 +37,51 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         logger = new StreamLogger(System.out);
     }
 
-    public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(SULClientConfiguration configuration, IA inputAdapter, OA outputAdapter) throws IOException {
-        SULClient<I, IA, O, OA> client = new SULClient();
-
-        // Configure socket.
-        Socket socket = new Socket(configuration.address, configuration.port);
+    public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(Socket socket, IA inputAdapter, OA outputAdapter) throws IOException {
+        var client = new SULClient<I, IA, O, OA>();
+        client.socket = socket;
         client.out = new PrintWriter(socket.getOutputStream());
         client.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        client.socket = socket;
         client.inputAdapter = inputAdapter;
         client.outputAdapter = outputAdapter;
 
         return client;
     }
 
+    /// Creates a SULClient without a socket, that will just write to any PrintWriter and read from any BufferedReader.
+    public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(PrintWriter writer, BufferedReader reader, IA inputAdapter, OA outputAdapter) throws IOException {
+        var client = new SULClient<I, IA, O, OA>();
+        client.out = writer;
+        client.in = reader;
+        client.inputAdapter = inputAdapter;
+        client.outputAdapter = outputAdapter;
+
+        return client;
+    }
+
+    public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(SULClientConfiguration configuration, IA inputAdapter, OA outputAdapter) throws IOException {
+        // Configure socket.
+        Socket socket = new Socket(configuration.address(), configuration.port());
+        return createClient(socket,inputAdapter,outputAdapter);
+    }
+
     public static SULClient<String, StringInputAdapter, String, StringOutputAdapter> createStringClient(SULClientConfiguration configuration) throws IOException {
-        StringInputAdapter inputAdapter = new StringInputAdapter();
-        StringOutputAdapter outputAdapter = new StringOutputAdapter();
+        var inputAdapter = new StringInputAdapter();
+        var outputAdapter = new StringOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
 
     public static SULClient<byte[], ByteArrayInputAdapter, byte[], ByteArrayOutputAdapter> createByteArrayClient(SULClientConfiguration configuration) throws IOException {
-        ByteArrayInputAdapter inputAdapter = new ByteArrayInputAdapter();
-        ByteArrayOutputAdapter outputAdapter = new ByteArrayOutputAdapter();
+        var inputAdapter = new ByteArrayInputAdapter();
+        var outputAdapter = new ByteArrayOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
 
     public static SULClient<Boolean[],InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> createBooleanArrayClient(SULClientConfiguration configuration) throws IOException {
-        BooleanArrayInputAdapter inputAdapter = new BooleanArrayInputAdapter();
-        BooleanArrayOutputAdapter outputAdapter = new BooleanArrayOutputAdapter();
+        var inputAdapter = new BooleanArrayInputAdapter();
+        var outputAdapter = new BooleanArrayOutputAdapter();
 
         return createClient(configuration, inputAdapter, outputAdapter);
     }
@@ -92,28 +106,30 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void pre() {
-        logger.log(LogEntrySeverity.INFO, "Starting experiment {%s}", ""+count++);
+        logger.log(LogEntrySeverity.INFO, "Starting experiment {%d}", count++);
         // Reset SUL
-        char[] resetCode = BAjER.resetCode;
+        var resetCode = BAjER.resetCode;
         out.write(resetCode);
         out.flush();
-        //System.out.println("Sent: " + charArrayToString(resetCode));
+        logger.log(LogEntrySeverity.INFO, "Sent: {%s}", charArrayToString(resetCode));
 
         try {
             int response = in.read();
-            //System.out.println("SUL Reset, response from server: { " +response+" }");
             if (response != 0) {
                 throw new RuntimeException("AAAAAAH, COULD NOT RESET");
             }
+            logger.log(LogEntrySeverity.INFO, "SUL Reset, response from server: {%d}", response);
 
             // Send [2] Setup, number of inputs, number of outputs.
-            char[] setupCode = BAjER.setup(numberofinputs, numberofoutputs);
+            var setupCode = BAjER.setup(numberofinputs, numberofoutputs);
             out.write(setupCode);
             out.flush();
-            //System.out.println("Sent: " + charArrayToString(setupCode));
+
+            logger.log(LogEntrySeverity.INFO, "Sent: {%s}", charArrayToString(setupCode));
 
             response = in.read();
-            //System.out.println("SUL Setup, response from server: { " +response+" }");
+
+            logger.log(LogEntrySeverity.INFO, "SUL Setup, response from server: {%d}", response);
             if (response != 0) {
                 throw new RuntimeException("AAAAAAH, COULD NOT SETUP");
             }
@@ -130,7 +146,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     }
 
-    private String byteArrayToString(byte[] bytes){
+    private String byteArrayToString(byte ... bytes){
         StringBuilder result = new StringBuilder("[ ");
         for (byte b:
              bytes) {
@@ -151,12 +167,11 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     @Override
     public O step(I input) {
         // Send input.
-        char[] stepCode = BAjER.step(inputAdapter.toBytes(input));
+        var stepCode = BAjER.step(inputAdapter.toBytes(input));
         out.print(stepCode);
         out.flush();
 
-
-        //System.out.println("Sent: " + charArrayToString(stepCode));
+        logger.log(LogEntrySeverity.INFO, "Sent: {%s}", charArrayToString(stepCode));
 
         // Return output.
         try {
@@ -165,12 +180,15 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
             if (code != 0)
                 throw new RuntimeException("AAAAAAAAAAAAAAAH. STEP RETURNED: " + code);
 
+            var logbytes = new byte[numberofoutputs+1];
+            logbytes[0] = (byte) code;
             for (int i = 0; i < bytes.length; i++) {
                 int value = in.read(); // Maybe check that the stream has not ended?
                 bytes[i] = (byte) value;
-            }
 
-            //System.out.println("SUL Step, response from server: { " + byteArrayToString(bytes) +" }");
+                logbytes[i+1] = (byte) value;
+            }
+            logger.log(LogEntrySeverity.INFO, "SUL Step, response from server: {%s}" , byteArrayToString(logbytes));
 
             return outputAdapter.fromBytes(bytes);
         } catch (IOException e) {
