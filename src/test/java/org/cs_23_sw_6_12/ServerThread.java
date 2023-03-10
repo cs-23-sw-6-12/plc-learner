@@ -29,8 +29,8 @@ public class ServerThread extends Thread {
             serverSocket = new ServerSocket(port);
             clientSocket = serverSocket.accept();
 
-            var out = new PrintWriter(clientSocket.getOutputStream());
-            var in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             byte[] inputBytes = new byte[inbytes.length];
             for (int i = 0; i < inputBytes.length; i++) {

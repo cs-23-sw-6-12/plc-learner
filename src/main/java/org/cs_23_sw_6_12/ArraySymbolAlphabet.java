@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public abstract class ArraySymbolAlphabet <I extends Object> {
     @SafeVarargs
     public final Alphabet<I[]> fromValues(int symbolSize, Class<I> c, I... values){
-        var alphabet = new ArrayList<I[]>();
+        ArrayList<I[]> alphabet = new ArrayList();
 
 
         for (int i = 0; i < symbolSize; i++) {
             try {
 
-                var symbol = c.getConstructor().newInstance();
+                I symbol = c.getConstructor().newInstance();
             } catch (InvocationTargetException | InstantiationException | IllegalAccessException |
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);

@@ -21,12 +21,12 @@ public class SULClientTest {
         ServerThread serverThread = new ServerThread(port, inBytes, outBytes);
         serverThread.start();
 
-        var connectionConfig = new SULClientConfiguration(address, port);
+        SULClientConfiguration connectionConfig = new SULClientConfiguration(address, port);
         SULClient<byte[], ByteArrayInputAdapter, byte[], ByteArrayOutputAdapter> sul = null;
 
         sul = SULClient.createByteArrayClient(connectionConfig);
 
-        var output = sul.step(inBytes);
+        byte[] output = sul.step(inBytes);
 
         Assertions.assertArrayEquals(output, outBytes);
     }
@@ -38,13 +38,13 @@ public class SULClientTest {
         ServerThread serverThread = new ServerThread(port, inBytes, outBytes);
         serverThread.start();
 
-        var connectionConfig = new SULClientConfiguration(address, port);
+        SULClientConfiguration connectionConfig = new SULClientConfiguration(address, port);
         SULClient<Boolean[], InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> sul = null;
 
         sul = SULClient.createBooleanArrayClient(connectionConfig);
 
         Boolean[] input = new Boolean[]{true, false,};
-        var output = sul.step(input);
+        Boolean[] output = sul.step(input);
 
         Assertions.assertArrayEquals(output, new Boolean[]{false, true});
     }

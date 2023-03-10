@@ -19,7 +19,7 @@ public class StreamLogger implements Logger {
         if (severity.level < currentMaximumSeverity.level)
             return;
 
-        var messageFormatted = String.format(format, args);
+        String messageFormatted = String.format(format, args);
         printStream.printf("[%s]: %s\n", new SimpleDateFormat("HH:mm:ss dd-MM-yyyy").format(new Date()), messageFormatted);
         printStream.flush();
     }

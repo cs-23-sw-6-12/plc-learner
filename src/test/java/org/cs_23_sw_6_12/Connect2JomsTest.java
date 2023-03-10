@@ -12,7 +12,7 @@ public class Connect2JomsTest {
     String address = "6.tcp.eu.ngrok.io";
     @Test
     public void testBooleanArraySentUsingBAjER() throws IOException {
-        var connectionConfig = new SULClientConfiguration(address, port);
+        SULClientConfiguration connectionConfig = new SULClientConfiguration(address, port);
         SULClient<Boolean[], InputAdapter<Boolean[]>, Boolean[], OutputAdapter<Boolean[]>> sul;
         sul = SULClient.createBooleanArrayClient(connectionConfig);
 

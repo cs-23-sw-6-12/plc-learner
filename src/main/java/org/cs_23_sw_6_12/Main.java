@@ -23,8 +23,8 @@ public class Main {
                 new Boolean[]{false, false}
         );
 
-        // System under learning.
-        var sul = SULClient.createBooleanArrayClient(
+        // System under learning. TODO: Change to example
+        SULClient sul = SULClient.createBooleanArrayClient(
                 new SULClientConfiguration(args[0], Integer.parseInt(args[1])));
         sul.numberofinputs = 2;
         sul.numberofoutputs = 2;
@@ -38,7 +38,7 @@ public class Main {
         MealyDHC<Boolean[], Boolean[]> learner = new MealyDHC<>(alphabet, membershipOracle);
 
         Experiment.MealyExperiment<Boolean[], Boolean[]> experiment =
-                new Experiment.MealyExperiment<>(learner, equivalenceOracle,alphabet);
+                new Experiment.MealyExperiment<>(learner, equivalenceOracle, alphabet);
 
         experiment.run();
 
