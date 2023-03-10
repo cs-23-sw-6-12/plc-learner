@@ -1,6 +1,6 @@
-package org.cs_23_sw_6_12.InputAdapters;
+package org.cs_23_sw_6_12.Adapters.Output;
 
-import org.cs_23_sw_6_12.Interfaces.OutputAdapter;
+import org.cs_23_sw_6_12.Adapters.OutputAdapter;
 
 public class BooleanArrayOutputAdapter implements OutputAdapter<Boolean[]> {
     @Override

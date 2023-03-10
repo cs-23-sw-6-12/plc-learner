@@ -1,6 +1,6 @@
-package org.cs_23_sw_6_12.InputAdapters;
+package org.cs_23_sw_6_12.Adapters.Input;
 
-import org.cs_23_sw_6_12.Interfaces.InputAdapter;
+import org.cs_23_sw_6_12.Adapters.InputAdapter;
 
 public class ByteArrayInputAdapter implements InputAdapter<byte[]> {
     @Override

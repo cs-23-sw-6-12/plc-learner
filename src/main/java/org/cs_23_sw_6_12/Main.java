@@ -1,13 +1,14 @@
 package org.cs_23_sw_6_12;
 import de.learnlib.algorithms.dhc.mealy.MealyDHC;
-import de.learnlib.api.oracle.EquivalenceOracle;
+import de.learnlib.filter.cache.sul.SULCache;
+import de.learnlib.filter.statistic.oracle.MealyCounterOracle;
+import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
-import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
-import org.cs_23_sw_6_12.Interfaces.SULTimed;
 
 import java.io.IOException;
 
@@ -16,33 +17,47 @@ public class Main {
 
         int MAX_DEPTH = 3;
 
-        Alphabet<Boolean[]> alphabet = Alphabets.fromArray(
-                new Boolean[]{true, false},
-                new Boolean[]{true, true},
-                new Boolean[]{false, true},
-                new Boolean[]{false, false}
-        );
-
-        // System under learning. TODO: Change to example
-        SULClient sul = SULClient.createBooleanArrayClient(
+        // System under learning.
+/*
+ */
+        var sul = SULClient.createBooleanWordClient(
                 new SULClientConfiguration(args[0], Integer.parseInt(args[1])));
         sul.numberofinputs = 2;
         sul.numberofoutputs = 2;
 
+        var alphabet = Alphabets.fromArray(
+                Word.fromSymbols(true, false),
+                Word.fromSymbols(true, true),
+                Word.fromSymbols(false,true),
+                Word.fromSymbols(false, false)
+        );
+
+
+        //var esul = ExampleSUL.createExample();
+        //var compare = new CompareSULWrapper<>(sul, esul);
+        var wrapper = new SULWrapper<>(sul);
+
         // Standard mealy membership oracle.
-        SULOracle<Boolean[], Boolean[]> membershipOracle = new SULOracle<>(sul);
+        //var cache = SULCache.createTreeCache(alphabet,wrapper);
+        var membershipOracle = new SULOracle<>(wrapper);
 
-        EquivalenceOracle.MealyEquivalenceOracle<Boolean[], Boolean[]> equivalenceOracle =
+        var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
+        /*
+        var equivalenceOracle =
                 new ClockExplorationEQOracle<>(sul, MAX_DEPTH);
+        */
 
-        MealyDHC<Boolean[], Boolean[]> learner = new MealyDHC<>(alphabet, membershipOracle);
+        var learner = new MealyDHC<>(alphabet, membershipOracle);
 
-        Experiment.MealyExperiment<Boolean[], Boolean[]> experiment =
-                new Experiment.MealyExperiment<>(learner, equivalenceOracle, alphabet);
+        var experiment =
+                new Experiment.MealyExperiment<>(learner, equivalenceOracle,alphabet);
 
         experiment.run();
 
-        MealyMachine<?, Boolean[], ?, Boolean[]> result = experiment.getFinalHypothesis();
+        System.out.println(experiment.getRounds().getSummary());
+        System.out.println(wrapper.getCounter());
+
+        var result = experiment.getFinalHypothesis();
 
         Visualization.visualize(result, alphabet);
     }

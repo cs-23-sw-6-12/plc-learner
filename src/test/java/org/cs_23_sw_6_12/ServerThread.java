@@ -11,10 +11,10 @@ import java.util.Arrays;
 public class ServerThread extends Thread {
     int port;
 
-    byte[] outbytes = new byte[]{0,1};
+    byte[] outbytes;
 
     // The inputBytes that will be sent if inbytes are received
-    byte[] inbytes = new byte[]{0,1,0};
+    byte[] inbytes;
 
     public ServerThread(int port, byte[] inBytes, byte[] outBytes){
         this.port = port;
@@ -39,8 +39,7 @@ public class ServerThread extends Thread {
             }
 
             if (Arrays.equals(inputBytes, inbytes)){
-
-                for (int x : outbytes) {
+                for (int x : BAjER.step(outbytes)) {
                     out.write(x);
                 }
                 out.flush();

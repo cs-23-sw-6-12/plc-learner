@@ -1,9 +1,18 @@
 package org.cs_23_sw_6_12;
 
 import de.learnlib.api.exception.SULException;
-import org.cs_23_sw_6_12.InputAdapters.*;
-import org.cs_23_sw_6_12.Interfaces.InputAdapter;
-import org.cs_23_sw_6_12.Interfaces.OutputAdapter;
+import net.automatalib.words.Word;
+import org.cs_23_sw_6_12.Adapters.Input.BooleanArrayInputAdapter;
+import org.cs_23_sw_6_12.Adapters.Input.BooleanWordInputAdapter;
+import org.cs_23_sw_6_12.Adapters.Input.ByteArrayInputAdapter;
+import org.cs_23_sw_6_12.Adapters.Input.StringInputAdapter;
+import org.cs_23_sw_6_12.Adapters.Output.BooleanArrayOutputAdapter;
+import org.cs_23_sw_6_12.Adapters.Output.BooleanWordOutputAdapter;
+import org.cs_23_sw_6_12.Adapters.Output.ByteArrayOutputAdapter;
+import org.cs_23_sw_6_12.Adapters.Output.StringOutputAdapter;
+import org.cs_23_sw_6_12.Adapters.InputAdapter;
+import org.cs_23_sw_6_12.Adapters.OutputAdapter;
+import org.cs_23_sw_6_12.Interfaces.Logger;
 import org.cs_23_sw_6_12.Interfaces.SULTimed;
 
 import java.io.BufferedReader;
@@ -11,10 +20,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> implements SULTimed<I, O> {
 
+    private int count = 0;
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
@@ -22,6 +31,11 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     private OA outputAdapter;
     public int numberofoutputs = 2;
     public int numberofinputs = 2;
+    private Logger logger;
+
+    private SULClient(){
+        logger = new StreamLogger(System.out);
+    }
 
     public static <I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> SULClient<I, IA, O, OA> createClient(SULClientConfiguration configuration, IA inputAdapter, OA outputAdapter) throws IOException {
         SULClient<I, IA, O, OA> client = new SULClient();
@@ -58,6 +72,14 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         return createClient(configuration, inputAdapter, outputAdapter);
     }
 
+    public static SULClient<Word<Boolean>,InputAdapter<Word<Boolean>>, Word<Boolean>, OutputAdapter<Word<Boolean>>> createBooleanWordClient(SULClientConfiguration configuration) throws IOException {
+        var inputAdapter = new BooleanWordInputAdapter();
+        var outputAdapter = new BooleanWordOutputAdapter();
+
+        return createClient(configuration, inputAdapter, outputAdapter);
+    }
+
+
     @Override
     public O step(I input, long stepClockLimit) throws SULException {
         return null;
@@ -70,15 +92,16 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void pre() {
+        logger.log(LogEntrySeverity.INFO, "Starting experiment {%s}", ""+count++);
         // Reset SUL
         char[] resetCode = BAjER.resetCode;
         out.write(resetCode);
         out.flush();
-        System.out.println("Sent: " + charArrayToString(resetCode));
+        //System.out.println("Sent: " + charArrayToString(resetCode));
 
         try {
             int response = in.read();
-            System.out.println("SUL Reset, response from server: { " +response+" }");
+            //System.out.println("SUL Reset, response from server: { " +response+" }");
             if (response != 0) {
                 throw new RuntimeException("AAAAAAH, COULD NOT RESET");
             }
@@ -87,10 +110,10 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
             char[] setupCode = BAjER.setup(numberofinputs, numberofoutputs);
             out.write(setupCode);
             out.flush();
-            System.out.println("Sent: " + charArrayToString(setupCode));
+            //System.out.println("Sent: " + charArrayToString(setupCode));
 
             response = in.read();
-            System.out.println("SUL Setup, response from server: { " +response+" }");
+            //System.out.println("SUL Setup, response from server: { " +response+" }");
             if (response != 0) {
                 throw new RuntimeException("AAAAAAH, COULD NOT SETUP");
             }
@@ -125,7 +148,6 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         }
         return result + "]";
     }
-
     @Override
     public O step(I input) {
         // Send input.
@@ -133,7 +155,8 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         out.print(stepCode);
         out.flush();
 
-        System.out.println("Sent: " + charArrayToString(stepCode));
+
+        //System.out.println("Sent: " + charArrayToString(stepCode));
 
         // Return output.
         try {
@@ -147,7 +170,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
                 bytes[i] = (byte) value;
             }
 
-            System.out.println("SUL Step, response from server: { " + byteArrayToString(bytes) +" }");
+            //System.out.println("SUL Step, response from server: { " + byteArrayToString(bytes) +" }");
 
             return outputAdapter.fromBytes(bytes);
         } catch (IOException e) {

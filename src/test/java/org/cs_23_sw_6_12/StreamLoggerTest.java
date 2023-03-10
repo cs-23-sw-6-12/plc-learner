@@ -1,7 +1,5 @@
 package org.cs_23_sw_6_12;
 
-import org.cs_23_sw_6_12.InputAdapters.ByteArrayInputAdapter;
-import org.cs_23_sw_6_12.InputAdapters.ByteArrayOutputAdapter;
 import org.cs_23_sw_6_12.Interfaces.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
