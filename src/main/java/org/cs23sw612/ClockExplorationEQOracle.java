@@ -1,4 +1,4 @@
-package org.cs_23_sw_6_12;
+package org.cs23sw612;
 
 /* Copyright (C) 2013 TU Dortmund
  * This file is part of LearnLib, http://www.learnlib.de/.
@@ -17,6 +17,9 @@ package org.cs_23_sw_6_12;
  * <http://www.gnu.de/documents/lgpl.en.html>.
  */
 
+import de.learnlib.api.exception.SULException;
+import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
+import de.learnlib.api.query.DefaultQuery;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,16 +29,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import de.learnlib.api.exception.SULException;
-import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
-import de.learnlib.api.query.DefaultQuery;
 import net.automatalib.automata.concepts.MutableTransitionOutput;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.commons.util.collections.CollectionsUtil;
 import net.automatalib.words.Word;
-import org.cs_23_sw_6_12.Interfaces.SULTimed;
+import org.cs23sw612.Interfaces.SULTimed;
 
 /**
  * Finds transitions with uncertain clock guards and "trims" them to smallest equivalent.
@@ -59,11 +58,11 @@ import org.cs_23_sw_6_12.Interfaces.SULTimed;
 public class ClockExplorationEQOracle<I, O> implements
         MealyEquivalenceOracle<I,O> {
 
-    private int minDepth;
-    private int maxDepth;
-    private final SULTimed<I, O> sul;
     private final static Logger LOGGER = Logger.getGlobal();
-    private long trimTime = 1000L; // the amount of time to trim off clock guards
+    private final SULTimed<I, O> sul;
+    private final int minDepth;
+    private final int maxDepth;
+    private final long trimTime = 1000L; // the amount of time to trim off clock guards
 
     /**
      * Constructor.
@@ -88,6 +87,71 @@ public class ClockExplorationEQOracle<I, O> implements
         this.maxDepth = maxDepth;
 
         this.sul = sulOracle;
+    }
+
+    static Long clockGuardFromOutput(String output) {
+        String[] tokens = output.split("[\\[\\?\\]]+");
+        if (tokens.length < 2) {
+            return null; // No clock guard from split
+        }
+        double secondsGuard = Double.valueOf(tokens[1]);
+        Long clockGuard = Math.round(secondsGuard*1000); // get clockguard in ms
+        return clockGuard;
+    }
+
+    static String symbolFromOutput(String output) {
+        String[] tokens = output.split("[\\[\\?\\]]+");
+        if (tokens.length < 1) {
+            return null; // no tokens...?
+        }
+        String symbol = tokens[0]; // get clockguard in ms
+        return symbol;
+    }
+
+    static boolean outputContainsUncertainClockGuard(String output) {
+        // If no ? then no uncertainty
+        if (!output.contains("[?")) {
+            return false;
+        }
+        // Tokenise and attempt to parse a long from the guard
+        String[] tokens = output.split("[\\[\\?\\]]+");
+        if (tokens.length < 2) {
+            return false; // No clock guard from split
+        }
+        try {
+            Double secondsGuard = Double.parseDouble(tokens[1]);
+            Long clockGuard = Math.round(secondsGuard *1000);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+    static boolean outputsAreEquivalent(String observed, String expected) {
+        String observedSym = symbolFromOutput(observed);
+        String expectedSym = symbolFromOutput(expected);
+        if (!observedSym.equalsIgnoreCase(expectedSym)) {
+            return false;
+        }
+        Long observedGuard = clockGuardFromOutput(observed);
+        Long expectedGuard = clockGuardFromOutput(expected);
+        boolean observedIsUncertain = outputContainsUncertainClockGuard(observed);
+        boolean expectedIsUncertain = outputContainsUncertainClockGuard(expected);
+
+        // If both guards are null then the outputs can be equivalent
+        if (expectedGuard == null && observedGuard == null) {
+            return true;
+        }
+
+            /* If the expected guard is null and the observed is > 0 this is an unobservable transition
+            and the observed guard has just timed to the limit
+            */
+        if (expectedGuard == null && observedIsUncertain) {
+            return true;
+        }
+
+        // If both guards have the same value then the outputs are equal
+        return observedGuard.longValue() == expectedGuard.longValue();
     }
 
     /**
@@ -142,8 +206,8 @@ public class ClockExplorationEQOracle<I, O> implements
                     // Copy all symbols to a new list for storing in the uncertainprefixes map
                     List<I> copySymList = new ArrayList<>(prefix);
                     copySymList.add(sym);
-                    uncertainPrefixes.put((List<I>) copySymList, clockGuard);
-                    LOGGER.fine("Added uncertain prefix: " + copySymList.toString());
+                    uncertainPrefixes.put(copySymList, clockGuard);
+                    LOGGER.fine("Added uncertain prefix: " + copySymList);
                 }
             }
         }
@@ -208,24 +272,24 @@ public class ClockExplorationEQOracle<I, O> implements
                     if (clockGuard <= 0L) {
                         // Trimmed all the way to zero so there is no guard
                         String newOutput = symbolFromOutput(uncertainOutput.toString());
-                        LOGGER.fine("Trimmed clock guard to zero and removed: " + uncertainPrefix.toString() + "/" + newOutput);
+                        LOGGER.fine("Trimmed clock guard to zero and removed: " + uncertainPrefix + "/" + newOutput);
                         ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     } else {
                         // the trimmed guard did not affect the result so keep it trimmed and uncertain
                         String newOutput = symbolFromOutput(uncertainOutput.toString()) +"[?"+ Math.floor(clockGuard/1000.0f) + "]";
-                        LOGGER.fine("Trimmed clock guard is still uncertain: " + uncertainPrefix.toString() + "/" + newOutput);
+                        LOGGER.fine("Trimmed clock guard is still uncertain: " + uncertainPrefix + "/" + newOutput);
                         ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     }
                 } else {
                     // the trimmed guard affected the result - undo trim and remove uncertainty
                     String newOutput = symbolFromOutput(uncertainOutput.toString()) +"["+ Math.floor(uncertainPrefix.getValue()/1000.0f) + "]";
-                    LOGGER.fine("Trimmed clock guard uncertainty removed: " + uncertainPrefix.toString() + "/" + newOutput);
+                    LOGGER.fine("Trimmed clock guard uncertainty removed: " + uncertainPrefix + "/" + newOutput);
                     ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     // Don't bother with any more suffixes
                     break;
                 }
             } catch (SULException e) {
-                LOGGER.warning("SUL connection failed while trimming clock guard: " + e.toString());
+                LOGGER.warning("SUL connection failed while trimming clock guard: " + e);
             } finally {
                 try {
                     sul.post();
@@ -234,74 +298,5 @@ public class ClockExplorationEQOracle<I, O> implements
                 }
             }
         }
-    }
-
-    static Long clockGuardFromOutput(String output) {
-        String[] tokens = output.split("[\\[\\?\\]]+");
-        if (tokens.length < 2) {
-            return null; // No clock guard from split
-        }
-        double secondsGuard = Double.valueOf(tokens[1]);
-        Long clockGuard = Math.round(secondsGuard*1000); // get clockguard in ms
-        return clockGuard;
-    }
-
-    static String symbolFromOutput(String output) {
-        String[] tokens = output.split("[\\[\\?\\]]+");
-        if (tokens.length < 1) {
-            return null; // no tokens...?
-        }
-        String symbol = tokens[0]; // get clockguard in ms
-        return symbol;
-    }
-
-    static boolean outputContainsUncertainClockGuard(String output) {
-        // If no ? then no uncertainty
-        if (!output.toString().contains("[?")) {
-            return false;
-        }
-        // Tokenise and attempt to parse a long from the guard
-        String[] tokens = output.split("[\\[\\?\\]]+");
-        if (tokens.length < 2) {
-            return false; // No clock guard from split
-        }
-        try {
-            Double secondsGuard = Double.parseDouble(tokens[1]);
-            Long clockGuard = Math.round(secondsGuard *1000);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
-
-    static boolean outputsAreEquivalent(String observed, String expected) {
-        String observedSym = symbolFromOutput(observed);
-        String expectedSym = symbolFromOutput(expected);
-        if (!observedSym.equalsIgnoreCase(expectedSym)) {
-            return false;
-        }
-        Long observedGuard = clockGuardFromOutput(observed);
-        Long expectedGuard = clockGuardFromOutput(expected);
-        boolean observedIsUncertain = outputContainsUncertainClockGuard(observed);
-        boolean expectedIsUncertain = outputContainsUncertainClockGuard(expected);
-
-        // If both guards are null then the outputs can be equivalent
-        if (expectedGuard == null && observedGuard == null) {
-            return true;
-        }
-
-            /* If the expected guard is null and the observed is > 0 this is an unobservable transition
-            and the observed guard has just timed to the limit
-            */
-        if (expectedGuard == null && observedIsUncertain) {
-            return true;
-        }
-
-        // If both guards have the same value then the outputs are equal
-        if (observedGuard.longValue() == expectedGuard.longValue()) {
-            return true;
-        }
-
-        return false;
     }
 }

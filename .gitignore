@@ -4,6 +4,7 @@ target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
+.idea/
 .idea/workspace.xml
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -37,4 +38,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
 .gradle

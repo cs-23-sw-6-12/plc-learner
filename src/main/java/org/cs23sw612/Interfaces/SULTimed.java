@@ -1,4 +1,4 @@
-package org.cs_23_sw_6_12.Interfaces;
+package org.cs23sw612.Interfaces;
 
 /* Copyright (C) 2013 TU Dortmund
  * This file is part of LearnLib, http://www.learnlib.de/.
