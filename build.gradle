@@ -20,9 +20,10 @@ dependencies {
   //  api project(':plc-learner')
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     implementation "de.learnlib.testsupport:learnlib-learning-examples:$learnLibVersion"
+    implementation 'org.slf4j:slf4j-simple:1.7.29'
 }
 
-group = 'org.cs_23_sw_6_12'
+group = 'org.cs23sw612'
 version = '1.0-SNAPSHOT'
 description = 'plc-learner'
 java.sourceCompatibility = JavaVersion.VERSION_16
@@ -33,6 +34,10 @@ publishing {
             from(components.java)
         }
     }
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile) {
