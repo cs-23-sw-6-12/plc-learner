@@ -43,7 +43,7 @@ public class SULClientTest {
   @Test
   public void testSULClient() throws IOException {
     TestServer<Word<Boolean>, Object> ts = new TestServer<Word<Boolean>, Object>();
-    ts.sul = ExampleSUL.createExample();
+    ts.sul = ExampleSUL.createExampleSUL();
     ts.inputAdapter = new BooleanWordInputAdapter();
     ts.outputAdapter = new BooleanWordOutputAdapter();
     ts.port = 1337;
