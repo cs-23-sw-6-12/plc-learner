@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * A collection of {@link Equation}s.
  * From a given {@link MealyMachine}, it creates all the equations produced from it.
+ *
  * @param <S> States
  * @param <I> Input
  * @param <T> Transitions. Can only be of input/output types, which (currently) is only {@link CompactMealyTransition}
@@ -23,7 +24,7 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
     private final EquationTable<S, I, T, O, M, A> table;
 
     /**
-     * @param machine The machine to create the equation table over
+     * @param machine  The machine to create the equation table over
      * @param alphabet The given input-alphabet
      */
     public EquationCollection(M machine, A alphabet) {
@@ -49,9 +50,13 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
         });
     }
 
-    public EquationTable<S, I, T, O, M, A> getTable() {return table;}
+    public EquationTable<S, I, T, O, M, A> getTable() {
+        return table;
+    }
 
-    public Collection<Equation<S, I, O>> getEquations() {return equations;}
+    public Collection<Equation<S, I, O>> getEquations() {
+        return equations;
+    }
 
     @Override
     public String toString() {

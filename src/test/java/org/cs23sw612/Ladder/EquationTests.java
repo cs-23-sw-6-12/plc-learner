@@ -13,6 +13,7 @@ import java.util.Objects;
 public class EquationTests {
     CompactMealy<Word<Boolean>, Object> testSystem = ExampleSUL.createExample();
     Alphabet<Word<Boolean>> testAlphabet = ExampleSUL.alphabet;
+
     @Test
     public void testAllTransitionsInTable() {
         EquationTable<Integer, Word<Boolean>, CompactMealyTransition<Object>, Object, CompactMealy<Word<Boolean>, Object>, Alphabet<Word<Boolean>>>

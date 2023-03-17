@@ -16,9 +16,11 @@ import java.util.function.Function;
 //TODO: Remove next_states
 
 // TODO: rename?
+
 /**
  * A table over the "equations" from a given machine.
  * Generally, it represents a collection of all the transitions (input, state, output, next state).
+ *
  * @param <S> States
  * @param <I> Input
  * @param <T> Transitions. Can only be of input/output types, which (currently) is only {@link CompactMealyTransition}
@@ -36,7 +38,7 @@ class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends Meal
     private static final Function<? super Boolean, String> boolToInt = i -> i ? "1" : "0";
 
     /**
-     * @param machine The machine to create the equaton table over
+     * @param machine  The machine to create the equaton table over
      * @param alphabet The given input-alphabet
      */
     EquationTable(M machine, A alphabet) {
@@ -76,19 +78,22 @@ class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends Meal
                 latexTableHeader(),
                 asString("&", "&", sep, "\\hline"), sep);*/
         return String.format("\\begin{tabularx}{\\linewidth}{|X|X|X||X|}\\hline\n%s%s\\end{tabularx}",
-               // latexTableHeader(),
+                // latexTableHeader(),
                 asString("&", "&", sep, "\\hline"), sep);
     }
 
     private String asString(String sep) {
         return asString(sep, sep, "\n");
     }
+
     private String asString(String sep, String catSep) {
         return asString(sep, catSep, "\n", "");
     }
+
     private String asString(String sep, String catSep, String lineSep) {
         return asString(sep, catSep, lineSep, "");
     }
+
     private String asString(String sep, String catSep, String lineSep, String headerSep) {
         String header = "INPUT & STATE & NEXT STATE & OUTPUT";
         String body = String.join(lineSep, equations.stream().map(row -> row.asString(sep, catSep, boolToInt)).toList());
@@ -104,13 +109,13 @@ class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends Meal
     }
 
     /**
-     * @param ins The input for the equation
-     * @param states The state the for the equation
+     * @param ins        The input for the equation
+     * @param states     The state the for the equation
      * @param nextStates The state following the input
-     * @param out The ouput
-     * @param <S> States
-     * @param <I> Input
-     * @param <O> Output
+     * @param out        The ouput
+     * @param <S>        States
+     * @param <I>        Input
+     * @param <O>        Output
      */
     record EquationRow<S, I, O>(@NonNull I ins, @NonNull S states, @NonNull S nextStates, @NonNull O out) {
         @Override
@@ -125,6 +130,7 @@ class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends Meal
         String asString(String sep, String catSep) {
             return asString(sep, catSep, Object::toString);
         }
+
         String asString(String sep, String catSep, Function<? super Boolean, String> conv) {
             return String.join(" " + catSep + " ", new String[]{ins.toString(), states.toString(), nextStates.toString(), out.toString()});
         }

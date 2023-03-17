@@ -20,6 +20,7 @@ package org.cs23sw612;
 import de.learnlib.api.exception.SULException;
 import de.learnlib.api.oracle.EquivalenceOracle.MealyEquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import net.automatalib.automata.concepts.MutableTransitionOutput;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
@@ -38,25 +40,24 @@ import org.cs23sw612.Interfaces.SULTimed;
 
 /**
  * Finds transitions with uncertain clock guards and "trims" them to smallest equivalent.
- *
+ * <p>
  * Performs a complete exploration checking for outputs tagged with [?] clock guards.
  * The step clock limit is trimmed and output compared to see if the trim still results in equivalence.
- *
+ * <p>
  * Clock discovery walk:
  * 1) For each outgoing transition check the guard on the output and see if we can do it faster
  * 2) The output must match the hypothesis output
  * 3) The successor state signature must match the hypothesis successor state signature
  * 4) If output and successor match then "trim" the clock guard
- *
+ * <p>
  * Based on CompleteExplorationEQOracle by Malte Isberner.
- *
- * @author Ben Caldwell <benny.caldwell@gmail.com>
  *
  * @param <I> input symbol class
  * @param <O> output class
+ * @author Ben Caldwell <benny.caldwell@gmail.com>
  */
 public class ClockExplorationEQOracle<I, O> implements
-        MealyEquivalenceOracle<I,O> {
+        MealyEquivalenceOracle<I, O> {
 
     private final static Logger LOGGER = Logger.getGlobal();
     private final SULTimed<I, O> sul;
@@ -66,8 +67,9 @@ public class ClockExplorationEQOracle<I, O> implements
 
     /**
      * Constructor.
+     *
      * @param sulOracle interface to the system under learning
-     * @param maxDepth maximum exploration depth
+     * @param maxDepth  maximum exploration depth
      */
     public ClockExplorationEQOracle(SULTimed<I, O> sulOracle, int maxDepth) {
         this(sulOracle, 1, maxDepth);
@@ -75,12 +77,13 @@ public class ClockExplorationEQOracle<I, O> implements
 
     /**
      * Constructor.
+     *
      * @param sulOracle interface to the system under learning
-     * @param minDepth minimum exploration depth
-     * @param maxDepth maximum exploration depth
+     * @param minDepth  minimum exploration depth
+     * @param maxDepth  maximum exploration depth
      */
     public ClockExplorationEQOracle(SULTimed<I, O> sulOracle, int minDepth, int maxDepth) {
-        if(maxDepth < minDepth)
+        if (maxDepth < minDepth)
             maxDepth = minDepth;
 
         this.minDepth = minDepth;
@@ -95,7 +98,7 @@ public class ClockExplorationEQOracle<I, O> implements
             return null; // No clock guard from split
         }
         double secondsGuard = Double.valueOf(tokens[1]);
-        Long clockGuard = Math.round(secondsGuard*1000); // get clockguard in ms
+        Long clockGuard = Math.round(secondsGuard * 1000); // get clockguard in ms
         return clockGuard;
     }
 
@@ -120,7 +123,7 @@ public class ClockExplorationEQOracle<I, O> implements
         }
         try {
             Double secondsGuard = Double.parseDouble(tokens[1]);
-            Long clockGuard = Math.round(secondsGuard *1000);
+            Long clockGuard = Math.round(secondsGuard * 1000);
         } catch (NumberFormatException e) {
             return false;
         }
@@ -155,13 +158,12 @@ public class ClockExplorationEQOracle<I, O> implements
     }
 
     /**
-     *
      * @param hypothesis
      * @param inputs
      * @return null or a counterexample
      */
     @Override
-    public DefaultQuery<I, Word<O>> findCounterExample(MealyMachine<?,I,?,O> hypothesis,
+    public DefaultQuery<I, Word<O>> findCounterExample(MealyMachine<?, I, ?, O> hypothesis,
                                                        Collection<? extends I> inputs) {
         return doFindCounterExample(hypothesis, inputs);
     }
@@ -171,30 +173,30 @@ public class ClockExplorationEQOracle<I, O> implements
         LOGGER.fine("Started finding counter examples.");
 
         // find uncertain clock guards with accessor prefix
-        HashMap<List<I>,Long> uncertainPrefixes = findUncertainPrefixes((CompactMealy<I,O>)hypothesis, inputs);
+        HashMap<List<I>, Long> uncertainPrefixes = findUncertainPrefixes((CompactMealy<I, O>) hypothesis, inputs);
 
         // while uncertain clock guards exist
-        while (uncertainPrefixes != null && uncertainPrefixes.size()>0) {
+        while (uncertainPrefixes != null && uncertainPrefixes.size() > 0) {
             // trimmed uncertain guards - keep trimming or remove uncertainty
             Iterator it = uncertainPrefixes.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry pairs = (Map.Entry)it.next();
+                Map.Entry pairs = (Map.Entry) it.next();
                 trimClockGuard(hypothesis, inputs, pairs);
             }
 
             // find remaining uncertain clock guards
-            uncertainPrefixes = findUncertainPrefixes((CompactMealy<I,O>)hypothesis, inputs);
+            uncertainPrefixes = findUncertainPrefixes((CompactMealy<I, O>) hypothesis, inputs);
         }
 
         return null;
     }
 
-    HashMap<List<I>,Long> findUncertainPrefixes(CompactMealy<I,O> hypothesis, Collection<? extends I> inputs) {
+    HashMap<List<I>, Long> findUncertainPrefixes(CompactMealy<I, O> hypothesis, Collection<? extends I> inputs) {
 
         LOGGER.fine("Started uncertain prefixes.");
 
         // Store access prefixes resulting in uncertain clock guards in a hash map (no duplicates?)
-        HashMap<List<I>,Long> uncertainPrefixes = new HashMap<>();
+        HashMap<List<I>, Long> uncertainPrefixes = new HashMap<>();
 
         for (Integer state : hypothesis.getStates()) {
             List<? extends I> prefix = findAccessPrefix(state, hypothesis, inputs);
@@ -214,10 +216,10 @@ public class ClockExplorationEQOracle<I, O> implements
         return uncertainPrefixes;
     }
 
-    List<? extends I> findAccessPrefix(Integer state, CompactMealy<I,O> hypothesis, Collection<? extends I> inputs) {
+    List<? extends I> findAccessPrefix(Integer state, CompactMealy<I, O> hypothesis, Collection<? extends I> inputs) {
         int cur = hypothesis.getInitialState();
         // Get all possible sequences of inputs from min depth to max depth
-        for(List<? extends I> prefix : CollectionsUtil.allTuples(inputs, minDepth, maxDepth)) {
+        for (List<? extends I> prefix : CollectionsUtil.allTuples(inputs, minDepth, maxDepth)) {
             if (hypothesis.getState(prefix) == state) {
                 return prefix;
             }
@@ -225,7 +227,7 @@ public class ClockExplorationEQOracle<I, O> implements
         return null;
     }
 
-    private <S, T> void trimClockGuard(MealyMachine<S, I, T, O> hypothesis, Collection<? extends I> inputs, Map.Entry<List<I>,Long> uncertainPrefix) {
+    private <S, T> void trimClockGuard(MealyMachine<S, I, T, O> hypothesis, Collection<? extends I> inputs, Map.Entry<List<I>, Long> uncertainPrefix) {
         // The uncertain prefix comes as a hashmap pair with key: list of inputs <I> as a prefix; value: output <O> from the prefix
         // For each suffix of the given uncertain prefix
         for (I sym : inputs) {
@@ -241,8 +243,7 @@ public class ClockExplorationEQOracle<I, O> implements
                     // If this is the last step
                     if (!iterator.hasNext()) {
                         break;
-                    }
-                    else {
+                    } else {
                         sul.step(step);
                         cur = hypothesis.getSuccessor(cur, step);
                     }
@@ -260,7 +261,7 @@ public class ClockExplorationEQOracle<I, O> implements
                 String expectedOutput = hypothesis.getOutput(cur, sym).toString();
                 // use the clock guard from hypothesis for SUL clock limit so we get identical outputs
                 String observedOutput;
-                if (clockGuardFromOutput(expectedOutput)!=null) {
+                if (clockGuardFromOutput(expectedOutput) != null) {
                     long clockLimit = clockGuardFromOutput(expectedOutput);
                     observedOutput = sul.step(sym, clockLimit).toString();
                 } else {
@@ -273,18 +274,18 @@ public class ClockExplorationEQOracle<I, O> implements
                         // Trimmed all the way to zero so there is no guard
                         String newOutput = symbolFromOutput(uncertainOutput.toString());
                         LOGGER.fine("Trimmed clock guard to zero and removed: " + uncertainPrefix + "/" + newOutput);
-                        ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
+                        ((MutableTransitionOutput) hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     } else {
                         // the trimmed guard did not affect the result so keep it trimmed and uncertain
-                        String newOutput = symbolFromOutput(uncertainOutput.toString()) +"[?"+ Math.floor(clockGuard/1000.0f) + "]";
+                        String newOutput = symbolFromOutput(uncertainOutput.toString()) + "[?" + Math.floor(clockGuard / 1000.0f) + "]";
                         LOGGER.fine("Trimmed clock guard is still uncertain: " + uncertainPrefix + "/" + newOutput);
-                        ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
+                        ((MutableTransitionOutput) hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     }
                 } else {
                     // the trimmed guard affected the result - undo trim and remove uncertainty
-                    String newOutput = symbolFromOutput(uncertainOutput.toString()) +"["+ Math.floor(uncertainPrefix.getValue()/1000.0f) + "]";
+                    String newOutput = symbolFromOutput(uncertainOutput.toString()) + "[" + Math.floor(uncertainPrefix.getValue() / 1000.0f) + "]";
                     LOGGER.fine("Trimmed clock guard uncertainty removed: " + uncertainPrefix + "/" + newOutput);
-                    ((MutableTransitionOutput)hypothesis).setTransitionOutput(uncertainTransition, newOutput);
+                    ((MutableTransitionOutput) hypothesis).setTransitionOutput(uncertainTransition, newOutput);
                     // Don't bother with any more suffixes
                     break;
                 }

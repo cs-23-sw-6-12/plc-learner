@@ -10,6 +10,7 @@ import java.util.List;
  * A representation of how an output can be produced.
  * The given output can be produced by a one of the list of "operations".
  * This list can be viewed as a OR operation ("x produces output OR y produces output OR ...").
+ *
  * @param <S> States
  * @param <I> Input
  * @param <O> Output
@@ -36,8 +37,9 @@ public class Equation<S, I, O> {
     /**
      * Method used to extend how the output can be produced.
      * Can be viewed as a pair ({@code in,s}) that (also) produces {@code out}.
+     *
      * @param in The input to extend {@code out} with
-     * @param s The state to extend {@code out} with
+     * @param s  The state to extend {@code out} with
      */
     public void extend(I in, S s) {
         if (or == null) or = new ArrayList<>();
@@ -53,7 +55,7 @@ public class Equation<S, I, O> {
     public String toString() {
         return output.toString() + " = " +
                 String.join(" + ", or.stream().map(p ->
-                        String.format("(%s %s)", p.getFirst(), p.getSecond()))
+                                String.format("(%s %s)", p.getFirst(), p.getSecond()))
                         .toList());
     }
 
