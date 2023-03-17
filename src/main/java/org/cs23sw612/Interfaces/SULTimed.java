@@ -23,20 +23,24 @@ import de.learnlib.api.exception.SULException;
 /**
  * Interface for a system under learning (SUL) that can make single steps.
  *
- * @param <I> input symbols
- * @param <O> output symbols
+ * @param <I>
+ *            input symbols
+ * @param <O>
+ *            output symbols
  * @author falkhowar
  */
 public interface SULTimed<I, O> extends SUL<I, O> {
 
-  /**
-   * make one step on the SUL.
-   *
-   * @param input the input symbol to the SUL
-   * @param stepClockLimit the clock limit to wait for an output symbol this step
-   * @return output of SUL
-   */
-  O step(I input, long stepClockLimit) throws SULException;
+	/**
+	 * make one step on the SUL.
+	 *
+	 * @param input
+	 *            the input symbol to the SUL
+	 * @param stepClockLimit
+	 *            the clock limit to wait for an output symbol this step
+	 * @return output of SUL
+	 */
+	O step(I input, long stepClockLimit) throws SULException;
 
-  long getClockLimit();
+	long getClockLimit();
 }
