@@ -38,8 +38,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
-<<<<<<< HEAD
-=======
 
->>>>>>> adc5dd138b9fb901aec6940ae85852801280f506
 .gradle
