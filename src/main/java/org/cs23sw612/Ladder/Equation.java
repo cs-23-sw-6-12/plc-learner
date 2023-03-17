@@ -6,6 +6,14 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A representation of how an output can be produced.
+ * The given output can be produced by a one of the list of "operations".
+ * This list can be viewed as a OR operation ("x produces output OR y produces output OR ...").
+ * @param <S> States
+ * @param <I> Input
+ * @param <O> Output
+ */
 public class Equation<S, I, O> {
     public final O output;
     private List<Pair<I, S>> or;
@@ -13,6 +21,10 @@ public class Equation<S, I, O> {
     public Equation(@NonNull O output) {
         this.output = output;
     }
+
+    /**
+     * @param o A {@link EquationTable.EquationRow} to be augmented to an {@link Equation}
+     */
     public Equation(EquationTable.EquationRow<S, I, O> o) {
         assert o.out() != null;
         this.output = o.out();
@@ -21,12 +33,22 @@ public class Equation<S, I, O> {
     }
 
 
+    /**
+     * Method used to extend how the output can be produced.
+     * Can be viewed as a pair ({@code in,s}) that (also) produces {@code out}.
+     * @param in The input to extend {@code out} with
+     * @param s The state to extend {@code out} with
+     */
     public void extend(I in, S s) {
         if (or == null) or = new ArrayList<>();
         or.add(Pair.of(in, s));
     }
 
-    //TODO: Question formatting (states=variables, states on lhs? etc.)
+    public List<Pair<I, S>> getFullList() {
+        return or;
+    }
+
+    //TODO: Formatting shit?
     @Override
     public String toString() {
         return output.toString() + " = " +
@@ -37,7 +59,7 @@ public class Equation<S, I, O> {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof EquationTable.EquationRow<?, ?, ?> &&
+        return o instanceof EquationTable.EquationRow &&
                 equals((EquationTable.EquationRow<S, I, O>) o);
     }
 

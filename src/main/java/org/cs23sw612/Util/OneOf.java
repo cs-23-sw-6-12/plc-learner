@@ -2,20 +2,20 @@ package org.cs23sw612.Util;
 
 import java.util.Optional;
 
-public class OneOF<L, R> {
+public class OneOf<L, R> {
     enum Which {Left, Right}
     Which which = null;
     L left = null;
     R right = null;
 
-    public OneOF() { }
-    public static <L, R> OneOF<L, R> fromLeft(L val) {
-        OneOF<L, R> out = new OneOF<>();
+    public OneOf() { }
+    public static <L, R> OneOf<L, R> fromLeft(L val) {
+        OneOf<L, R> out = new OneOf<>();
         out.setLeft(val);
         return out;
     }
-    public static <L, R> OneOF<L, R> fromRight(R val) {
-        OneOF<L, R> out = new OneOF<>();
+    public static <L, R> OneOf<L, R> fromRight(R val) {
+        OneOf<L, R> out = new OneOf<>();
         out.setRight(val);
         return out;
     }
