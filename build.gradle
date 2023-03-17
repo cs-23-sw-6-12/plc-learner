@@ -54,9 +54,12 @@ targetCompatibility = JavaVersion.VERSION_16
 
 spotless {
     java {
+        removeUnusedImports()
+        //cleanthat()
         //googleJavaFormat()
         //palantirJavaFormat()
         eclipse()
+        formatAnnotations()
         // optional: you can specify a specific version and/or switch to AOSP style
         //   and/or reflow long strings (requires at least 1.8)
         //   and/or use custom group artifact (you probably don't need this)
