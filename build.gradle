@@ -59,6 +59,7 @@ spotless {
         //googleJavaFormat()
         //palantirJavaFormat()
         eclipse()
+        indentWithSpaces(4)
         formatAnnotations()
         // optional: you can specify a specific version and/or switch to AOSP style
         //   and/or reflow long strings (requires at least 1.8)
