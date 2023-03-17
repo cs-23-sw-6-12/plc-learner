@@ -5,7 +5,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id("com.diffplug.spotless") version "6.17.0"
+
+    id "com.diffplug.spotless" version "6.17.0"
 }
 
 //apply plugin: 'com.github.sherter.google-java-format'
@@ -58,6 +59,7 @@ spotless {
         //cleanthat()
         //googleJavaFormat()
         //palantirJavaFormat()
+
         eclipse()
         indentWithSpaces(4)
         formatAnnotations()
