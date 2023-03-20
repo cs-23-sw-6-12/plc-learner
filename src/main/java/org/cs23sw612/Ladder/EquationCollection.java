@@ -3,7 +3,9 @@ package org.cs23sw612.Ladder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 
@@ -25,7 +27,7 @@ import net.automatalib.words.Alphabet;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends MealyMachine<S, I, T, O>, A extends Alphabet<I>> {
+public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>> {
     private final List<Equation<S, I, O>> equations = new ArrayList<>();
     private final EquationTable<S, I, T, O, M, A> table;
 

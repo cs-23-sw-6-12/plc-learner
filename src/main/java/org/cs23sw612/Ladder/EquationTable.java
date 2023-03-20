@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 import net.automatalib.automata.concepts.StateIDs;
 import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,7 +34,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  * @param <A>
  *            Alphabet over {@code I}
  */
-class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends MealyMachine<S, I, T, O>, A extends Alphabet<I>> {
+class EquationTable<S, I, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>> {
     // TODO: Remove names?
     private final List<String> inputs;
     private final List<String> outputs = new ArrayList<>();
