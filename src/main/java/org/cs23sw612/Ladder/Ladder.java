@@ -8,8 +8,9 @@ import net.automatalib.words.Word;
 public class Ladder<S, I extends Word<?>, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>> {
 
     public Ladder(EquationCollection<S, I, T, O, M, A> ec) {
-        
+        ec.getEquations().forEach(e -> {
+            System.out.println("based");
+            e.getFullList().get(0).getFirst().forEach(System.out::println);
+        });
     }
-
-
 }

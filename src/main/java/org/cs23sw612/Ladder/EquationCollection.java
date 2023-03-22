@@ -2,6 +2,7 @@ package org.cs23sw612.Ladder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import net.automatalib.automata.transducers.MealyMachine;
@@ -27,7 +28,8 @@ import net.automatalib.words.Alphabet;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>> {
+public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>>
+         implements Collection<Equation<S, I, O>>{
     private final List<Equation<S, I, O>> equations = new ArrayList<>();
     private final EquationTable<S, I, T, O, M, A> table;
 
@@ -65,10 +67,6 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
         return table;
     }
 
-    public Collection<Equation<S, I, O>> getEquations() {
-        return equations;
-    }
-
     @Override
     public String toString() {
         return String.join("\n", equations.stream().map(Object::toString).toList());
@@ -76,5 +74,70 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
 
     public String toLatexTabularXString() {
         return table.toLatexTabularXString();
+    }
+
+    @Override
+    public int size() {
+        return equations.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return equations.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return equations.contains(o);
+    }
+
+    @Override
+    public Iterator<Equation<S, I, O>> iterator() {
+        return equations.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return equations.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] ts) {
+        return equations.toArray(ts);
+    }
+
+    @Override
+    public boolean add(Equation<S, I, O> equation) {
+        return equations.add(equation);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return equations.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+        return equations.containsAll(collection);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Equation<S, I, O>> collection) {
+        return equations.addAll(collection);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> collection) {
+        return equations.removeAll(collection);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> collection) {
+        return equations.retainAll(collection);
+    }
+
+    @Override
+    public void clear() {
+        equations.clear();
     }
 }
