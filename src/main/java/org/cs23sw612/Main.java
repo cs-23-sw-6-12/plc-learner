@@ -7,7 +7,6 @@ import de.learnlib.oracle.equivalence.MealySimulatorEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import java.io.IOException;
-
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Word;
@@ -36,8 +35,8 @@ public class Main {
         // var t = new EquationTable(result, ExampleSUL.alphabet);
         // System.out.println(t.toLatexTabularXString());
         // var e = t.getEquationCollection();
-        EquationCollection e = new EquationCollection(result, ExampleSUL.alphabet);
-        Ladder l = new Ladder(e);
+        var e = new EquationCollection(result, ExampleSUL.alphabet);
+        var l = new Ladder(e);
         // System.out.println(e);
         // System.out.println(e.toLatexTabularXString());
         // Visualization.visualize(result, ExampleSUL.alphabet);

@@ -60,7 +60,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
             if (index == -1) {
                 equations.add(new Equation<>(eq));
             } else {
-                equations.get(index).extend(eq.inputs(), eq.states());
+                equations.get(index).extend(eq.states(), eq.inputs());
             }
         });
     }

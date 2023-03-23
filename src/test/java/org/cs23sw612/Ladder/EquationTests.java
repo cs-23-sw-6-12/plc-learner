@@ -45,11 +45,11 @@ public class EquationTests {
     public void testCorrectEquationCollection() {
         var testCol = new EquationCollection<>(testSystem, testAlphabet);
         testCol.forEach(eq -> eq.getFullList().forEach(p -> {
-            CompactMealyTransition<Object> trans = testSystem.getTransition(b(p.getSecond()), p.getFirst());
+            CompactMealyTransition<Object> trans = testSystem.getTransition(b(p.getFirst()), p.getSecond());
             assert trans != null;
             assert trans.getOutput() == eq.output;
-            testSystem.removeTransition(b(p.getSecond()), p.getFirst(), trans);
-            assert testSystem.getTransition(b(p.getSecond()), p.getFirst()) == null;
+            testSystem.removeTransition(b(p.getFirst()), p.getSecond(), trans);
+            assert testSystem.getTransition(b(p.getFirst()), p.getSecond()) == null;
         }));
         testSystem.forEach(s -> testAlphabet.forEach(w -> {
             assert testSystem.getTransition(s, w) == null;

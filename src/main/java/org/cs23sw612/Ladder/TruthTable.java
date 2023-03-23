@@ -196,10 +196,10 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof Equation && equals((Equation<S, I, O>) o);
+            return o instanceof Equation && equals((Equation) o);
         }
 
-        private boolean equals(Equation<S, I, O> eq) {
+        private boolean equals(Equation eq) {
             return output == eq.output;
         }
     }
