@@ -7,8 +7,9 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * A representation of how an output can be produced. The given output can be
- * produced by a one of the list of "operations". This list can be viewed as a
- * OR operation ("x produces output OR y produces output OR ...").
+ * produced by one of the elements from the list of boolean equations. This list
+ * can be viewed as a OR operation ("x produces output OR y produces output OR
+ * ...").
  *
  * @param <S>
  *            States
