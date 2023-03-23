@@ -9,6 +9,7 @@ import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 
 /**
  * A collection of {@link Equation}s. From a given {@link MealyMachine}, it
@@ -28,10 +29,11 @@ import net.automatalib.words.Alphabet;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends TransitionOutputAutomaton<S, I, T, O>, A extends Alphabet<I>>
-         implements Collection<Equation<S, I, O>>{
-    private final List<Equation<S, I, O>> equations = new ArrayList<>();
-    private final EquationTable<S, I, T, O, M, A> table;
+public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>>
+        implements
+            Collection<Equation<Word<Boolean>, I, O>> {
+    private final List<Equation<Word<Boolean>, I, O>> equations = new ArrayList<>();
+    private final TruthTable<S, I, T, O, M, A> table;
 
     /**
      * @param machine
@@ -40,30 +42,30 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
      *            The given input-alphabet
      */
     public EquationCollection(M machine, A alphabet) {
-        this(new EquationTable<>(machine, alphabet));
+        this(new TruthTable<S, I, T, O, M, A>(machine, alphabet));
     }
 
-    private EquationCollection(EquationTable<S, I, T, O, M, A> tab) {
+    private EquationCollection(TruthTable<S, I, T, O, M, A> tab) {
         table = tab;
-        extractEquations(table.getRawEquations());
+        extractEquations(table.getEquations());
     }
     /*
      * public EquationCollection(Collection<EquationTable.EquationRow<S, I, O>> eqs)
      * { this.extractEquations(eqs); }
      */
 
-    private void extractEquations(Collection<EquationTable.EquationRow<S, I, O>> eqs) {
+    private void extractEquations(List<TruthTable.TruthRow<Word<Boolean>, I, O>> eqs) {
         eqs.forEach(eq -> {
             int index = equations.indexOf(eq);
             if (index == -1) {
                 equations.add(new Equation<>(eq));
             } else {
-                equations.get(index).extend(eq.ins(), eq.states());
+                equations.get(index).extend(eq.inputs(), eq.states());
             }
         });
     }
 
-    public EquationTable<S, I, T, O, M, A> getTable() {
+    public TruthTable<S, I, T, O, M, A> getTable() {
         return table;
     }
 
@@ -92,7 +94,7 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
     }
 
     @Override
-    public Iterator<Equation<S, I, O>> iterator() {
+    public Iterator<Equation<Word<Boolean>, I, O>> iterator() {
         return equations.iterator();
     }
 
@@ -107,7 +109,7 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
     }
 
     @Override
-    public boolean add(Equation<S, I, O> equation) {
+    public boolean add(Equation<Word<Boolean>, I, O> equation) {
         return equations.add(equation);
     }
 
@@ -122,7 +124,7 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
     }
 
     @Override
-    public boolean addAll(Collection<? extends Equation<S, I, O>> collection) {
+    public boolean addAll(Collection<? extends Equation<Word<Boolean>, I, O>> collection) {
         return equations.addAll(collection);
     }
 

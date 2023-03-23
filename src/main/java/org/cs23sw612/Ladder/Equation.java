@@ -27,24 +27,24 @@ public class Equation<S, I, O> {
 
     /**
      * @param o
-     *            A {@link EquationTable.EquationRow} to be augmented to an
+     *            A {@link TruthTable.TruthRow} to be augmented to an
      *            {@link Equation}
      */
-    public Equation(EquationTable.EquationRow<S, I, O> o) {
-        assert o.out() != null;
-        this.output = o.out();
+    public Equation(TruthTable.TruthRow<S, I, O> o) {
+        assert o.output() != null;
+        this.output = o.output();
         or = new ArrayList<>();
-        or.add(Pair.of(o.ins(), o.states()));
+        or.add(Pair.of(o.inputs(), o.states()));
     }
 
     /**
      * Method used to extend how the output can be produced. Can be viewed as a pair
-     * ({@code in,s}) that (also) produces {@code out}.
+     * ({@code in,s}) that (also) produces {@code output}.
      *
      * @param in
-     *            The input to extend {@code out} with
+     *            The input to extend {@code output} with
      * @param s
-     *            The state to extend {@code out} with
+     *            The state to extend {@code output} with
      */
     public void extend(I in, S s) {
         if (or == null)
@@ -65,10 +65,10 @@ public class Equation<S, I, O> {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof EquationTable.EquationRow && equals((EquationTable.EquationRow<S, I, O>) o);
+        return o instanceof TruthTable.TruthRow && equals((TruthTable.TruthRow<S, I, O>) o);
     }
 
-    private boolean equals(EquationTable.EquationRow<S, I, O> o) {
-        return o.out() == output;
+    private boolean equals(TruthTable.TruthRow<S, I, O> o) {
+        return o.output() == output;
     }
 }
