@@ -21,24 +21,7 @@ public class ExampleSUL {
                 .withOutput(Word.fromSymbols(true, false)).to("s0").from("s1").on(Word.fromSymbols(true, true))
                 .withOutput(Word.fromSymbols(false, false)).to("s0").from("s1").on(Word.fromSymbols(false, false))
                 .withOutput(Word.fromSymbols(true, true)).to("s1").from("s1").on(Word.fromSymbols(true, false))
-                .withOutput(Word.fromSymbols(false, true)).to("s2") // TODO: to s1
-
-                .from("s2").on(Word.fromSymbols(false, false)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s2").on(Word.fromSymbols(false, true)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s2").on(Word.fromSymbols(true, true)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s2").on(Word.fromSymbols(true, false)).withOutput(Word.fromSymbols(false, false)).to("s3")
-                .from("s3").on(Word.fromSymbols(false, false)).withOutput(Word.fromSymbols(true, false)).to("s3")
-                .from("s3").on(Word.fromSymbols(false, true)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s3").on(Word.fromSymbols(true, true)).withOutput(Word.fromSymbols(true, false)).to("s3")
-                .from("s3").on(Word.fromSymbols(true, false)).withOutput(Word.fromSymbols(false, false)).to("s4")
-                .from("s4").on(Word.fromSymbols(false, false)).withOutput(Word.fromSymbols(true, false)).to("s3")
-                .from("s4").on(Word.fromSymbols(false, true)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s4").on(Word.fromSymbols(true, true)).withOutput(Word.fromSymbols(true, false)).to("s4")
-                .from("s4").on(Word.fromSymbols(true, false)).withOutput(Word.fromSymbols(false, false)).to("s5")
-                .from("s5").on(Word.fromSymbols(false, false)).withOutput(Word.fromSymbols(true, false)).to("s4")
-                .from("s5").on(Word.fromSymbols(false, true)).withOutput(Word.fromSymbols(true, false)).to("s0")
-                .from("s5").on(Word.fromSymbols(true, true)).withOutput(Word.fromSymbols(true, false)).to("s2")
-                .from("s5").on(Word.fromSymbols(true, false)).withOutput(Word.fromSymbols(false, false)).to("s5")
+                .withOutput(Word.fromSymbols(false, true)).to("s1")
                 .create();
     }
 

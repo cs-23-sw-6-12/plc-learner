@@ -45,10 +45,12 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
     private final List<O> outputs = new ArrayList<>();
     private final int outputCount;
     private final List<String> states;
-    private final List<TruthRow<S, I, O>> equations = new ArrayList<>();
+    private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
     private final StateIDs<S> stateIds;
     private static final Function<? super Boolean, String> boolToInt = i -> i ? "1" : "0";
     private int varCount = 0;
+
+    private List<TruthRow<Word<Boolean>, I, O>> equations = null;
 
     /**
      * @param machine
@@ -81,11 +83,11 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                 if (!this.outputs.contains(output.toString()))
                     this.outputs.add(output);
 
-                equations.add(new TruthRow<>(word, state, stateIds.getState(trans.getSuccId()), output));
+                rows.add(new TruthRow<>(word, state, stateIds.getState(trans.getSuccId()), output));
             });
             stateCount += 1;
-            varCount = (int) Math.max(Math.ceil(Math.log(stateCount) / Math.log(2)), 1); // Log base 2
         }
+        varCount = (int) Math.max(Math.ceil(Math.log(stateCount) / Math.log(2)), 1); // Log base 2
         // region assert output alphabet
         {
             var min = outputs.stream().min(Comparator.comparing(w -> w.stream().count()));
@@ -104,8 +106,10 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
      * @return The raw {@link TruthTable}
      */
     List<TruthRow<Word<Boolean>, I, O>> getEquations() {
-        return equations.stream().map(e -> new TruthRow<>(e.inputs, convertState(e.states.longValue()),
-                convertState(e.nextStates.longValue()), e.output)).toList();
+        if (equations == null)
+            equations = rows.stream().map(e -> new TruthRow<>(e.inputs, convertState(e.states.longValue()),
+                    convertState(e.nextStates.longValue()), e.output)).toList();
+        return equations;
     }
 
     private Word<Boolean> convertState(long state) {
@@ -154,8 +158,7 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
 
     private String asString(String sep, String catSep, String lineSep, String headerSep) {
         String header = "INPUT & STATE & NEXT STATE & OUTPUT";
-        String body = String.join(lineSep,
-                equations.stream().map(row -> row.asString(sep, catSep, boolToInt)).toList());
+        String body = String.join(lineSep, rows.stream().map(row -> row.asString(sep, catSep, boolToInt)).toList());
         return header + lineSep + headerSep + body;
     }
 

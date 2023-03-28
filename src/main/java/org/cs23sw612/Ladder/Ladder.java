@@ -7,59 +7,71 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class Ladder<S extends Number, I extends Word<Boolean>, T extends CompactMealyTransition<? super O>, O extends Word<Boolean>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
-
+    public ArrayList<Rung> rungs;
     public Ladder(EquationCollection<S, I, T, O, M, A> ec) {
+        rungs = new ArrayList<>();
 
-        ArrayList<Rung> rungs = new ArrayList<>();
         for (Equation<Word<Boolean>, I, O> equation : ec) {
-            for (Pair<Word<Boolean>, I> vari : equation.getFullList()) {
-                Rung rung = new Rung();
-                int i = 1;
-                for (Boolean w : vari.getSecond()) {
-                    String gatetype = w ? "NO" : "NC";
-                    Gate gate = new Gate(gatetype, Integer.toString(i));
-                    rung.gates.add(gate);
-                    i++;
+            boolean first = true;
+            for (Pair<Word<Boolean>, I> StateInputPair : equation.getFullList()) {
+                Rung rung;
+                if ((long) equation.getFullList().size() > 1 && !first)
+                    rung = new ORRung();
+                else {
+                    rung = new Rung();
+                    rung.outputgate = new Gate(String.format("(%S)", convertState(equation.output)));
                 }
-                Gate stategate = new Gate("NO", "State " + vari.getFirst().toString());
-                rung.gates.add(stategate);
-                Gate outputgate = new Gate("Coil", equation.output.toString());
-                rung.gates.add(outputgate);
-                rung.outputvar = equation.output;
+                int inputParam = 1;
+                for (Boolean word : StateInputPair.getSecond()) {
+                    rung.add(new Gate(word ? String.format("| %s|", inputParam) : String.format("|/%s|", inputParam)));
+                    inputParam++;
+                }
+                rung.add(new Gate(String.format("|State %s|", convertState(StateInputPair.getFirst()))));
                 rungs.add(rung);
+                first = false;
             }
-            System.out.println(equation);
-            System.out.println(equation.getFullList().get(0).getFirst());
-            System.out.println(rungs);
         }
+    }
+    private String convertState(Word<Boolean> state) {
+        return state.stream().map(i -> i ? "1" : "0").collect(Collectors.joining(""));
     }
 
     private class Rung {
-        O outputvar;
-        ArrayList<Gate> gates = new ArrayList<Gate>();
+        private Gate outputgate;
+        private final ArrayList<Gate> gates = new ArrayList<>();
         @Override
         public String toString() {
-            return "|---" + String.join("---", gates.stream().map(Gate::toString).toList()) + "|";
+            return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----" + outputgate
+                    + "--|";
         }
+        public void add(Gate gate) {
+            this.gates.add(gate);
+        }
+    }
 
+    private class ORRung extends Rung {
+        private final ArrayList<Gate> gates = new ArrayList<>();
+        @Override
+        public String toString() {
+            return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ";
+        }
+        @Override
+        public void add(Gate gate) {
+            this.gates.add(gate);
+        }
     }
 
     private class Gate {
-        String Inputvar;
-        String Type;
-
-        public Gate(String type, String inputvar) {
-            this.Type = type;
-            this.Inputvar = inputvar;
+        private final String gate;
+        public Gate(String gate) {
+            this.gate = gate;
         }
         @Override
         public String toString() {
-            return Type + ":" + Inputvar;
+            return gate;
         }
     }
 }
-
-// Joms |--|1|---|/2|---|state?|---(? ?)---| or
-// Den her opgave er alt for meget string formatting lol i mean tru lol
