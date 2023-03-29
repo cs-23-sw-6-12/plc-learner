@@ -21,8 +21,7 @@ public class ExampleSUL {
                 .withOutput(Word.fromSymbols(true, false)).to("s0").from("s1").on(Word.fromSymbols(true, true))
                 .withOutput(Word.fromSymbols(false, false)).to("s0").from("s1").on(Word.fromSymbols(false, false))
                 .withOutput(Word.fromSymbols(true, true)).to("s1").from("s1").on(Word.fromSymbols(true, false))
-                .withOutput(Word.fromSymbols(false, true)).to("s1")
-                .create();
+                .withOutput(Word.fromSymbols(false, true)).to("s1").create();
     }
 
     public static MealySimulatorSUL<Word<Boolean>, Object> createExampleSUL() {

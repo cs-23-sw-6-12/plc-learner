@@ -26,14 +26,14 @@ public class EquationTests {
         var testTab = new EquationCollection<>(testSystem, testAlphabet).getTable();
         StateIDs<Integer> stateIds = testSystem.stateIDs();
         testTab.getEquations().forEach(eq -> {
-            CompactMealyTransition<Object> trans = testSystem.getTransition(b(eq.states()), eq.inputs());
+            CompactMealyTransition<Object> trans = testSystem.getTransition(b(eq.state()), eq.input());
             assert trans != null;
             assert trans.getOutput() == eq.output();
-            assert trans.getSuccId() == stateIds.getStateId(b(eq.nextStates()));
+            assert trans.getSuccId() == stateIds.getStateId(b(eq.nextState()));
             assert stateIds.getState(trans.getSuccId()) != null;
-            assert Objects.equals(stateIds.getState(trans.getSuccId()), b(eq.nextStates()));
-            testSystem.removeTransition(b(eq.states()), eq.inputs(), trans);
-            assert testSystem.getTransition(b(eq.states()), eq.inputs()) == null;
+            assert Objects.equals(stateIds.getState(trans.getSuccId()), b(eq.nextState()));
+            testSystem.removeTransition(b(eq.state()), eq.input(), trans);
+            assert testSystem.getTransition(b(eq.state()), eq.input()) == null;
         });
 
         testSystem.forEach(s -> testAlphabet.forEach(w -> {

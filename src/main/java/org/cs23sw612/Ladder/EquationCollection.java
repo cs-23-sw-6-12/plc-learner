@@ -1,9 +1,6 @@
 package org.cs23sw612.Ladder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
@@ -42,7 +39,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
      *            The given input-alphabet
      */
     public EquationCollection(M machine, A alphabet) {
-        this(new TruthTable<S, I, T, O, M, A>(machine, alphabet));
+        this(new TruthTable<>(machine, alphabet));
     }
 
     private EquationCollection(TruthTable<S, I, T, O, M, A> tab) {
@@ -60,7 +57,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
             if (index == -1) {
                 equations.add(new Equation<>(eq));
             } else {
-                equations.get(index).extend(eq.states(), eq.inputs());
+                equations.get(index).extend(eq.state(), eq.input());
             }
         });
     }
@@ -74,9 +71,6 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
         return String.join("\n", equations.stream().map(Object::toString).toList());
     }
 
-    public String toLatexTabularXString() {
-        return table.toLatexTabularXString();
-    }
 
     @Override
     public int size() {
@@ -104,7 +98,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
     }
 
     @Override
-    public <T> T[] toArray(T[] ts) {
+    public <TT> TT[] toArray(TT[] ts) {
         return equations.toArray(ts);
     }
 
@@ -120,7 +114,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        return equations.containsAll(collection);
+        return new HashSet<>(equations).containsAll(collection);
     }
 
     @Override

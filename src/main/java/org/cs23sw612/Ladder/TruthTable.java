@@ -40,15 +40,12 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  */
 class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
     // TODO: Remove names?
-    private final List<String> inputs;
     private final int inputCount;
     private final List<O> outputs = new ArrayList<>();
-    private final int outputCount;
-    private final List<String> states;
     private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
     private final StateIDs<S> stateIds;
     private static final Function<? super Boolean, String> boolToInt = i -> i ? "1" : "0";
-    private int varCount = 0;
+    private final int varCount;
 
     private List<TruthRow<Word<Boolean>, I, O>> equations = null;
 
@@ -71,8 +68,6 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
 
         inputCount = (int) alphabet.getSymbol(0).stream().count();
         this.stateIds = machine.stateIDs();
-        this.states = machine.getStates().stream().map(S::toString).toList();
-        this.inputs = alphabet.stream().map(I::toString).toList();
 
         int stateCount = 0;
         for (S state : machine.getStates()) {
@@ -80,7 +75,7 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                 T trans = machine.getTransition(state, word);
                 assert trans != null;
                 O output = (O) trans.getOutput();
-                if (!this.outputs.contains(output.toString()))
+                if (!this.outputs.contains(output))
                     this.outputs.add(output);
 
                 rows.add(new TruthRow<>(word, state, stateIds.getState(trans.getSuccId()), output));
@@ -98,8 +93,6 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
             assert min.get().stream().count() == max.get().stream().count();
         }
         // endregion
-
-        outputCount = (int) outputs.get(0).stream().count();
     }
 
     /**
@@ -107,8 +100,8 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
      */
     List<TruthRow<Word<Boolean>, I, O>> getEquations() {
         if (equations == null)
-            equations = rows.stream().map(e -> new TruthRow<>(e.inputs, convertState(e.states.longValue()),
-                    convertState(e.nextStates.longValue()), e.output)).toList();
+            equations = rows.stream().map(e -> new TruthRow<>(e.input, convertState(e.state.longValue()),
+                    convertState(e.nextState.longValue()), e.output)).toList();
         return equations;
     }
 
@@ -127,9 +120,9 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
 
     String toLatexTabularXString() {
         Supplier<String> latexHeader = () -> new String(new char[inputCount]).replace("\0", "|X") + "||" + // Input
-                new String(new char[varCount]).replace("\0", "|X") + "||" + // Vars/states
+                new String(new char[varCount]).replace("\0", "|X") + "||" + // Vars/state
                 new String(new char[varCount]).replace("\0", "|X") + "|||" + // Updated vars/nextstates
-                // + String.join("|", states.stream().map((i) -> "X").toList()) + "|||" +
+                // + String.join("|", state.stream().map((i) -> "X").toList()) + "|||" +
                 // String.join("|", outputs.stream().map((i) -> "X").toList()) + "|";
                 "X|"; // Output
 
@@ -139,21 +132,13 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
          * "\\begin{tabularx}{\\linewidth}{%s}\\hline\n%s%s\\end{tabularx}",
          * latexTableHeader(), asString("&", "&", sep, "\\hline"), sep);
          */
-        return String.format("\\begin{tabularx}{\\linewidth}{|X|X|X||X|}\\hline\n%s%s\\end{tabularx}",
-                // latexTableHeader(),
+        return String.format("\\begin{tabularx}{\\linewidth}{%s}\\hline\n%s%s\\end{tabularx}",
+                latexHeader.get(),
                 asString("&", "&", sep, "\\hline"), sep);
-    }
-
-    private String asString(String sep) {
-        return asString(sep, sep, "\n");
     }
 
     private String asString(String sep, String catSep) {
         return asString(sep, catSep, "\n", "");
-    }
-
-    private String asString(String sep, String catSep, String lineSep) {
-        return asString(sep, catSep, lineSep, "");
     }
 
     private String asString(String sep, String catSep, String lineSep, String headerSep) {
@@ -163,11 +148,11 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
     }
 
     /**
-     * @param inputs
+     * @param input
      *            The input for the equation
-     * @param states
+     * @param state
      *            The state the for the equation
-     * @param nextStates
+     * @param nextState
      *            The state following the input
      * @param output
      *            The output
@@ -178,23 +163,15 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
      * @param <O>
      *            Output
      */
-    record TruthRow<S, I, O>(@NonNull I inputs, @NonNull S states, @NonNull S nextStates, @NonNull O output) {
+    record TruthRow<S, I, O>(@NonNull I input, @NonNull S state, @NonNull S nextState, @NonNull O output) {
         @Override
         public String toString() {
-            return String.format("%s | %s | %s || %s", inputs, states, nextStates, output);
-        }
-
-        String asString(String sep) {
-            return asString(sep, sep);
-        }
-
-        String asString(String sep, String catSep) {
-            return asString(sep, catSep, Object::toString);
+            return String.format("%s | %s | %s || %s", input, state, nextState, output);
         }
 
         String asString(String sep, String catSep, Function<? super Boolean, String> conv) {
             return String.join(" " + catSep + " ",
-                    new String[]{inputs.toString(), states.toString(), nextStates.toString(), output.toString()});
+                    new String[]{input.toString(), state.toString(), nextState.toString(), output.toString()});
         }
 
         @Override

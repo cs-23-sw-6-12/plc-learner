@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Word;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * A representation of how an output can be produced. The given output can be
@@ -25,9 +24,6 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
     public final O output;
     private List<Pair<S, I>> or;
 
-    public Equation(@NonNull O output) {
-        this.output = output;
-    }
 
     /**
      * @param o
@@ -37,7 +33,7 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
     public Equation(TruthTable.TruthRow<S, I, O> o) {
         this.output = o.output();
         or = new ArrayList<>();
-        or.add(Pair.of(o.states(), o.inputs()));
+        or.add(Pair.of(o.state(), o.input()));
     }
 
     /**
@@ -62,7 +58,6 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
     // TODO: Formatting shit?
     @Override
     public String toString() {
-        ;
         return output.toString() + " = "
                 + String.join(" + ",
                         or.stream()
