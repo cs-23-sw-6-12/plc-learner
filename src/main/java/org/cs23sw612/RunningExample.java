@@ -5,7 +5,6 @@ import de.learnlib.algorithms.dhc.mealy.MealyDHC;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealy;
 import de.learnlib.algorithms.lstar.mealy.ExtensibleLStarMealyBuilder;
 import de.learnlib.algorithms.ttt.mealy.TTTLearnerMealy;
-import de.learnlib.datastructure.observationtable.OTUtils;
 import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
 import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.oracle.equivalence.MealySimulatorEQOracle;
@@ -14,16 +13,23 @@ import de.learnlib.util.Experiment;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.Equation;
+import org.cs23sw612.Ladder.EquationCollection;
 
 public class RunningExample {
 
     // private static final Alphabet<Word<Boolean>> alphabet =
     // AlphabetUtil.createAlphabet(2);
+    private static void p(Object s) {
+        System.out.println(s);
+    }
+    private static Consumer<? super Equation> p = System.out::println;
     public static void main(String[] args) throws IOException {
         CompactMealy<Word<Boolean>, Object> example = ExampleSUL.createExample();
         Alphabet<Word<Boolean>> alphabet = ExampleSUL.alphabet;
@@ -55,25 +61,31 @@ public class RunningExample {
         experimentDHC.run();
 
         StringWriter actualDT = new StringWriter();
-        System.out.println("Mealy stuff:");
+        p("Mealy stuff:");
         GraphDOT.write(example, actualDT);
-        System.out.println(actualDT);
+        p(actualDT);
 
-        System.out.println("L*:");
+        p("L*:");
         new ObservationTableASCIIWriter<>().write(learnerLstar.getObservationTable(), System.out);
-        OTUtils.displayHTMLInBrowser(learnerLstar.getObservationTable());
+        // OTUtils.displayHTMLInBrowser(learnerLstar.getObservationTable());
 
-        System.out.println("TTT:");
+        p("TTT (Sp & DT):");
         actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getHypothesisDS(), actualDT);
-        System.out.println(actualDT);
-        actualDT = new StringWriter();
+        // p(actualDT);
+        // actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getDiscriminationTree(), actualDT);
-        System.out.println(actualDT);
+        p(actualDT);
 
-        System.out.println("DHC:");
-        System.out.println(learnerDHC.getGlobalSuffixes());
+        p("DHC:");
+        p(learnerDHC.getGlobalSuffixes());
 
-        //TODO: Tables and equations
+        var ec = new EquationCollection<>(example, alphabet);
+        p("Truth table:");
+        p(ec.getTableLatex());
+
+        p("Equations:");
+
+        ec.forEach(e -> p("\\item[]" + e));
     }
 }

@@ -39,4 +39,13 @@ public class AlphabetUtil {
         return Alphabets.fromCollection(arr);
     }
 
+    public static String toBinaryString(Object b) {
+        if (b instanceof Boolean)
+            return (Boolean) b ? "1" : "0";
+        else if (b instanceof Number) {
+            return ((Number) b).longValue() != 0 ? "1" : "0";
+        } else
+            throw new TypeNotPresentException("lol", new Throwable());
+    }
+
 }
