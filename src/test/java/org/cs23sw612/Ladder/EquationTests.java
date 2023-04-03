@@ -23,8 +23,7 @@ public class EquationTests {
     }
     @Test
     public void testAllTransitionsInTable() {
-        var ec = new EquationCollection<>(testSystem, testAlphabet);
-        var testTab = ec.getTable();
+        var testTab = new EquationCollection<>(testSystem, testAlphabet).getTable();
         StateIDs<Integer> stateIds = testSystem.stateIDs();
 
         testTab.getEquations().forEach(eq -> {
