@@ -13,20 +13,27 @@ public class EquationTests {
     CompactMealy<Word<Boolean>, Object> testSystem = ExampleSUL.createExample();
     Alphabet<Word<Boolean>> testAlphabet = ExampleSUL.alphabet;
 
+    private static int b(Word<Boolean> w) {
+        int out = 0;
+        for (Boolean b : w) {
+            out <<= 1;
+            out |= b ? 1 : 0;
+        }
+        return out;
+    }
     @Test
     public void testAllTransitionsInTable() {
-        EquationTable<Integer, Word<Boolean>, CompactMealyTransition<Object>, Object, CompactMealy<Word<Boolean>, Object>, Alphabet<Word<Boolean>>> testTab = new EquationCollection<>(
-                testSystem, testAlphabet).getTable();
+        var testTab = new EquationCollection<>(testSystem, testAlphabet).getTable();
         StateIDs<Integer> stateIds = testSystem.stateIDs();
-        testTab.getRawEquations().forEach(eq -> {
-            CompactMealyTransition<Object> trans = testSystem.getTransition(eq.states(), eq.ins());
+        testTab.getEquations().forEach(eq -> {
+            CompactMealyTransition<Object> trans = testSystem.getTransition(b(eq.state()), eq.input());
             assert trans != null;
-            assert trans.getOutput() == eq.out();
-            assert trans.getSuccId() == stateIds.getStateId(eq.nextStates());
+            assert trans.getOutput() == eq.output();
+            assert trans.getSuccId() == stateIds.getStateId(b(eq.nextState()));
             assert stateIds.getState(trans.getSuccId()) != null;
-            assert Objects.equals(stateIds.getState(trans.getSuccId()), eq.nextStates());
-            testSystem.removeTransition(eq.states(), eq.ins(), trans);
-            assert testSystem.getTransition(eq.states(), eq.ins()) == null;
+            assert Objects.equals(stateIds.getState(trans.getSuccId()), b(eq.nextState()));
+            testSystem.removeTransition(b(eq.state()), eq.input(), trans);
+            assert testSystem.getTransition(b(eq.state()), eq.input()) == null;
         });
 
         testSystem.forEach(s -> testAlphabet.forEach(w -> {
@@ -36,14 +43,13 @@ public class EquationTests {
 
     @Test
     public void testCorrectEquationCollection() {
-        EquationCollection<Integer, Word<Boolean>, CompactMealyTransition<Object>, Object, CompactMealy<Word<Boolean>, Object>, Alphabet<Word<Boolean>>> testCol = new EquationCollection<>(
-                testSystem, testAlphabet);
-        testCol.getEquations().forEach(eq -> eq.getFullList().forEach(p -> {
-            CompactMealyTransition<Object> trans = testSystem.getTransition(p.getSecond(), p.getFirst());
+        var testCol = new EquationCollection<>(testSystem, testAlphabet);
+        testCol.forEach(eq -> eq.getFullList().forEach(p -> {
+            CompactMealyTransition<Object> trans = testSystem.getTransition(b(p.getFirst()), p.getSecond());
             assert trans != null;
             assert trans.getOutput() == eq.output;
-            testSystem.removeTransition(p.getSecond(), p.getFirst(), trans);
-            assert testSystem.getTransition(p.getSecond(), p.getFirst()) == null;
+            testSystem.removeTransition(b(p.getFirst()), p.getSecond(), trans);
+            assert testSystem.getTransition(b(p.getFirst()), p.getSecond()) == null;
         }));
         testSystem.forEach(s -> testAlphabet.forEach(w -> {
             assert testSystem.getTransition(s, w) == null;
