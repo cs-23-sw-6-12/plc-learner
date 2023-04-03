@@ -5,12 +5,11 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import net.automatalib.words.impl.Alphabets;
+import org.cs23sw612.Util.AlphabetUtil;
 
 public class ExampleSUL {
 
-    public static final Alphabet<Word<Boolean>> alphabet = Alphabets.fromArray(Word.fromSymbols(true, false),
-            Word.fromSymbols(true, true), Word.fromSymbols(false, true), Word.fromSymbols(false, false));
+    public static final Alphabet<Word<Boolean>> alphabet = AlphabetUtil.createAlphabet(2);
 
     public static CompactMealy<Word<Boolean>, Object> createExample() {
         return AutomatonBuilders.newMealy(alphabet).withInitial("s0").from("s0").on(Word.fromSymbols(false, false))
