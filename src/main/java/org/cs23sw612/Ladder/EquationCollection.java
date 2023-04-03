@@ -1,11 +1,12 @@
 package org.cs23sw612.Ladder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 import net.automatalib.automata.transducers.MealyMachine;
+import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 
 /**
  * A collection of {@link Equation}s. From a given {@link MealyMachine}, it
@@ -25,9 +26,11 @@ import net.automatalib.words.Alphabet;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M extends MealyMachine<S, I, T, O>, A extends Alphabet<I>> {
-    private final List<Equation<S, I, O>> equations = new ArrayList<>();
-    private final EquationTable<S, I, T, O, M, A> table;
+public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>>
+        implements
+            Collection<Equation<Word<Boolean>, I, O>> {
+    private final List<Equation<Word<Boolean>, I, O>> equations = new ArrayList<>();
+    private final TruthTable<S, I, T, O, M, A> table;
 
     /**
      * @param machine
@@ -36,35 +39,31 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
      *            The given input-alphabet
      */
     public EquationCollection(M machine, A alphabet) {
-        this(new EquationTable<>(machine, alphabet));
+        this(new TruthTable<>(machine, alphabet));
     }
 
-    private EquationCollection(EquationTable<S, I, T, O, M, A> tab) {
+    private EquationCollection(TruthTable<S, I, T, O, M, A> tab) {
         table = tab;
-        extractEquations(table.getRawEquations());
+        extractEquations(table.getEquations());
     }
     /*
      * public EquationCollection(Collection<EquationTable.EquationRow<S, I, O>> eqs)
      * { this.extractEquations(eqs); }
      */
 
-    private void extractEquations(Collection<EquationTable.EquationRow<S, I, O>> eqs) {
+    private void extractEquations(List<TruthTable.TruthRow<Word<Boolean>, I, O>> eqs) {
         eqs.forEach(eq -> {
             int index = equations.indexOf(eq);
             if (index == -1) {
                 equations.add(new Equation<>(eq));
             } else {
-                equations.get(index).extend(eq.ins(), eq.states());
+                equations.get(index).extend(eq.state(), eq.input());
             }
         });
     }
 
-    public EquationTable<S, I, T, O, M, A> getTable() {
+    public TruthTable<S, I, T, O, M, A> getTable() {
         return table;
-    }
-
-    public Collection<Equation<S, I, O>> getEquations() {
-        return equations;
     }
 
     @Override
@@ -72,7 +71,69 @@ public class EquationCollection<S, I, T extends CompactMealyTransition<O>, O, M 
         return String.join("\n", equations.stream().map(Object::toString).toList());
     }
 
-    public String toLatexTabularXString() {
-        return table.toLatexTabularXString();
+
+    @Override
+    public int size() {
+        return equations.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return equations.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return equations.contains(o);
+    }
+
+    @Override
+    public Iterator<Equation<Word<Boolean>, I, O>> iterator() {
+        return equations.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        return equations.toArray();
+    }
+
+    @Override
+    public <TT> TT[] toArray(TT[] ts) {
+        return equations.toArray(ts);
+    }
+
+    @Override
+    public boolean add(Equation<Word<Boolean>, I, O> equation) {
+        return equations.add(equation);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return equations.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> collection) {
+        return new HashSet<>(equations).containsAll(collection);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Equation<Word<Boolean>, I, O>> collection) {
+        return equations.addAll(collection);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> collection) {
+        return equations.removeAll(collection);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> collection) {
+        return equations.retainAll(collection);
+    }
+
+    @Override
+    public void clear() {
+        equations.clear();
     }
 }
