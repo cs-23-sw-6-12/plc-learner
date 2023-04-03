@@ -2,7 +2,6 @@ package org.cs23sw612.Ladder;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -37,12 +36,18 @@ import org.cs23sw612.Util.AlphabetUtil;
  *            Alphabet over {@code I}
  */
 class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
-    private final int inputCount;
+    private int inputCount = 0;
     private final List<O> outputs = new ArrayList<>();
     private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
     private final StateIDs<S> stateIds;
-    private final int varCount;
+    private int varCount = 0;
     private List<TruthRow<Word<Boolean>, I, O>> equations = null;
+    private final Function<String, String> latexHeader = ph -> new String(new char[inputCount]).replace("\0", "|" + ph)
+            + "|" + // Input
+            new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Vars/state
+            // new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Updated
+            // vars/nextstates
+            "|" + new String(new char[outputs.get(0).length()]).replace("\0", "|" + ph) + "|"; // Output
 
     /**
      * @param machine
@@ -113,16 +118,20 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
         return asString("|", "||");
     }
 
-    public String toLatexTabularXString() {
-        Supplier<String> latexHeader = () -> new String(new char[inputCount]).replace("\0", "|X") + "|" + // Input
-                new String(new char[varCount]).replace("\0", "|X") + "|" + // Vars/state
-                new String(new char[varCount]).replace("\0", "|X") + "||" + // Updated vars/nextstates
-                new String(new char[outputs.get(0).length()]).replace("\0", "|X") + "|"; // Output
+    public String toLatexTabularXString(String width) {
 
         String lineSep = "\\\\\\hline\n";
+        String headSep = "\\\\\\hline\\hline\n";
 
-        return String.format("\\begin{tabularx}{\\linewidth}{%s}\\hline\n%s%s\\end{tabularx}", latexHeader.get(),
-                asString("&", "&", lineSep, lineSep), lineSep);
+        return String.format("\\begin{tabularx}{%s}{%s}\\hline\n%s%s\\end{tabularx}", width, latexHeader.apply("X"),
+                asString("&", "&", lineSep, headSep), lineSep);
+    }
+    public String toLatexTabularString() {
+        String lineSep = "\\\\\\hline\n";
+        String headSep = "\\\\\\hline\\hline\n";
+
+        return String.format("\\begin{tabular}{%s}\\hline\n%s%s\\end{tabular}", latexHeader.apply("c"),
+                asString("&", "&", lineSep, headSep), lineSep);
     }
 
     private String asString(String sep, String catSep) {
@@ -134,12 +143,12 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                 .collect(Collectors.joining())
                 + IntStream.range(0, varCount).boxed().map(i -> String.format("$S_%d$ %s ", i, sep))
                         .collect(Collectors.joining())
-                + IntStream.range(0, varCount).boxed().map(i -> String.format("$S'_%d$ %s ", i, sep))
-                        .collect(Collectors.joining())
-                + String.join(" " + sep + " ", IntStream.range(0, outputs.get(0).length()).boxed()
-                        .map(i -> String.format("$O_%d$", i)).toList())
+                // + IntStream.range(0, varCount).boxed().map(i -> String.format("$S'_%d$ %s ",
+                // i, sep))
                 // .collect(Collectors.joining())
-                // + "$O$"
+                + String.join(" " + sep + " ",
+                        IntStream.range(0, outputs.get(0).length()).boxed().map(i -> String.format("$O_%d$", i))
+                                .toList())
                 + headerSep + String.join(lineSep,
                         rows.stream().map(row -> row.asString(sep, catSep, AlphabetUtil::toBinaryString)).toList());
     }
@@ -172,7 +181,8 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                     new String[]{
                             input.stream().map(conv).map(s -> String.format("%s %s ", s, catSep))
                                     .collect(Collectors.joining()),
-                            conv.apply(state), " " + catSep + " ", conv.apply(nextState), " " + catSep + " ",
+                            conv.apply(state), " " + catSep + " ",
+                            // conv.apply(nextState), " " + catSep + " ",
                             String.join(" " + catSep + " ",
                                     output.stream().map(conv).map(s -> String.format("%s", s)).toList())});
         }

@@ -16,11 +16,12 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
+import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.Ladder.Equation;
 import org.cs23sw612.Ladder.EquationCollection;
+import org.cs23sw612.Ladder.Ladder;
 
 public class RunningExample {
 
@@ -29,7 +30,8 @@ public class RunningExample {
     private static void p(Object s) {
         System.out.println(s);
     }
-    private static Consumer<? super Equation> p = System.out::println;
+    private static Consumer<? super Object> p = System.out::println;
+
     public static void main(String[] args) throws IOException {
         CompactMealy<Word<Boolean>, Object> example = ExampleSUL.createExample();
         Alphabet<Word<Boolean>> alphabet = ExampleSUL.alphabet;
@@ -80,12 +82,15 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-        var ec = new EquationCollection<>(example, alphabet);
+        EquationCollection<Integer, Word<Boolean>, CompactMealyTransition<Object>, Word<Boolean>, CompactMealy<Word<Boolean>, Object>, Alphabet<Word<Boolean>>> ec = new EquationCollection<>(
+                example, alphabet);
         p("Truth table:");
-        p(ec.getTableLatex());
+        p(ec.getTabularLatex());
 
         p("Equations:");
-
         ec.forEach(e -> p("\\item[]" + e));
+
+        p("Rungs:");
+        new Ladder(ec).rungs.forEach(System.out::print);
     }
 }
