@@ -22,7 +22,7 @@ import net.automatalib.words.Word;
  * @param <O>
  *            Output
  * @param <M>
- *            Machine. Can only be a {@link MealyMachine}
+ *            Machine. Can only be a {@link TransitionOutputAutomaton}
  * @param <A>
  *            Alphabet over {@code I}
  */
@@ -52,7 +52,6 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
      */
 
     private void extractEquations(List<TruthTable.TruthRow<Word<Boolean>, I, O>> eqs) {
-        System.out.println("New col");
         eqs.forEach(eq -> {
             List<Equation<Word<Boolean>, I, O>> index = equations.stream().filter(e -> e.output.equals(eq.output()))
                     .toList();
@@ -62,6 +61,10 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
             else
                 index.get(0).extend(eq.state(), eq.input());
         });
+    }
+
+    TruthTable<S, I, T, O, M, A> getTable() {
+        return table;
     }
 
     public String getTableLatex() {
