@@ -2,8 +2,8 @@ package org.cs23sw612.Ladder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Word;
 import org.cs23sw612.Util.AlphabetUtil;
@@ -23,7 +23,7 @@ import org.cs23sw612.Util.AlphabetUtil;
  */
 public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word<?>> {
     public final O output;
-    private List<Pair<S, I>> or;
+    private final List<Pair<S, I>> or;
 
     /**
      * @param o
@@ -32,8 +32,7 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
      */
     public Equation(TruthTable.TruthRow<S, I, O> o) {
         this.output = o.output();
-        or = new ArrayList<>();
-        or.add(Pair.of(o.state(), o.input()));
+        or = Lists.newArrayList(Pair.of(o.state(), o.input()));
     }
 
     /**
@@ -46,8 +45,6 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
      *            The state to extend {@code output} with
      */
     public void extend(S s, I in) {
-        if (or == null)
-            or = new ArrayList<>();
         or.add(Pair.of(s, in));
     }
 
@@ -57,11 +54,13 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
 
     @Override
     public String toString() {
-        return output.stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining("")) + " = "
-                + String.join(" + ", or.stream().map(p -> String.format("(%s, %s)",
-                        p.getFirst().stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining("")),
-                        p.getSecond().stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining(""))))
-                        .toList());
+        return AlphabetUtil.toBinaryString(output) + " = "
+                + String.join(" + ", or.stream().map(this::formatPair).toList());
+    }
+
+    private String formatPair(Pair<S, I> p) {
+        return String.format("(%s, %s)", AlphabetUtil.toBinaryString(p.getFirst()),
+                AlphabetUtil.toBinaryString(p.getSecond()));
     }
 
     @Override
