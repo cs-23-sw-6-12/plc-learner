@@ -27,7 +27,7 @@ public class EquationTests {
         var testTab = ec.getTable();
         StateIDs<Integer> stateIds = testSystem.stateIDs();
 
-        for (var eq : testTab.getEquations()) {
+        testTab.getEquations().forEach(eq -> {
             CompactMealyTransition<Object> trans = testSystem.getTransition(b(eq.state()), eq.input());
             assert trans != null;
             assert trans.getOutput() == eq.output();
@@ -36,7 +36,7 @@ public class EquationTests {
             assert Objects.equals(stateIds.getState(trans.getSuccId()), b(eq.nextState()));
             testSystem.removeTransition(b(eq.state()), eq.input(), trans);
             assert testSystem.getTransition(b(eq.state()), eq.input()) == null;
-        }
+        });
 
         testSystem.forEach(s -> testAlphabet.forEach(w -> {
             assert testSystem.getTransition(s, w) == null;
