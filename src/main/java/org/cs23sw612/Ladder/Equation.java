@@ -1,6 +1,5 @@
 package org.cs23sw612.Ladder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
