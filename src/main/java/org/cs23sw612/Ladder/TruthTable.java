@@ -1,11 +1,9 @@
 package org.cs23sw612.Ladder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import net.automatalib.automata.concepts.StateIDs;
 import net.automatalib.automata.transducers.MealyMachine;
@@ -14,11 +12,10 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.cs23sw612.Util.AlphabetUtil;
 
 // TODO: Transitions for outputs is defined to only be of this type. Maybe be better, lol
 // TODO: Remove next_states
-
-// TODO: rename?
 
 /**
  * A table over the "equations" from a given machine. Generally, it represents a
@@ -39,15 +36,18 @@ import org.checkerframework.checker.nullness.qual.NonNull;
  *            Alphabet over {@code I}
  */
 class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
-    // TODO: Remove names?
-    private final int inputCount;
+    private int inputCount = 0;
     private final List<O> outputs = new ArrayList<>();
     private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
     private final StateIDs<S> stateIds;
-    private static final Function<? super Boolean, String> boolToInt = i -> i ? "1" : "0";
-    private final int varCount;
-
+    private int varCount = 0;
     private List<TruthRow<Word<Boolean>, I, O>> equations = null;
+    private final Function<String, String> latexHeader = ph -> new String(new char[inputCount]).replace("\0", "|" + ph)
+            + "|" + // Input
+            new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Vars/state
+            // new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Updated
+            // vars/nextstates
+            "|" + new String(new char[outputs.get(0).length()]).replace("\0", "|" + ph) + "|"; // Output
 
     /**
      * @param machine
@@ -118,23 +118,20 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
         return asString("|", "||");
     }
 
-    String toLatexTabularXString() {
-        Supplier<String> latexHeader = () -> new String(new char[inputCount]).replace("\0", "|X") + "||" + // Input
-                new String(new char[varCount]).replace("\0", "|X") + "||" + // Vars/state
-                new String(new char[varCount]).replace("\0", "|X") + "|||" + // Updated vars/nextstates
-                // + String.join("|", state.stream().map((i) -> "X").toList()) + "|||" +
-                // String.join("|", outputs.stream().map((i) -> "X").toList()) + "|";
-                "X|"; // Output
+    public String toLatexTabularXString(String width) {
 
-        String sep = "\\\\\\hline\n";
-        /*
-         * return String.format(
-         * "\\begin{tabularx}{\\linewidth}{%s}\\hline\n%s%s\\end{tabularx}",
-         * latexTableHeader(), asString("&", "&", sep, "\\hline"), sep);
-         */
-        return String.format("\\begin{tabularx}{\\linewidth}{%s}\\hline\n%s%s\\end{tabularx}",
-                latexHeader.get(),
-                asString("&", "&", sep, "\\hline"), sep);
+        String lineSep = "\\\\\\hline\n";
+        String headSep = "\\\\\\hline\\hline\n";
+
+        return String.format("\\begin{tabularx}{%s}{%s}\\hline\n%s%s\\end{tabularx}", width, latexHeader.apply("X"),
+                asString("&", "&", lineSep, headSep), lineSep);
+    }
+    public String toLatexTabularString() {
+        String lineSep = "\\\\\\hline\n";
+        String headSep = "\\\\\\hline\\hline\n";
+
+        return String.format("\\begin{tabular}{%s}\\hline\n%s%s\\end{tabular}", latexHeader.apply("c"),
+                asString("&", "&", lineSep, headSep), lineSep);
     }
 
     private String asString(String sep, String catSep) {
@@ -142,9 +139,18 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
     }
 
     private String asString(String sep, String catSep, String lineSep, String headerSep) {
-        String header = "INPUT & STATE & NEXT STATE & OUTPUT";
-        String body = String.join(lineSep, rows.stream().map(row -> row.asString(sep, catSep, boolToInt)).toList());
-        return header + lineSep + headerSep + body;
+        return IntStream.range(0, inputCount).boxed().map(i -> String.format("$I_%d$ %s ", i, sep))
+                .collect(Collectors.joining())
+                + IntStream.range(0, varCount).boxed().map(i -> String.format("$S_%d$ %s ", i, sep))
+                        .collect(Collectors.joining())
+                // + IntStream.range(0, varCount).boxed().map(i -> String.format("$S'_%d$ %s ",
+                // i, sep))
+                // .collect(Collectors.joining())
+                + String.join(" " + sep + " ",
+                        IntStream.range(0, outputs.get(0).length()).boxed().map(i -> String.format("$O_%d$", i))
+                                .toList())
+                + headerSep + String.join(lineSep,
+                        rows.stream().map(row -> row.asString(sep, catSep, AlphabetUtil::toBinaryString)).toList());
     }
 
     /**
@@ -163,15 +169,22 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
      * @param <O>
      *            Output
      */
-    record TruthRow<S, I, O>(@NonNull I input, @NonNull S state, @NonNull S nextState, @NonNull O output) {
+    record TruthRow<S, I extends Word<?>, O extends Word<?>>(@NonNull I input, @NonNull S state, @NonNull S nextState,
+            @NonNull O output) {
         @Override
         public String toString() {
             return String.format("%s | %s | %s || %s", input, state, nextState, output);
         }
 
-        String asString(String sep, String catSep, Function<? super Boolean, String> conv) {
-            return String.join(" " + catSep + " ",
-                    new String[]{input.toString(), state.toString(), nextState.toString(), output.toString()});
+        String asString(String sep, String catSep, Function<Object, String> conv) {
+            return String.join("",
+                    new String[]{
+                            input.stream().map(conv).map(s -> String.format("%s %s ", s, catSep))
+                                    .collect(Collectors.joining()),
+                            conv.apply(state), " " + catSep + " ",
+                            // conv.apply(nextState), " " + catSep + " ",
+                            String.join(" " + catSep + " ",
+                                    output.stream().map(conv).map(s -> String.format("%s", s)).toList())});
         }
 
         @Override

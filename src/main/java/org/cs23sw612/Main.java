@@ -6,26 +6,16 @@ import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import java.io.IOException;
-import net.automatalib.automata.concepts.Output;
-import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.visualization.Visualization;
-import net.automatalib.words.Alphabet;
-import net.automatalib.words.Word;
-import net.automatalib.words.impl.Alphabets;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
-import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
-import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.Util.AlphabetUtil;
 
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        var sul = SULClient.createClient(
-                new SULClientConfiguration(args[0], Integer.parseInt(args[1])),
-                new IntegerWordInputAdapter(),
-                new IntegerWordOutputAdapter()
-        );
+        var sul = SULClient.createClient(new SULClientConfiguration(args[0], Integer.parseInt(args[1])),
+                new IntegerWordInputAdapter(), new IntegerWordOutputAdapter());
         sul.numberofinputs = 3;
         sul.numberofoutputs = 1;
 
@@ -38,13 +28,11 @@ public class Main {
         // Standard mealy membership oracle.
         var membershipOracle = new SULOracle<>(cache);
 
-        var equivalenceOracle = new CompleteExplorationEQOracle<>(
-                membershipOracle, 3);
+        var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
 
         var learner = new MealyDHC<>(alphabet, membershipOracle);
 
-        var experiment = new Experiment.MealyExperiment<>(learner,
-                equivalenceOracle, alphabet);
+        var experiment = new Experiment.MealyExperiment<>(learner, equivalenceOracle, alphabet);
 
         experiment.run();
 

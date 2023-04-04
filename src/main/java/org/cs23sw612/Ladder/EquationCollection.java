@@ -22,7 +22,7 @@ import net.automatalib.words.Word;
  * @param <O>
  *            Output
  * @param <M>
- *            Machine. Can only be a {@link MealyMachine}
+ *            Machine. Can only be a {@link TransitionOutputAutomaton}
  * @param <A>
  *            Alphabet over {@code I}
  */
@@ -53,24 +53,33 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
 
     private void extractEquations(List<TruthTable.TruthRow<Word<Boolean>, I, O>> eqs) {
         eqs.forEach(eq -> {
-            int index = equations.indexOf(eq);
-            if (index == -1) {
+            List<Equation<Word<Boolean>, I, O>> index = equations.stream().filter(e -> e.output.equals(eq.output()))
+                    .toList();
+            assert index.size() <= 1;
+            if (index.isEmpty())
                 equations.add(new Equation<>(eq));
-            } else {
-                equations.get(index).extend(eq.state(), eq.input());
-            }
+            else
+                index.get(0).extend(eq.state(), eq.input());
         });
     }
 
-    public TruthTable<S, I, T, O, M, A> getTable() {
+    TruthTable<S, I, T, O, M, A> getTable() {
         return table;
     }
 
+    public String getTabularLatex() {
+        return table.toLatexTabularString();
+    }
+
+    public String getTabularXLatex(String width) {
+        return table.toLatexTabularXString(width);
+    }
+
+    // region overrides
     @Override
     public String toString() {
         return String.join("\n", equations.stream().map(Object::toString).toList());
     }
-
 
     @Override
     public int size() {
@@ -136,4 +145,5 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
     public void clear() {
         equations.clear();
     }
+    // endregion
 }
