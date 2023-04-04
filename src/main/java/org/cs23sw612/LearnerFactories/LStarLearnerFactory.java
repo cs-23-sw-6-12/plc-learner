@@ -7,14 +7,14 @@ import de.learnlib.oracle.membership.SULOracle;
 import net.automatalib.words.Alphabet;
 import org.cs23sw612.Interfaces.MealyLearnerFactory;
 
-public class LStarLearnerFactory<I,O> implements MealyLearnerFactory<I,O> {
+public class LStarLearnerFactory<I, O> implements MealyLearnerFactory<I, O> {
     @Override
     public String getName() {
         return "L*";
     }
 
     @Override
-    public LearningAlgorithm.MealyLearner<I,O> createLearner(Alphabet<I> alphabet, SULOracle<I, O> membershipOracle) {
+    public LearningAlgorithm.MealyLearner<I, O> createLearner(Alphabet<I> alphabet, SULOracle<I, O> membershipOracle) {
         return new TTTLearnerMealy<>(alphabet, membershipOracle, AcexAnalyzers.BINARY_SEARCH_BWD);
     }
 }

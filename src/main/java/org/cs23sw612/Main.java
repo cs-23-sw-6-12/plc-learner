@@ -6,8 +6,7 @@ import picocli.CommandLine;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        int exitCode = new CommandLine(new LearnCommand())
-                .execute(args);
+        int exitCode = new CommandLine(new LearnCommand()).execute(args);
         System.exit(exitCode);
     }
 }
