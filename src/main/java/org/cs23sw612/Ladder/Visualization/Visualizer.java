@@ -54,31 +54,19 @@ public class Visualizer {
 
     public record SVGRung(float height, List<SVGGate> gates){
         public void draw(SVGGraphics2D svg) {
-            //draw start of line.
-
-            var path = new Path2D.Double();
-            path.moveTo(0, RUNG_HEIGHT);
             for (SVGGate gate : gates){
-                path.lineTo(gate.x, gate.y);
-                path.append(gate.getShape(), true);
+                var line = new Path2D.Double();
+
+                svg.setColor(new Color(0x538065));
+                var g = new Path2D.Double();
+                g.moveTo(gate.x, gate.y);
+                g.lineTo(gate.x + GATE_WIDTH, gate.y);
+                svg.draw(g);
+                svg.setColor(new Color(0x000000));
             }
-            svg.draw(path);
         }
     }
-
     public record SVGGate(GateType type, float x, float y){
-        public Shape getShape(){
-            Path2D path = new Path2D.Double();
-            path.moveTo(x,y);
-            path.lineTo(x+5,y);
-            path.moveTo(x+5, y-15);
-            path.lineTo(x+5, y+15);
-            path.moveTo(x+15, y-15);
-            path.lineTo(x+15, y+15);
-            path.moveTo(x+15, y);
-            path.lineTo(x+20, y);
-            return path;
-        }
     }
 
     public enum GateType{
