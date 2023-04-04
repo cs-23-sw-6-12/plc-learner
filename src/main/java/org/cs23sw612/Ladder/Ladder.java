@@ -9,9 +9,9 @@ import net.automatalib.words.Word;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class Ladder<S extends Number, I extends Word<Boolean>, T extends CompactMealyTransition<? super O>, O extends Word<Boolean>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
+public class Ladder {
     public ArrayList<Rung> rungs;
-    public Ladder(EquationCollection<S, I, T, O, M, A> ec) {
+    public <S extends Number, I extends Word<Boolean>, T extends CompactMealyTransition<? super O>, O extends Word<Boolean>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> Ladder(EquationCollection<S, I, T, O, M, A> ec) {
         rungs = new ArrayList<>();
 
         for (Equation<Word<Boolean>, I, O> equation : ec) {
@@ -22,14 +22,14 @@ public class Ladder<S extends Number, I extends Word<Boolean>, T extends Compact
                     rung = new ORRung();
                 else {
                     rung = new Rung();
-                    rung.outputgate = new Gate(String.format("(%S)", convertState(equation.output)));
+                    rung.outputgate = new Coil(String.format("%S", convertState(equation.output)));
                 }
                 int inputParam = 1;
                 for (Boolean word : StateInputPair.getSecond()) {
-                    rung.add(new Gate(word ? String.format("| %s|", inputParam) : String.format("|/%s|", inputParam)));
+                    rung.add(word ? new NOC(Integer.toString(inputParam)) : new NCC((Integer.toString(inputParam))));
                     inputParam++;
                 }
-                rung.add(new Gate(String.format("|State %s|", convertState(StateInputPair.getFirst()))));
+                rung.add(new NOC(String.format("State %s", convertState(StateInputPair.getFirst()))));
                 rungs.add(rung);
                 first = false;
             }
@@ -39,9 +39,9 @@ public class Ladder<S extends Number, I extends Word<Boolean>, T extends Compact
         return state.stream().map(i -> i ? "1" : "0").collect(Collectors.joining(""));
     }
 
-    private class Rung {
-        private Gate outputgate;
-        private final ArrayList<Gate> gates = new ArrayList<>();
+    public class Rung {
+        public Gate outputgate;
+        public final ArrayList<Gate> gates = new ArrayList<>();
         @Override
         public String toString() {
             return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----" + outputgate
@@ -52,8 +52,8 @@ public class Ladder<S extends Number, I extends Word<Boolean>, T extends Compact
         }
     }
 
-    private class ORRung extends Rung {
-        private final ArrayList<Gate> gates = new ArrayList<>();
+    public class ORRung extends Rung {
+        public final ArrayList<Gate> gates = new ArrayList<>();
         @Override
         public String toString() {
             return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ";
@@ -64,14 +64,48 @@ public class Ladder<S extends Number, I extends Word<Boolean>, T extends Compact
         }
     }
 
-    private class Gate {
-        private final String gate;
+    public class Gate {
+        public final String gate;
         public Gate(String gate) {
             this.gate = gate;
         }
         @Override
         public String toString() {
             return gate;
+        }
+    }
+
+    public class NOC extends Gate{
+
+        public NOC(String variable) {
+            super(variable);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("| %s|", gate);
+        }
+    }
+
+    public class NCC extends Gate{
+
+        public NCC(String variable) {
+            super(variable);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("|/%s|", gate);
+        }
+    }
+    public class Coil extends Gate{
+        public Coil(String variable) {
+            super(variable);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(%s)", gate);
         }
     }
 }
