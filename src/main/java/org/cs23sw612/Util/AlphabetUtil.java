@@ -27,18 +27,27 @@ public class AlphabetUtil {
         return bs;
     }
 
-    public static Alphabet<Word<Integer>> createIntAlphabet(int num){
+    public static Alphabet<Word<Integer>> createIntAlphabet(int num) {
         if (num <= 0)
             return Alphabets.fromList(Collections.emptyList());
         ArrayList<Word<Integer>> arr = new ArrayList<>((int) Math.pow(num, 2));
         int decr = (1 << num) - 1;
         assert Integer.bitCount(decr) == num;
         for (; decr >= 0; decr--)
-            arr.add(Word.fromList(
-                    Arrays.stream(booleanArrayFromInt(decr, num))
-                            .map(bool -> bool? 1 : 0)
-                            .collect(Collectors.toList())));
+            arr.add(Word.fromList(Arrays.stream(booleanArrayFromInt(decr, num)).map(bool -> bool ? 1 : 0)
+                    .collect(Collectors.toList())));
         return Alphabets.fromCollection(arr);
+    }
+
+    public static String toBinaryString(Object b) {
+        if (b instanceof Boolean)
+            return (Boolean) b ? "1" : "0";
+        else if (b instanceof Number)
+            return ((Number) b).longValue() != 0 ? "1" : "0";
+        else if (b instanceof Word<?>)
+            return ((Word<?>) b).stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining());
+        else
+            throw new TypeNotPresentException("lol", new Throwable());
     }
 
 }

@@ -1,7 +1,6 @@
 package org.cs23sw612;
 
 import java.io.IOException;
-
 import org.cs23sw612.commands.LearnCommand;
 import picocli.CommandLine;
 
