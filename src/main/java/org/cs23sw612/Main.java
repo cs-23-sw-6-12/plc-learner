@@ -19,8 +19,10 @@ import static org.cs23sw612.Ladder.Visualization.svg_components.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-          SVGGraphics2D g2 = new SVGGraphics2D(110, 110);
-          NC(g2,25,40);
+          SVGGraphics2D g2 = new SVGGraphics2D(110, 150);
+          NO(g2,25,30);
+          NC(g2,25,65);
+          Coil(g2,25,100);
           SVGUtils.writeToSVG(new File("test_image.svg"), g2.getSVGElement());
 
     //    var sul = SULClient.createClient(new SULClientConfiguration(args[0], Integer.parseInt(args[1])),
