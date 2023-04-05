@@ -2,15 +2,15 @@ package org.cs23sw612.Adapters.Input;
 
 import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.InputAdapter;
+import org.slf4j.LoggerFactory;
+
+import java.util.stream.Collectors;
 
 public class IntegerWordInputAdapter implements InputAdapter<Word<Integer>> {
     @Override
-    public byte[] toBytes(Word<Integer> object) {
-        byte[] word = new byte[object.length()];
-        java.util.List<Integer> chars = object.asList();
-        for (int i = 0; i < object.length(); i++) {
-            word[i] = chars.get(i).byteValue();
-        }
-        return word;
+    public Boolean[] getBits(Word<Integer> word) {
+        return word.stream().map(i -> (Boolean) (i != 0))
+                .toList().toArray(new Boolean[] {});
+
     }
 }

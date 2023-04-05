@@ -10,6 +10,7 @@ import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
+import org.cs23sw612.BAjER.BAjERClient;
 import org.cs23sw612.SULClient;
 import org.cs23sw612.SULClientConfiguration;
 import org.cs23sw612.Util.AlphabetUtil;
@@ -55,15 +56,21 @@ public class LearnCommand implements Callable<Integer> {
             return 1;
         }
 
-        var sul = SULClient.createClient(new SULClientConfiguration(bajerServerAddress, bajerServerPort),
-                new IntegerWordInputAdapter(), new IntegerWordOutputAdapter());
-        sul.numberofinputs = inputCount;
-        sul.numberofoutputs = outputCount;
+        var bajerClient = new BAjERClient();
+        try {
+            bajerClient.Connect(bajerServerAddress, bajerServerPort);
+        } catch (Exception ex) {
+            System.err.println("Could not connect to BAjER server");
+            System.err.println(ex.getMessage());
+            return 1;
+        }
+
+        var sul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(), new IntegerWordOutputAdapter(), (byte) inputCount, (byte) outputCount);
 
         var alphabet = AlphabetUtil.createIntAlphabet(inputCount);
-        var cache = SULCache.createTreeCache(alphabet, sul);
+        //var cache = SULCache.createTreeCache(alphabet, sul);
 
-        var membershipOracle = new SULOracle<>(cache);
+        var membershipOracle = new SULOracle<>(sul);
 
         var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
 

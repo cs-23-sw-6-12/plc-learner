@@ -29,8 +29,8 @@ public class ServerThread extends Thread {
             serverSocket = new ServerSocket(port);
             clientSocket = serverSocket.accept();
 
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            var out = clientSocket.getOutputStream();
+            var in = clientSocket.getInputStream();
 
             byte[] inputBytes = new byte[inbytes.length];
             for (int i = 0; i < inputBytes.length; i++) {
@@ -39,9 +39,11 @@ public class ServerThread extends Thread {
             }
 
             if (Arrays.equals(inputBytes, inbytes)) {
-                for (int x : BAjER.step(outbytes)) {
-                    out.write(x);
+                byte[] bytes = new byte[inbytes.length + 1];
+                for (var i = 0; i < inbytes.length; i++) {
+                    bytes[i + 1] = (byte) inbytes[i];
                 }
+                out.write(bytes);
                 out.flush();
             } else {
                 serverSocket.close();

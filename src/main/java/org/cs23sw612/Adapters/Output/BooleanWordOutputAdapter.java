@@ -5,13 +5,7 @@ import org.cs23sw612.Adapters.OutputAdapter;
 
 public class BooleanWordOutputAdapter implements OutputAdapter<Word<Boolean>> {
     @Override
-    public Word<Boolean> fromBytes(byte[] bytes) {
-        Boolean[] output = new Boolean[bytes.length];
-
-        for (int i = 0; i < bytes.length; i++) {
-            output[i] = bytes[i] == 1;
-        }
-
-        return Word.fromSymbols(output);
+    public Word<Boolean> fromBits(Boolean[] bits) {
+        return Word.fromSymbols(bits);
     }
 }
