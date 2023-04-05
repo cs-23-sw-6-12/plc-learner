@@ -1,10 +1,6 @@
 package org.cs23sw612.Ladder.Visualization;
-
-import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
 
 public class svg_components {
    

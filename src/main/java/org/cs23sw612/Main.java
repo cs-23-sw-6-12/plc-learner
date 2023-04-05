@@ -5,18 +5,11 @@ import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
-
-import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import net.automatalib.visualization.Visualization;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.Util.AlphabetUtil;
-import org.jfree.svg.SVGGraphics2D;
-import org.jfree.svg.SVGUtils;
-
-import static org.cs23sw612.Ladder.Visualization.svg_components.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
