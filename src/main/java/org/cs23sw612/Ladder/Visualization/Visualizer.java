@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Visualizer {
     private static final float SPACING = 30;
-    public static float GATE_WIDTH = 20f;
+    public static float GATE_WIDTH = 25f;
     public static float RUNG_HEIGHT = 50f;
 
     public static SVGGraphics2D layoutSVG(Ladder ladder){
