@@ -1,7 +1,6 @@
 package org.cs23sw612.commands;
 
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
-import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;

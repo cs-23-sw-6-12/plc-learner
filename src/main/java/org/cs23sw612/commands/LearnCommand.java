@@ -40,7 +40,8 @@ public class LearnCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"--visualize", "-v"}, description = "Visualize the automaton when done")
     private boolean visualize;
 
-    @CommandLine.Option(names = {"--out", "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    @CommandLine.Option(names = {"--out",
+            "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
     @Override
@@ -72,19 +73,23 @@ public class LearnCommand implements Callable<Integer> {
         var learnerFactory = learnerRepo.getLearnerFactory(learnerName);
 
         if (learnerFactory == null) {
-            System.err.format("Unknown learner \"%s\", use the list-learners command to see the list of available learners\n", learnerName);
+            System.err.format(
+                    "Unknown learner \"%s\", use the list-learners command to see the list of available learners\n",
+                    learnerName);
             return 1;
         }
 
         var learner = learnerFactory.createLearner(alphabet, membershipOracle);
 
-        var experiment = new Experiment.MealyExperiment<Word<Integer>, Word<Integer>>(learner, equivalenceOracle, alphabet);
+        var experiment = new Experiment.MealyExperiment<Word<Integer>, Word<Integer>>(learner, equivalenceOracle,
+                alphabet);
 
         experiment.run();
 
         var result = experiment.getFinalHypothesis();
 
-        DOTSerializationProvider.getInstance().writeModel(outFile, (Graph) result.transitionGraphView(alphabet).asNormalGraph());
+        DOTSerializationProvider.getInstance().writeModel(outFile,
+                (Graph) result.transitionGraphView(alphabet).asNormalGraph());
 
         if (visualize) {
             Visualization.visualize(result, alphabet);
