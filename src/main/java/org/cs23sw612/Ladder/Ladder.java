@@ -53,7 +53,6 @@ public class Ladder {
     }
 
     public class ORRung extends Rung {
-        public final ArrayList<Gate> gates = new ArrayList<>();
         @Override
         public String toString() {
             return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ";

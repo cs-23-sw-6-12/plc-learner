@@ -5,6 +5,7 @@ import java.awt.*;
 public abstract class SVGRungElement {
     public final float x;
     public final float y;
+    public static float WIDTH = 50f;
 
     public SVGRungElement(float x, float y) {
         this.x = x;

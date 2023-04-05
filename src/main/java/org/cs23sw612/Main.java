@@ -46,6 +46,7 @@ public class Main {
 
         var svg = Visualizer.layoutSVG(l);
         SVGUtils.writeToSVG(new File("svg.svg"), svg.getSVGElement());
+        System.out.println(l.rungs);
 
         /*
         var result = experiment.getFinalHypothesis();
