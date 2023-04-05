@@ -40,7 +40,7 @@ public class LearnCommand implements Callable<Integer> {
     @CommandLine.Option(names = {"--visualize", "-v"}, description = "Visualize the automaton when done")
     private boolean visualize;
 
-    @CommandLine.Option(names = {"--out", "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.json", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    @CommandLine.Option(names = {"--out", "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
     @Override
@@ -72,10 +72,7 @@ public class LearnCommand implements Callable<Integer> {
         var learnerFactory = learnerRepo.getLearnerFactory(learnerName);
 
         if (learnerFactory == null) {
-            System.err.format("Unknown learner \"%s\", use one of the following learners\n", learnerName);
-            learnerRepo.getLearnerNames().forEach(learnerName -> {
-                System.err.format("- %s\n", learnerName);
-            });
+            System.err.format("Unknown learner \"%s\", use the list-learners command to see the list of available learners\n", learnerName);
             return 1;
         }
 
