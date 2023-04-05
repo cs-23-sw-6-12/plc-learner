@@ -10,6 +10,7 @@ public class SVGRung {
     private final float height;
     private final List<SVGRungElement> gates;
     private final Point2D.Double attachmentPoint;
+    private String coil = null;
     private Point2D.Double endAttachmentPoint = null;
 
     public SVGRung(float height, Point2D.Double attachmentPoint, List<SVGRungElement> gates) {
@@ -21,6 +22,11 @@ public class SVGRung {
     public SVGRung(float height, Point2D.Double attachmentPoint, Point2D.Double endAttachmentPoint, List<SVGRungElement> gates){
         this(height, attachmentPoint, gates);
         this.endAttachmentPoint = endAttachmentPoint;
+    }
+
+    public SVGRung(float height, Point2D.Double attachmentPoint, String Coil, List<SVGRungElement> gates){
+        this(height, attachmentPoint, gates);
+        this.coil = Coil;
     }
 
     public void draw(SVGGraphics2D svg) {
