@@ -2,8 +2,6 @@ package org.cs23sw612;
 
 import de.learnlib.api.exception.SULException;
 
-import java.io.IOException;
-
 import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.BAjER.IBAjERClient;
@@ -29,7 +27,6 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         this.inputCount = inputCount;
         this.outputCount = outputCount;
     }
-
 
     @Override
     public O step(I input, long stepClockLimit) throws SULException {

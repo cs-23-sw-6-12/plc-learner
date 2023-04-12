@@ -1,6 +1,5 @@
 package org.cs23sw612.BAjER;
 
-import org.cs23sw612.CompareSULWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,25 +30,22 @@ public class BAjERClient implements IBAjERClient {
         if (bits.length != inBitsCount) {
             throw new BAjERException("Step received too many bits");
         }
-        logger.trace(String.format("Bajer: sending step %s", Arrays.stream(bits).map(b -> b ? "0" : "1").collect(Collectors.joining())));
+        logger.trace(String.format("Bajer: sending step %s",
+                Arrays.stream(bits).map(b -> b ? "0" : "1").collect(Collectors.joining())));
 
         socket.getOutputStream().write(streamToByteArray(
-                Stream.concat(
-                        Stream.of((Byte) (byte) 0),
-                        Arrays.stream(bits).map(b -> (Byte) (byte) (b ? 1 : 0))
-                )
-        ));
+                Stream.concat(Stream.of((Byte) (byte) 0), Arrays.stream(bits).map(b -> (Byte) (byte) (b ? 1 : 0)))));
         socket.getOutputStream().flush();
         if (socket.getInputStream().readNBytes(1)[0] != 0)
             throw new BAjERException("Expected to get a 0 in return for step command");
 
         var received = Arrays.stream(byteArrayToByteArray(socket.getInputStream().readNBytes(outBitsCount)))
-                .map(b -> (Boolean) (b != 0))
-                .toList().toArray(new Boolean[] {});
+                .map(b -> (Boolean) (b != 0)).toList().toArray(new Boolean[]{});
 
         logger.info(String.format("%s", Arrays.stream(received).map(b -> b ? "1" : "0").collect(Collectors.joining())));
 
-        logger.trace(String.format("Bajer: received outputs %s", Arrays.stream(received).map(b -> b ? "1" : "0").collect(Collectors.joining())));
+        logger.trace(String.format("Bajer: received outputs %s",
+                Arrays.stream(received).map(b -> b ? "1" : "0").collect(Collectors.joining())));
         return received;
     }
 
@@ -74,7 +70,7 @@ public class BAjERClient implements IBAjERClient {
     @Override
     public void Reset() throws IOException, BAjERException {
         logger.trace("BAjER: sending reset");
-        
+
         socket.getOutputStream().write(new byte[]{1});
         socket.getOutputStream().flush();
 
@@ -85,7 +81,7 @@ public class BAjERClient implements IBAjERClient {
     }
 
     private byte[] streamToByteArray(Stream<Byte> stream) {
-        var bytes = stream.toList().toArray(new Byte[] {});
+        var bytes = stream.toList().toArray(new Byte[]{});
         var buf = new byte[bytes.length];
         for (var i = 0; i < bytes.length; i++) {
             buf[i] = bytes[i];
