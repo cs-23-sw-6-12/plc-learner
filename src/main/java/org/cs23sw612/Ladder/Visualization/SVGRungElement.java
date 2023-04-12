@@ -15,7 +15,5 @@ public abstract class SVGRungElement {
     }
 
     public abstract Path2D getShape();
-
-    private static final int LENGTH = 50;
 }
 

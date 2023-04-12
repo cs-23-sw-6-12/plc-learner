@@ -17,11 +17,12 @@ public class Visualizer {
 
         for (int i = 0; i < ladder.rungs.size(); i++) {
 
+            var rung = ladder.rungs.get(i);
             var gateList = new ArrayList<SVGRungElement>();
-            var isOrRung = ladder.rungs.get(i) instanceof Ladder.ORRung;
+            var isOrRung = rung instanceof Ladder.ORRung;
             var height = RUNG_HEIGHT * (i + 1);
 
-            ArrayList<Ladder.Gate> gates = ladder.rungs.get(i).gates;
+            ArrayList<Ladder.Gate> gates = rung.gates;
             int j = 0;
             for (; j < gates.size(); j++) {
                 Ladder.Gate gate = gates.get(j);
@@ -30,16 +31,20 @@ public class Visualizer {
             }
 
             var point = new Point2D.Double(0, 0);
+            String coilString = null;
             Point2D.Double endpoint = null;
             if (isOrRung) {
                 point.x = GATE_WIDTH / 2;
                 point.y = RUNG_HEIGHT * i;
                 endpoint = new Point2D.Double((GATE_WIDTH + SPACING) * (gateList.size() + 1) + GATE_WIDTH / 2, height - RUNG_HEIGHT);
-                new SVGRung(height, point, endpoint, gateList).draw(svg);
-            } else {
-                new SVGRung(height, point, ladder.rungs.get(i).outputgate.gate, gateList).draw(svg);
             }
+            else
+                coilString = rung.outputgate.gate;
+
+            var coil = new SVGCoil(svg.getWidth() - SVGCoil.WIDTH, height, coilString);
+            new SVGRung(height, point, endpoint, coil, gateList).draw(svg);
         }
+
         return svg;
     }
 
