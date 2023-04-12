@@ -42,8 +42,6 @@ public class BAjERClient implements IBAjERClient {
         var received = Arrays.stream(byteArrayToByteArray(socket.getInputStream().readNBytes(outBitsCount)))
                 .map(b -> (Boolean) (b != 0)).toList().toArray(new Boolean[]{});
 
-        logger.info(String.format("%s", Arrays.stream(received).map(b -> b ? "1" : "0").collect(Collectors.joining())));
-
         logger.trace(String.format("Bajer: received outputs %s",
                 Arrays.stream(received).map(b -> b ? "1" : "0").collect(Collectors.joining())));
         return received;

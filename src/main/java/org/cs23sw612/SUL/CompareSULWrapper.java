@@ -1,4 +1,4 @@
-package org.cs23sw612;
+package org.cs23sw612.SUL;
 
 import de.learnlib.api.SUL;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package org.cs23sw612;
+package org.cs23sw612.SUL;
 
 import de.learnlib.api.exception.SULException;
 
@@ -52,12 +52,12 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void post() {
-
     }
     @Override
     public O step(I input) {
         try {
-            var output = bajerClient.Step(inputAdapter.getBits(input));
+            var bits = inputAdapter.getBits(input);
+            var output = bajerClient.Step(bits);
             return outputAdapter.fromBits(output);
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -6,7 +6,7 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.ExampleSUL;
+import org.cs23sw612.SUL.ExampleSUL;
 import org.junit.jupiter.api.Test;
 
 public class EquationTests {
