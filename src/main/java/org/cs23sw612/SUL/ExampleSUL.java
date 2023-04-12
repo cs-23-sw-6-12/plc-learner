@@ -1,4 +1,4 @@
-package org.cs23sw612;
+package org.cs23sw612.SUL;
 
 import de.learnlib.driver.util.MealySimulatorSUL;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;

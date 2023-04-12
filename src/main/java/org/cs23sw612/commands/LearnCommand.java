@@ -1,5 +1,7 @@
 package org.cs23sw612.commands;
 
+import de.learnlib.api.SUL;
+import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
@@ -10,7 +12,8 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
-import SUL.SULClient;
+import org.cs23sw612.SUL.SULClient;
+import org.cs23sw612.SUL.PerformanceMetricSUL;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import picocli.CommandLine;
@@ -43,6 +46,18 @@ public class LearnCommand implements Callable<Integer> {
             "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
+    @CommandLine.Option(names = {"--benchmark", "-b"}, description = "Measure performance metrics and print them when learning has finished")
+    private boolean benchmark;
+
+    @CommandLine.Option(names = {"--cache", "-c"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private boolean cacheSul;
+
+    private final LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository;
+
+    public LearnCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository) {
+        this.learnerRepository = learnerRepository;
+    }
+
     @Override
     public Integer call() throws Exception {
         FileOutputStream outFile;
@@ -63,19 +78,29 @@ public class LearnCommand implements Callable<Integer> {
             return 1;
         }
 
-        var sul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(), new IntegerWordOutputAdapter(), (byte) inputCount, (byte) outputCount);
-
         var alphabet = AlphabetUtil.createIntAlphabet(inputCount);
-        //var cache = SULCache.createTreeCache(alphabet, sul);
 
-        var membershipOracle = new SULOracle<>(sul);
+        SUL<Word<Integer>, Word<Integer>> bajerSul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(), new IntegerWordOutputAdapter(), (byte) inputCount, (byte) outputCount);
+
+        var bajerMetricsSul = new PerformanceMetricSUL<>(bajerSul);
+        if (benchmark) {
+            bajerSul = bajerMetricsSul;
+        }
+
+        SUL<Word<Integer>, Word<Integer>> finalSul = null;
+
+        if (cacheSul) {
+            finalSul = SULCache.createTreeCache(alphabet, bajerSul);
+        } else {
+            finalSul = bajerSul;
+        }
+
+
+        var membershipOracle = new SULOracle<>(finalSul);
 
         var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
 
-        var learnerRepo = new LearnerFactoryRepository<Word<Integer>, Word<Integer>>();
-        learnerRepo.addDefaultFactories();
-
-        var learnerFactory = learnerRepo.getLearnerFactory(learnerName);
+        var learnerFactory = learnerRepository.getLearnerFactory(learnerName);
 
         if (learnerFactory == null) {
             System.err.format(
@@ -86,7 +111,7 @@ public class LearnCommand implements Callable<Integer> {
 
         var learner = learnerFactory.createLearner(alphabet, membershipOracle);
 
-        var experiment = new Experiment.MealyExperiment<Word<Integer>, Word<Integer>>(learner, equivalenceOracle,
+        var experiment = new Experiment.MealyExperiment<>(learner, equivalenceOracle,
                 alphabet);
 
         experiment.run();
@@ -95,6 +120,15 @@ public class LearnCommand implements Callable<Integer> {
 
         DOTSerializationProvider.getInstance().writeModel(outFile,
                 (Graph) result.transitionGraphView(alphabet).asNormalGraph());
+
+        if (benchmark) {
+            System.out.println("Benchmark results:");
+            System.out.format("total step time: %sms\n", bajerMetricsSul.getStepTime().toMillis());
+            System.out.format("total pre time: %sms\n", bajerMetricsSul.getPreTime().toMillis());
+            System.out.format("total post time: %sms\n", bajerMetricsSul.getPostTime().toMillis());
+            System.out.format("experiment count: %s\n", bajerMetricsSul.getCounter());
+            System.out.format("step count: %s\n", bajerMetricsSul.getStepCounter());
+        }
 
         if (visualize) {
             Visualization.visualize(result, alphabet);

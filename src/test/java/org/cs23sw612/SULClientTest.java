@@ -1,6 +1,6 @@
 package org.cs23sw612;
 
-import SUL.SULClient;
+import org.cs23sw612.SUL.SULClient;
 
 import java.io.*;
 
