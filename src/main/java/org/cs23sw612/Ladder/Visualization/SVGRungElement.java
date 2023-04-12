@@ -1,18 +1,20 @@
 package org.cs23sw612.Ladder.Visualization;
 
-import java.awt.*;
+import java.awt.geom.Path2D;
 
 public abstract class SVGRungElement {
-    public final float x;
-    public final float y;
-    public static float WIDTH = 25f;
+    public final double x;
+    public final double y;
+    public static double WIDTH = 25d;
+    public final String text;
 
-    public SVGRungElement(float x, float y) {
+    public SVGRungElement(double x, double y, String text) {
         this.x = x;
         this.y = y;
+        this.text = text;
     }
 
-    public abstract Shape getShape();
+    public abstract Path2D getShape();
 
     private static final int LENGTH = 50;
 }

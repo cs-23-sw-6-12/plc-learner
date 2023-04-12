@@ -1,15 +1,15 @@
 package org.cs23sw612.Ladder.Visualization;
 
-import java.awt.*;
 import java.awt.geom.Path2D;
 
 public class SVGNCC extends SVGRungElement {
-    public SVGNCC(float x, float y) {
-        super(x, y);
+
+    public SVGNCC(Double x, Double y, String text) {
+        super(x, y, text);
     }
 
     @Override
-    public Shape getShape() {
+    public Path2D getShape() {
         Path2D path = new Path2D.Double();
         path.moveTo(x,y);
         path.lineTo(x+6.25, y);
