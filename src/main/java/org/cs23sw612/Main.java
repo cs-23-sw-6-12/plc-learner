@@ -11,7 +11,6 @@ import org.cs23sw612.commands.PlcLearnerCommand;
 import org.cs23sw612.commands.VisualizeCommand;
 import picocli.CommandLine;
 
-
 public class Main {
     public static void main(String[] args) throws IOException {
         var learnerRepository = new LearnerFactoryRepository<Word<Integer>, Word<Integer>>();

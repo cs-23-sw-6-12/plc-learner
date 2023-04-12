@@ -2,10 +2,6 @@ package org.cs23sw612.SUL;
 
 import de.learnlib.api.exception.SULException;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.stream.Collectors;
-
 import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.BAjER.IBAjERClient;
@@ -38,7 +34,6 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
         currentInputString = "";
     }
-
 
     @Override
     public O step(I input, long stepClockLimit) throws SULException {

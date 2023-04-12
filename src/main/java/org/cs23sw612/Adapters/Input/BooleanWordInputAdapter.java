@@ -6,6 +6,6 @@ import org.cs23sw612.Adapters.InputAdapter;
 public class BooleanWordInputAdapter implements InputAdapter<Word<Boolean>> {
     @Override
     public Boolean[] getBits(Word<Boolean> word) {
-        return word.stream().toList().toArray(new Boolean[] {});
+        return word.stream().toList().toArray(new Boolean[]{});
     }
 }

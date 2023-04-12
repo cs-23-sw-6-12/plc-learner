@@ -9,6 +9,6 @@ public class IntegerWordOutputAdapter implements OutputAdapter<Word<Integer>> {
 
     @Override
     public Word<Integer> fromBits(Boolean[] bits) {
-        return Word.fromSymbols(Arrays.stream(bits).map(b -> b ? 1 : 0).toList().toArray(new Integer[] {}));
+        return Word.fromSymbols(Arrays.stream(bits).map(b -> b ? 1 : 0).toList().toArray(new Integer[]{}));
     }
 }
