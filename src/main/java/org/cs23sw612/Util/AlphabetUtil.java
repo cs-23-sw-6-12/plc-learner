@@ -1,12 +1,11 @@
 package org.cs23sw612.Util;
 
+import com.google.common.collect.Lists;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlphabetUtil {
@@ -50,4 +49,15 @@ public class AlphabetUtil {
             throw new TypeNotPresentException("lol", new Throwable());
     }
 
+    public static <I extends Word<Boolean>> ArrayList<List<I>> permutateWord(ArrayList<List<I>> old,
+            Alphabet<I> alphabet) {
+        ArrayList<List<I>> news = new ArrayList<>(Collections.emptyList());
+        for (var o : old)
+            for (var w : alphabet) {
+                var n = new ArrayList<>(o.stream().toList());
+                n.addAll(Lists.newArrayList(List.of(w)));
+                news.add(n);
+            }
+        return news;// .addAll(news);
+    }
 }
