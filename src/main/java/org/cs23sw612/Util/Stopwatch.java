@@ -1,10 +1,8 @@
 package org.cs23sw612.Util;
 
-import java.sql.Time;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Stopwatch {
     ArrayList<TimeSpan> timeSpans;
@@ -30,8 +28,6 @@ public class Stopwatch {
     }
 
     public Duration getTotalDuration() {
-        return timeSpans.stream()
-                .map(TimeSpan::getDuration)
-                .reduce(Duration.ofSeconds(0), Duration::plus);
+        return timeSpans.stream().map(TimeSpan::getDuration).reduce(Duration.ofSeconds(0), Duration::plus);
     }
 }

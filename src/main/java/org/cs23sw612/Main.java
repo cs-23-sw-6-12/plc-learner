@@ -1,7 +1,6 @@
 package org.cs23sw612;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import net.automatalib.words.Word;
 import org.cs23sw612.Util.LearnerFactoryRepository;
@@ -17,7 +16,8 @@ public class Main {
         learnerRepository.addDefaultFactories();
 
         int exitCode = new CommandLine(new PlcLearnerCommand()).addSubcommand(new LearnCommand(learnerRepository))
-                .addSubcommand(new ListLearnersCommand(learnerRepository)).addSubcommand(new VisualizeCommand()).execute(args);
+                .addSubcommand(new ListLearnersCommand(learnerRepository)).addSubcommand(new VisualizeCommand())
+                .execute(args);
         System.exit(exitCode);
     }
 }

@@ -30,7 +30,9 @@ public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
         return postTimer.getTotalDuration();
     }
 
-    public Duration getPreTime() { return preTimer.getTotalDuration(); }
+    public Duration getPreTime() {
+        return preTimer.getTotalDuration();
+    }
 
     public long getExperimentCounter() {
         return experimentCounter;

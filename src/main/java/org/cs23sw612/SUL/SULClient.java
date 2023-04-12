@@ -65,8 +65,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
     public void post() {
         if (triedCombinations.contains(currentInputString)) {
             logger.info(String.format("Tried again %s", currentInputString));
-        }
-        else {
+        } else {
             triedCombinations.add(currentInputString);
         }
         currentInputString = "";
