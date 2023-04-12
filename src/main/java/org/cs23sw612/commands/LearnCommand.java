@@ -1,6 +1,5 @@
 package org.cs23sw612.commands;
 
-import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
@@ -11,8 +10,7 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
-import org.cs23sw612.SULClient;
-import org.cs23sw612.SULClientConfiguration;
+import SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import picocli.CommandLine;

@@ -1,17 +1,11 @@
 package org.cs23sw612;
 
-import de.learnlib.algorithms.dhc.mealy.MealyDHC;
-import de.learnlib.filter.cache.sul.SULCache;
-import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
-import de.learnlib.oracle.membership.SULOracle;
-import de.learnlib.util.Experiment;
+import SUL.SULClient;
+
 import java.io.*;
-import net.automatalib.automata.concepts.Output;
-import net.automatalib.words.Word;
+
 import org.cs23sw612.Adapters.Input.BooleanWordInputAdapter;
-import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.Output.BooleanWordOutputAdapter;
-import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
