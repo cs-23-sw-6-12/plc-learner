@@ -4,7 +4,7 @@ import java.awt.geom.Path2D;
 
 public class SVGNCC extends SVGRungElement {
 
-    public SVGNCC(Double x, Double y, String text) {
+    public SVGNCC(double x, double y, String text) {
         super(x, y, text);
     }
 

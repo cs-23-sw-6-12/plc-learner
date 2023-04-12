@@ -5,6 +5,8 @@ import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
+import org.cs23sw612.Adapters.Input.BooleanWordInputAdapter;
+import org.cs23sw612.Adapters.Output.BooleanArrayOutputAdapter;
 import org.cs23sw612.Ladder.EquationCollection;
 import org.cs23sw612.Ladder.Ladder;
 import org.cs23sw612.Ladder.Visualization.Visualizer;
@@ -17,14 +19,14 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        /*
+
         var sul = SULClient.createClient(new SULClientConfiguration(args[0], Integer.parseInt(args[1])),
-                new IntegerWordInputAdapter(), new IntegerWordOutputAdapter());
+                new BooleanWordInputAdapter(), new BooleanArrayOutputAdapter());
         sul.numberofinputs = 3;
         sul.numberofoutputs = 1;
-        */
-        var sul = ExampleSUL.createExampleSUL();
-        var alphabet = AlphabetUtil.createAlphabet(2);
+
+        //var sul = ExampleSUL.createExampleSUL();
+        var alphabet = AlphabetUtil.createAlphabet(3);
 
         // This cache reduces the amount of "queries" that are actually executed on the
         // SUL.

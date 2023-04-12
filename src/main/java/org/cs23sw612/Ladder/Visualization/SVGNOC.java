@@ -3,7 +3,7 @@ package org.cs23sw612.Ladder.Visualization;
 import java.awt.geom.Path2D;
 
 public class SVGNOC extends SVGRungElement {
-    public SVGNOC(Double x, Double y, String text) {
+    public SVGNOC(double x, double y, String text) {
         super(x, y, text);
     }
 
