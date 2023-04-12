@@ -113,12 +113,12 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void pre() {
-        logger.info(String.format("Starting experiment {%d}", count++));
+        logger.info(String.format("Starting experiment %d", count++));
         // Reset SUL
         char[] resetCode = BAjER.resetCode;
         out.write(resetCode);
         out.flush();
-        logger.info(String.format("Sent: {%s}", charArrayToString(resetCode)));
+        logger.trace(String.format("Sent: {%s}", charArrayToString(resetCode)));
 
         try {
             int response = in.read();
@@ -126,18 +126,18 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
                 logger.error(String.format("Response from reset was not valid. Expected {0}, got {%d}", response));
                 throw new InvalidResponseException(response, 0);
             }
-            logger.info(String.format("SUL Reset, response from server: {%d}", response));
+            logger.trace(String.format("SUL Reset, response from server: {%d}", response));
 
             // Send [2] Setup, number of inputs, number of outputs.
             char[] setupCode = BAjER.setup(numberofinputs, numberofoutputs);
             out.write(setupCode);
             out.flush();
 
-            logger.info(String.format("Sent: {%s}", charArrayToString(setupCode)));
+            logger.trace(String.format("Sent: {%s}", charArrayToString(setupCode)));
 
             response = in.read();
 
-            logger.info(String.format("SUL Setup, response from server: {%d}", response));
+            logger.trace(String.format("SUL Setup, response from server: {%d}", response));
             if (response != 0) {
                 logger.error(String.format("Response from setup was not valid. Expected {0}, got {%d}", response));
                 throw new InvalidResponseException(response, 0);
@@ -179,7 +179,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
         out.print(stepCode);
         out.flush();
 
-        logger.info(String.format("Sent: {%s}", charArrayToString(stepCode)));
+        logger.trace(String.format("Sent: {%s}", charArrayToString(stepCode)));
 
         // Return output.
         try {
@@ -198,7 +198,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
                 logbytes[i + 1] = (byte) value;
             }
-            logger.info(String.format("SUL Step, response from server: {%s}", byteArrayToString(logbytes)));
+            logger.trace(String.format("SUL Step, response from server: {%s}", byteArrayToString(logbytes)));
 
             return outputAdapter.fromBytes(bytes);
         } catch (IOException e) {
