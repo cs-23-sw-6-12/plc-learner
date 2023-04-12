@@ -9,6 +9,10 @@ import org.cs23sw612.Interfaces.SULTimed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.stream.Collectors;
+
 public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> implements SULTimed<I, O> {
     private final Logger logger = LoggerFactory.getLogger(SULClient.class);
     private byte inputCount;

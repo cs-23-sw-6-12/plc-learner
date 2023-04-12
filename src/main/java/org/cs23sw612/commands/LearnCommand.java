@@ -123,11 +123,14 @@ public class LearnCommand implements Callable<Integer> {
 
         if (benchmark) {
             System.out.println("Benchmark results:");
-            System.out.format("total step time: %sms\n", bajerMetricsSul.getStepTime().toMillis());
-            System.out.format("total pre time: %sms\n", bajerMetricsSul.getPreTime().toMillis());
-            System.out.format("total post time: %sms\n", bajerMetricsSul.getPostTime().toMillis());
-            System.out.format("experiment count: %s\n", bajerMetricsSul.getCounter());
+            System.out.format("total step time: %.4f seconds\n", bajerMetricsSul.getStepTime().toMillis() / 1000.0);
+            System.out.format("total pre time: %.4f seconds\n", bajerMetricsSul.getPreTime().toMillis() / 1000.0);
+            System.out.format("total post time: %.4f seconds\n", bajerMetricsSul.getPostTime().toMillis() / 1000.0);
+            System.out.format("experiment count: %s\n", bajerMetricsSul.getExperimentCounter());
             System.out.format("step count: %s\n", bajerMetricsSul.getStepCounter());
+            System.out.format("step average time: %.5f ms\n", ((double)bajerMetricsSul.getStepTime().toMillis()) / bajerMetricsSul.getStepCounter());
+            System.out.format("pre average time: %.5f ms\n", ((double)bajerMetricsSul.getPreTime().toMillis()) / bajerMetricsSul.getExperimentCounter());
+            System.out.format("longest word during experiment: %s\n", bajerMetricsSul.getLongestWordLength());
         }
 
         if (visualize) {
