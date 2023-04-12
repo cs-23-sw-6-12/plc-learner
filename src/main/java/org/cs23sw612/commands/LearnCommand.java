@@ -16,6 +16,7 @@ import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
+import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
@@ -114,7 +115,10 @@ public class LearnCommand implements Callable<Integer> {
         var experiment = new Experiment.MealyExperiment<>(learner, equivalenceOracle,
                 alphabet);
 
+        Stopwatch experimentTimer = new Stopwatch();
+        experimentTimer.start();
         experiment.run();
+        experimentTimer.stop();
 
         var result = experiment.getFinalHypothesis();
 
@@ -123,6 +127,7 @@ public class LearnCommand implements Callable<Integer> {
 
         if (benchmark) {
             System.out.println("Benchmark results:");
+            System.out.format("total experiment time %.4f seconds\n", experimentTimer.getTotalDuration().toMillis() / 1000.0);
             System.out.format("total step time: %.4f seconds\n", bajerMetricsSul.getStepTime().toMillis() / 1000.0);
             System.out.format("total pre time: %.4f seconds\n", bajerMetricsSul.getPreTime().toMillis() / 1000.0);
             System.out.format("total post time: %.4f seconds\n", bajerMetricsSul.getPostTime().toMillis() / 1000.0);
