@@ -14,7 +14,6 @@ public class LStarLearnerFactory<I, O> implements MealyLearnerFactory<I, O> {
 
     @Override
     public LearningAlgorithm.MealyLearner<I, O> createLearner(Alphabet<I> alphabet, SULOracle<I, O> membershipOracle) {
-
         return new ExtensibleLStarMealyBuilder<I, O>().withAlphabet(alphabet).withOracle(membershipOracle).create();
     }
 }
