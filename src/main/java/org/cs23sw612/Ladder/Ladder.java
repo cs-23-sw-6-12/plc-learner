@@ -75,7 +75,7 @@ public class Ladder {
         }
     }
 
-    public class NOC extends Gate{
+    public class NOC extends Gate {
 
         public NOC(String variable) {
             super(variable);
@@ -87,7 +87,7 @@ public class Ladder {
         }
     }
 
-    public class NCC extends Gate{
+    public class NCC extends Gate {
 
         public NCC(String variable) {
             super(variable);
@@ -98,7 +98,7 @@ public class Ladder {
             return String.format("|/%s|", gate);
         }
     }
-    public class Coil extends Gate{
+    public class Coil extends Gate {
         public Coil(String variable) {
             super(variable);
         }
