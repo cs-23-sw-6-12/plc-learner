@@ -3,8 +3,13 @@ package org.cs23sw612.Ladder.Visualization;
 import org.cs23sw612.Ladder.Ladder;
 import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUnits;
+import org.jfree.svg.SVGUtils;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 
 public class Visualizer {
@@ -13,7 +18,7 @@ public class Visualizer {
     public static double RUNG_HEIGHT = 50d;
 
     public static SVGGraphics2D layoutSVG(Ladder ladder){
-        var svg = new SVGGraphics2D(1920, 1080, SVGUnits.PX);
+        var svg = new SVGGraphics2D(640, 640, SVGUnits.PX);
 
         for (int i = 0; i < ladder.rungs.size(); i++) {
 
@@ -57,5 +62,23 @@ public class Visualizer {
         else throw new RuntimeException("Unexpexted gate type");
     }
 
+    public static void showSVG(Ladder l) throws IOException {
+        var tempfile = File.createTempFile("plc-learner-","-ladder.svg");
+        saveSVG(l, tempfile.toURI());
+        Desktop desktop = Desktop.getDesktop();
+
+        try {
+            desktop.browse(tempfile.toURI());
+        }
+        catch (UnsupportedOperationException ex){
+            desktop.open(tempfile);
+        }
+    }
+
+    public static void saveSVG(Ladder l, URI path) throws IOException {
+        var svg = Visualizer.layoutSVG(l);
+        var file = new File(path);
+        SVGUtils.writeToSVG(file, svg.getSVGElement());
+    }
 }
 

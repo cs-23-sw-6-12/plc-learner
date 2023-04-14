@@ -11,12 +11,13 @@ import java.util.stream.Collectors;
 
 public class Ladder {
     public ArrayList<Rung> rungs;
-    public <S extends Number, I extends Word<Boolean>, T extends CompactMealyTransition<? super O>, O extends Word<Boolean>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> Ladder(EquationCollection<S, I, T, O, M, A> ec) {
+    public <S extends Number, IO extends Word<Boolean>, T extends CompactMealyTransition<? super IO>> Ladder(
+            EquationCollection<S, IO, T, IO, ? extends TransitionOutputAutomaton<S, IO, T, ? super IO>, Alphabet<IO>> ec) {
         rungs = new ArrayList<>();
 
-        for (Equation<Word<Boolean>, I, O> equation : ec) {
+        for (Equation<Word<Boolean>, IO, IO> equation : ec) {
             boolean first = true;
-            for (Pair<Word<Boolean>, I> StateInputPair : equation.getFullList()) {
+            for (Pair<Word<Boolean>, ? extends Word<Boolean>> StateInputPair : equation.getFullList()) {
                 Rung rung;
                 if ((long) equation.getFullList().size() > 1 && !first)
                     rung = new ORRung();

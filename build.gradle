@@ -5,8 +5,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-
     id "com.diffplug.spotless" version "6.17.0"
+    id("io.ktor.plugin") version "2.2.4"
 }
 
 //apply plugin: 'com.github.sherter.google-java-format'
@@ -19,16 +19,15 @@ repositories {
     }
 }
 
+
 def learnLibVersion = '0.16.0'
 dependencies {
     implementation "de.learnlib.distribution:learnlib-distribution:$learnLibVersion"
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     implementation "de.learnlib.testsupport:learnlib-learning-examples:$learnLibVersion"
     implementation 'org.slf4j:slf4j-simple:1.7.29'
-    // https://mvnrepository.com/artifact/org.jfree/org.jfree.svg
     implementation 'org.jfree:org.jfree.svg:5.0.5'
-
-
+    implementation 'info.picocli:picocli:4.7.1'
 }
 
 group = 'org.cs23sw612'
@@ -72,4 +71,8 @@ spotless {
         //   and/or use custom group artifact (you probably don't need this)
         //googleJavaFormat('1.8').aosp().reflowLongStrings().groupArtifact('com.google.googlejavaformat:google-java-format')
     }
+}
+
+application {
+    mainClass.set("org.cs23sw612.Main")
 }
