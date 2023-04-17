@@ -18,7 +18,8 @@ public class Main {
         var learnerRepository = new LearnerFactoryRepository<Word<Integer>, Word<Integer>>();
         learnerRepository.addDefaultFactories();
 
-        int exitCode = new CommandLine(new PlcLearnerCommand()).addSubcommand(new LearnCommand(learnerRepository, oracleRepository))
+        int exitCode = new CommandLine(new PlcLearnerCommand())
+                .addSubcommand(new LearnCommand(learnerRepository, oracleRepository))
                 .addSubcommand(new ListLearnersCommand(learnerRepository)).addSubcommand(new VisualizeCommand())
                 .execute(args);
         System.exit(exitCode);

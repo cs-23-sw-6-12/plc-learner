@@ -30,8 +30,10 @@ public class Ladder {
                     rung.add(word ? new NOC(Integer.toString(inputParam)) : new NCC((Integer.toString(inputParam))));
                     inputParam++;
                 }
-                for (int i=0; i<StateInputPair.getFirst().length(); i++){
-                    rung.add(StateInputPair.getFirst().asList().get(i) ? new NOC("S"+(i+1)): new NCC("S"+(i+1)));
+                for (int i = 0; i < StateInputPair.getFirst().length(); i++) {
+                    rung.add(StateInputPair.getFirst().asList().get(i)
+                            ? new NOC("S" + (i + 1))
+                            : new NCC("S" + (i + 1)));
                 }
                 rungs.add(rung);
                 first = false;

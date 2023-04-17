@@ -52,17 +52,16 @@ public class VisualizeCommand implements Callable<Integer> {
             var e = new EquationCollection<>(model, alphabet);
             var l = new Ladder(e);
 
-            if (svgOutputPath != null){
+            if (svgOutputPath != null) {
                 var f = new File(svgOutputPath);
                 f.getParentFile().mkdirs();
 
-                if (f.getParentFile().exists()){
+                if (f.getParentFile().exists()) {
                     Visualizer.saveSVG(l, f.toURI());
                     Visualizer.showSVG(f.toURI());
-                }
-                else throw new RuntimeException("Could not create file at " + f.getAbsolutePath());
-            }
-            else
+                } else
+                    throw new RuntimeException("Could not create file at " + f.getAbsolutePath());
+            } else
                 Visualizer.showSVG(l);
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");
@@ -84,14 +83,14 @@ public class VisualizeCommand implements Callable<Integer> {
     }
 
     private static Word<Boolean> getWord(String token) {
-        return Word.fromList(Arrays.stream(token.trim().split(" "))
-                .map(VisualizeCommand::parse)
-                .collect(Collectors.toList()));
+        return Word.fromList(
+                Arrays.stream(token.trim().split(" ")).map(VisualizeCommand::parse).collect(Collectors.toList()));
     }
 
-    private static boolean parse(String s){
+    private static boolean parse(String s) {
         if (s.equals("1"))
             return true;
-        else return Boolean.parseBoolean(s);
+        else
+            return Boolean.parseBoolean(s);
     }
 }

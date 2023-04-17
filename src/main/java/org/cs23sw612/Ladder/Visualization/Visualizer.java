@@ -93,7 +93,7 @@ public class Visualizer {
         showSVG(tempfile.toURI());
     }
 
-    public static void showSVG(URI path) throws IOException{
+    public static void showSVG(URI path) throws IOException {
         Desktop desktop = Desktop.getDesktop();
         try {
             desktop.browse(path);
