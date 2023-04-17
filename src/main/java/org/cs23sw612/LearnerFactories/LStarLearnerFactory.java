@@ -9,7 +9,7 @@ import org.cs23sw612.Interfaces.MealyLearnerFactory;
 public class LStarLearnerFactory<I, O> implements MealyLearnerFactory<I, O> {
     @Override
     public String getName() {
-        return "L*";
+        return "Lstar";
     }
 
     @Override
