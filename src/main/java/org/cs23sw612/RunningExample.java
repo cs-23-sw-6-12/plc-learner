@@ -10,11 +10,6 @@ import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.oracle.equivalence.MealySimulatorEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.function.Consumer;
-
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.serialization.dot.GraphDOT;
@@ -22,8 +17,13 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.cs23sw612.Ladder.EquationCollection;
 import org.cs23sw612.Ladder.Ladder;
-import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Ladder.Visualization.Visualizer;
+import org.cs23sw612.SUL.ExampleSUL;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.function.Consumer;
 
 public class RunningExample {
 
@@ -93,11 +93,9 @@ public class RunningExample {
         ec.forEach(e -> p("\\item[]" + e));
 
         p("Rungs:");
-        new Ladder(ec).rungs.forEach(System.out::print);
+        var ladder = new Ladder(ec);
+        ladder.rungs.forEach(System.out::print);
 
-        var e = new EquationCollection(example, alphabet);
-        var l = new Ladder(e);
-
-        Visualizer.showSVG(l);
+        Visualizer.showSVG(ladder);
     }
 }
