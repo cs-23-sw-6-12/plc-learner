@@ -84,13 +84,9 @@ public class VisualizeCommand implements Callable<Integer> {
 
     private static Word<Boolean> getWord(String token) {
         return Word.fromList(
-                Arrays.stream(token.trim().split(" ")).map(VisualizeCommand::parse).collect(Collectors.toList()));
+                Arrays.stream(token.trim().split(" "))
+                        .map(s -> s.equals("1") || Boolean.parseBoolean(s))
+                        .collect(Collectors.toList()));
     }
 
-    private static boolean parse(String s) {
-        if (s.equals("1"))
-            return true;
-        else
-            return Boolean.parseBoolean(s);
-    }
 }
