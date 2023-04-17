@@ -4,8 +4,6 @@ import java.awt.geom.Path2D;
 
 public class SVGCoil extends SVGRungElement {
 
-    public static float WIDTH = 50f;
-
     public SVGCoil(Double x, Double y, String text) {
         super(x, y, text);
     }

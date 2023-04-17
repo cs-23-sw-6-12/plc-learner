@@ -5,7 +5,6 @@ import java.awt.geom.Path2D;
 public abstract class SVGRungElement {
     public final double x;
     public final double y;
-    public static double WIDTH = 25d;
     public final String text;
 
     public SVGRungElement(double x, double y, String text) {
@@ -14,5 +13,11 @@ public abstract class SVGRungElement {
         this.text = text;
     }
 
+    /**
+     * Generate a path element to represent this rung element. This path should be
+     * drawn on an SVG.
+     * 
+     * @return This element as a Path2D.
+     */
     public abstract Path2D getShape();
 }

@@ -9,8 +9,8 @@ import java.util.List;
 public class SVGRung {
     private final double height;
     private final List<SVGRungElement> gates;
-    private final Point2D.Double attachmentPoint;
     private final SVGRungElement coil;
+    private final Point2D.Double attachmentPoint;
     private final Point2D.Double endAttachmentPoint;
 
     public SVGRung(double height, Point2D.Double startAttachmentPoint, Point2D.Double endAttachmentPoint,
@@ -22,9 +22,13 @@ public class SVGRung {
         this.coil = coil;
     }
 
+    /**
+     * Draw the rung onto the given svg.
+     * 
+     * @param svg
+     *            The SVG to draw on.
+     */
     public void draw(SVGGraphics2D svg) {
-        // draw start of line.
-
         var path = new Path2D.Double();
         path.moveTo(attachmentPoint.x, attachmentPoint.y);
         path.lineTo(attachmentPoint.x, height);
