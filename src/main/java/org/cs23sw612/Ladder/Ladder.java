@@ -25,12 +25,14 @@ public class Ladder {
                     rung = new Rung();
                     rung.outputgate = new Coil(String.format("%S", convertState(equation.output)));
                 }
-                int inputParam = 1; // TODO: THIS SHOULD BE FIXED (says Kira)
+                int inputParam = 1;
                 for (Boolean word : StateInputPair.getSecond()) {
                     rung.add(word ? new NOC(Integer.toString(inputParam)) : new NCC((Integer.toString(inputParam))));
                     inputParam++;
                 }
-                rung.add(new NOC(String.format("State %s", convertState(StateInputPair.getFirst()))));
+                for (int i=0; i<StateInputPair.getFirst().length(); i++){
+                    rung.add(StateInputPair.getFirst().asList().get(i) ? new NOC("S"+(i+1)): new NCC("S"+(i+1)));
+                }
                 rungs.add(rung);
                 first = false;
             }
