@@ -1,10 +1,13 @@
 package org.cs23sw612.commands;
 
 import de.learnlib.api.SUL;
+import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
+import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
+import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.graphs.Graph;
 import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
@@ -12,13 +15,17 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
+import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
+import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
 import java.io.FileOutputStream;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
@@ -55,10 +62,23 @@ public class LearnCommand implements Callable<Integer> {
             "-c"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private boolean cacheSul;
 
-    private final LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository;
+    @CommandLine.Option(names = {"--oracle", "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
+    private String oracleName;
 
-    public LearnCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository) {
+    @CommandLine.Option(names = {"--max-steps", "-n"}, description = "Sets the max steps when using the random walk oracle", defaultValue = "10000")
+    private Integer maxSteps;
+
+    @CommandLine.Option(names = {"--restart-probability"}, description = "Sets the restart probability when using the random walk oracle", defaultValue = "0.05")
+    private Double restartProbability;
+    @CommandLine.Option(names = {"--depth", "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
+    private Integer depth;
+
+    private final LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository;
+    private final OracleRepository oracleRepository;
+
+    public LearnCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository, OracleRepository oracleRepository) {
         this.learnerRepository = learnerRepository;
+        this.oracleRepository = oracleRepository;
     }
 
     @Override
@@ -99,9 +119,14 @@ public class LearnCommand implements Callable<Integer> {
             finalSul = bajerSul;
         }
 
-        var membershipOracle = new SULOracle<>(finalSul);
+        var oracle = oracleRepository.getLearnerFactory(oracleName).createOracle(finalSul,  new OracleConfig(maxSteps, restartProbability, depth));
 
-        var equivalenceOracle = new CompleteExplorationEQOracle<>(membershipOracle, 3);
+        if (oracle == null) {
+            System.err.format(
+                    "Unknown oracle \"%s\", use the list-oracles command to see the list of available learners\n",
+                    oracleName);
+            return 1;
+        }
 
         var learnerFactory = learnerRepository.getLearnerFactory(learnerName);
 
@@ -112,9 +137,9 @@ public class LearnCommand implements Callable<Integer> {
             return 1;
         }
 
-        var learner = learnerFactory.createLearner(alphabet, membershipOracle);
+        var learner = learnerFactory.createLearner(alphabet, new SULOracle<>(finalSul));
 
-        var experiment = new Experiment.MealyExperiment<>(learner, equivalenceOracle, alphabet);
+        var experiment = new Experiment.MealyExperiment<>(learner, oracle, alphabet);
 
         Stopwatch experimentTimer = new Stopwatch();
         experimentTimer.start();
