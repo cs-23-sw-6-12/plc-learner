@@ -8,6 +8,10 @@ import java.util.List;
 
 public class SVGRung {
     private final double height;
+    /**
+     * Adjusts text position in horizontally.
+     */
+    private final static double TEXT_OFFSET = 7d;
     private final List<SVGRungElement> gates;
     private final SVGRungElement coil;
     private final Point2D.Double attachmentPoint;
@@ -33,7 +37,7 @@ public class SVGRung {
         path.moveTo(attachmentPoint.x, attachmentPoint.y);
         path.lineTo(attachmentPoint.x, height);
         for (SVGRungElement svgRungElement : gates) {
-            svg.drawString(svgRungElement.text, (float) (svgRungElement.x), (float) height - 20);
+            svg.drawString(svgRungElement.text, (float) (svgRungElement.x + TEXT_OFFSET), (float) height - 20);
             path.lineTo(svgRungElement.x, height);
             path.append(svgRungElement.getShape(), true);
         }
@@ -43,7 +47,7 @@ public class SVGRung {
         } else {
             path.lineTo(coil.x, coil.y);
             path.append(coil.getShape(), true);
-            svg.drawString(coil.text, (float) coil.x, (float) (coil.y - 20));
+            svg.drawString(coil.text, (float) (coil.x + TEXT_OFFSET), (float) (coil.y - 20));
         }
         svg.draw(path);
     }
