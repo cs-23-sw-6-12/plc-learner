@@ -1,13 +1,21 @@
 package org.cs23sw612.commands;
 
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
+import net.automatalib.commons.util.Pair;
 import net.automatalib.serialization.dot.DOTParsers;
-import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.cs23sw612.Ladder.EquationCollection;
+import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "visualize", mixinStandardHelpOptions = true, version = "0.1.0", description = "Visualizes a PLC loaded from a DOT file")
 public class VisualizeCommand implements Callable<Integer> {
@@ -25,11 +33,11 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
 
-        CompactMealy<String, String> model;
-        Alphabet<String> alphabet;
+        CompactMealy<Word<Boolean>, Word<Boolean>> model;
+        Alphabet<Word<Boolean>> alphabet;
 
         try {
-            var parsed = DOTParsers.mealy().readModel(file);
+            var parsed = DOTParsers.mealy(this::ParseBool).readModel(file);
             model = parsed.model;
             alphabet = parsed.alphabet;
         } catch (Exception ex) {
@@ -38,7 +46,9 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
         try {
-            Visualization.visualize(model, alphabet);
+            var e = new EquationCollection<>(model, alphabet);
+            var l = new Ladder(e);
+            Visualizer.showSVG(l);
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");
             System.err.println(ex.getMessage());
@@ -46,5 +56,28 @@ public class VisualizeCommand implements Callable<Integer> {
         }
 
         return 0;
+    }
+
+    Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> ParseBool(Map<String, String> attr) {
+        String label = attr.get("label");
+        if (label == null) {
+            return Pair.of(null, null);
+        } else {
+            String[] tokens = label.split("/");
+            System.out.println(Pair.of(getWord(tokens[0]), getWord(tokens[1])));
+            return tokens.length != 2 ? Pair.of(null, null) : Pair.of(getWord(tokens[0]), getWord(tokens[1]));
+        }
+    }
+
+    private static Word<Boolean> getWord(String token) {
+        return Word.fromList(Arrays.stream(token.trim().split(" "))
+                .map(VisualizeCommand::parse)
+                .collect(Collectors.toList()));
+    }
+
+    private static boolean parse(String s){
+        if (s.equals("1"))
+            return true;
+        else return Boolean.parseBoolean(s);
     }
 }
