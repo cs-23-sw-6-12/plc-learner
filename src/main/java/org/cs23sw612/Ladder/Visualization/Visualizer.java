@@ -64,7 +64,7 @@ public class Visualizer {
                 else if (ladderGate instanceof Ladder.NCC)
                     svgGate = new SVGNCC(x, height, ladderGate.gate);
                 else
-                    throw new RuntimeException("Unexpexted gate type");
+                    throw new RuntimeException("Unexpected gate type");
 
                 gates.add(svgGate);
             }
