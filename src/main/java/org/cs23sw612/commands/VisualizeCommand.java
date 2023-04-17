@@ -11,6 +11,7 @@ import org.cs23sw612.Ladder.Ladder;
 import org.cs23sw612.Ladder.Visualization.Visualizer;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Map;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 public class VisualizeCommand implements Callable<Integer> {
     @CommandLine.Parameters(index = "0", description = "File path to the DOT file")
     private String filePath;
+    @CommandLine.Option(names = "--save-svg", description = "Save the generated svg file.")
+    private String svgOutputPath;
 
     @Override
     public Integer call() throws Exception {
@@ -48,7 +51,19 @@ public class VisualizeCommand implements Callable<Integer> {
         try {
             var e = new EquationCollection<>(model, alphabet);
             var l = new Ladder(e);
-            Visualizer.showSVG(l);
+
+            if (svgOutputPath != null){
+                var f = new File(svgOutputPath);
+                f.getParentFile().mkdirs();
+
+                if (f.getParentFile().exists()){
+                    Visualizer.saveSVG(l, f.toURI());
+                    Visualizer.showSVG(f.toURI());
+                }
+                else throw new RuntimeException("Could not create file at " + f.getAbsolutePath());
+            }
+            else
+                Visualizer.showSVG(l);
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");
             System.err.println(ex.getMessage());
@@ -64,7 +79,6 @@ public class VisualizeCommand implements Callable<Integer> {
             return Pair.of(null, null);
         } else {
             String[] tokens = label.split("/");
-            System.out.println(Pair.of(getWord(tokens[0]), getWord(tokens[1])));
             return tokens.length != 2 ? Pair.of(null, null) : Pair.of(getWord(tokens[0]), getWord(tokens[1]));
         }
     }

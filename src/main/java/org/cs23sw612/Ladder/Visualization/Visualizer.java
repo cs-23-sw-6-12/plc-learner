@@ -89,12 +89,16 @@ public class Visualizer {
     public static void showSVG(Ladder l) throws IOException {
         var tempfile = File.createTempFile("plc-learner-", "-ladder.svg");
         saveSVG(l, tempfile.toURI());
-        Desktop desktop = Desktop.getDesktop();
 
+        showSVG(tempfile.toURI());
+    }
+
+    public static void showSVG(URI path) throws IOException{
+        Desktop desktop = Desktop.getDesktop();
         try {
-            desktop.browse(tempfile.toURI());
+            desktop.browse(path);
         } catch (UnsupportedOperationException ex) {
-            desktop.open(tempfile);
+            desktop.open(new File(path));
         }
     }
 
