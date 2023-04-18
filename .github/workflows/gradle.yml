@@ -22,15 +22,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: Set up JDK 17
       uses: actions/setup-java@v1
       with:
         java-version: 17
         java-package: jdk
-    - name: gradle caching
-      uses: gradle/gradle-build-action@v2
+    - name: Cache Gradle packages
+      uses: actions/cache@v1
       with:
-        gradle-home-cache-cleanup: true
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Check formatting
@@ -40,15 +44,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: Set up JDK 17
       uses: actions/setup-java@v1
       with:
         java-version: 17
         java-package: jdk
-    - name: gradle caching
-      uses: gradle/gradle-build-action@v2
+    - name: Cache Gradle packages
+      uses: actions/cache@v1
       with:
-        gradle-home-cache-cleanup: true
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: ${{ runner.os }}-gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
