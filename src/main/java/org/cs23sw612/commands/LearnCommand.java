@@ -172,10 +172,12 @@ public class LearnCommand implements Callable<Integer> {
 
         if (visualize) {
             try {
-                var e = new EquationCollection(result, alphabet);
-                var l = new Ladder(e);
+                var equationCollection = new EquationCollection(result, alphabet);
+                var ladder = new Ladder(equationCollection);
 
-                Visualizer.showSVG(l);
+                var ladderSvg = Visualizer.layoutSVG(ladder);
+
+                Visualizer.showSVG(ladderSvg);
             } catch (Exception ex) {
                 System.err.println("Could not visualize the given model");
                 System.err.println(ex.getMessage());

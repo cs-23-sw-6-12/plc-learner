@@ -8,9 +8,13 @@ import org.jfree.svg.SVGUtils;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class Visualizer {
     /**
@@ -86,9 +90,26 @@ public class Visualizer {
         return svg;
     }
 
-    public static void showSVG(Ladder l) throws IOException {
+
+
+    public static void showSVG(SVGGraphics2D svg) throws IOException {
+        var svgDocumentString = svg.getSVGDocument();
+        var imageURI = "data:image/svg+xml;charset=utf-8;base64," + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
+        //Maximum length of a URI in firefox, chrome has 2MB but firefox is the bottleneck
+        if (imageURI.length() < 65535) {
+            try {
+                showSVG(new URI(imageURI));
+            } catch (URISyntaxException e) {
+                throw new RuntimeException("Invalid image URI", e);
+            }
+            return;
+        }
+
         var tempfile = File.createTempFile("plc-learner-", "-ladder.svg");
-        saveSVG(l, tempfile.toURI());
+
+        var tempFileWriter = new FileWriter(tempfile);
+        saveSVG(svg, tempFileWriter);
+        tempFileWriter.close();
 
         showSVG(tempfile.toURI());
     }
@@ -102,9 +123,7 @@ public class Visualizer {
         }
     }
 
-    public static void saveSVG(Ladder l, URI path) throws IOException {
-        var svg = Visualizer.layoutSVG(l);
-        var file = new File(path);
-        SVGUtils.writeToSVG(file, svg.getSVGElement());
+    public static void saveSVG(SVGGraphics2D svg, FileWriter fileWriter) throws IOException {
+        fileWriter.write(svg.getSVGDocument());
     }
 }

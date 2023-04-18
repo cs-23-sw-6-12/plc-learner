@@ -96,6 +96,8 @@ public class RunningExample {
         var ladder = new Ladder(ec);
         ladder.rungs.forEach(System.out::print);
 
-        Visualizer.showSVG(ladder);
+        var visualizedSvg = Visualizer.layoutSVG(ladder);
+
+        Visualizer.showSVG(visualizedSvg);
     }
 }
