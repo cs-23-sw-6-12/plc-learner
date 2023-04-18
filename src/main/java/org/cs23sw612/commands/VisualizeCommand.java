@@ -13,6 +13,8 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -49,20 +51,23 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
         try {
-            var e = new EquationCollection<>(model, alphabet);
-            var l = new Ladder(e);
+            var equationCollection = new EquationCollection<>(model, alphabet);
+            var ladder = new Ladder(equationCollection);
+            var ladderSvg = Visualizer.layoutSVG(ladder);
 
             if (svgOutputPath != null) {
                 var f = new File(svgOutputPath);
                 f.getParentFile().mkdirs();
 
-                if (f.getParentFile().exists()) {
-                    Visualizer.saveSVG(l, f.toURI());
-                    Visualizer.showSVG(f.toURI());
-                } else
-                    throw new RuntimeException("Could not create file at " + f.getAbsolutePath());
-            } else
-                Visualizer.showSVG(l);
+                try {
+                    Visualizer.saveSVG(ladderSvg, new FileWriter(f));
+                } catch (IOException exception) {
+                    System.err.println("Could not save SVG file");
+                    System.err.println(exception.getMessage());
+                    return 1;
+                }
+            }
+            Visualizer.showSVG(ladderSvg);
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");
             System.err.println(ex.getMessage());
