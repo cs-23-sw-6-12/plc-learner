@@ -16,7 +16,8 @@ public class CompleteExplorationOracleFactory implements OracleFactory {
     }
 
     @Override
-    public EquivalenceOracle<MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> createOracle(SUL<Word<Integer>, Word<Integer>> sul, OracleConfig oracleConfig) {
+    public EquivalenceOracle<MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> createOracle(
+            SUL<Word<Integer>, Word<Integer>> sul, OracleConfig oracleConfig) {
         return new CompleteExplorationEQOracle<>(new SULOracle<>(sul), oracleConfig.depth);
     }
 }
