@@ -2,7 +2,7 @@ package org.cs23sw612.Ladder;
 
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
-import net.automatalib.commons.util.Pair;
+import net.automatalib.commons.util.Triple;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
@@ -17,7 +17,8 @@ public class Ladder {
 
         for (Equation<Word<Boolean>, IO, IO> equation : ec) {
             boolean first = true;
-            for (Pair<Word<Boolean>, ? extends Word<Boolean>> StateInputPair : equation.getFullList()) {
+            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation
+                    .getFullList()) {
                 Rung rung;
                 if ((long) equation.getFullList().size() > 1 && !first)
                     rung = new ORRung();
@@ -26,11 +27,11 @@ public class Ladder {
                     rung.outputgate = new Gate(String.format("(%S)", convertState(equation.output)));
                 }
                 int inputParam = 1;
-                for (Boolean word : StateInputPair.getSecond()) {
+                for (Boolean word : eqVals.getSecond()) {
                     rung.add(new Gate(word ? String.format("| %s|", inputParam) : String.format("|/%s|", inputParam)));
                     inputParam++;
                 }
-                rung.add(new Gate(String.format("|State %s|", convertState(StateInputPair.getFirst()))));
+                rung.add(new Gate(String.format("|State %s|", convertState(eqVals.getFirst()))));
                 rungs.add(rung);
                 first = false;
             }

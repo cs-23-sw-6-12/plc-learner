@@ -59,7 +59,7 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
             if (index.isEmpty())
                 equations.add(new Equation<>(eq));
             else
-                index.get(0).extend(eq.state(), eq.input());
+                index.get(0).extend(eq.state(), eq.nextState(), eq.input());
         });
     }
 

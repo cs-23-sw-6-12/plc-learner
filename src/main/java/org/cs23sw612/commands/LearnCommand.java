@@ -1,13 +1,9 @@
 package org.cs23sw612.commands;
 
 import de.learnlib.api.SUL;
-import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.filter.cache.sul.SULCache;
-import de.learnlib.oracle.equivalence.CompleteExplorationEQOracle;
-import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
-import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.graphs.Graph;
 import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
@@ -24,8 +20,6 @@ import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
 import java.io.FileOutputStream;
-import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
@@ -62,21 +56,26 @@ public class LearnCommand implements Callable<Integer> {
             "-c"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private boolean cacheSul;
 
-    @CommandLine.Option(names = {"--oracle", "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
+    @CommandLine.Option(names = {"--oracle",
+            "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
     private String oracleName;
 
-    @CommandLine.Option(names = {"--max-steps", "-n"}, description = "Sets the max steps when using the random walk oracle", defaultValue = "10000")
+    @CommandLine.Option(names = {"--max-steps",
+            "-n"}, description = "Sets the max steps when using the random walk oracle", defaultValue = "10000")
     private Integer maxSteps;
 
-    @CommandLine.Option(names = {"--restart-probability"}, description = "Sets the restart probability when using the random walk oracle", defaultValue = "0.05")
+    @CommandLine.Option(names = {
+            "--restart-probability"}, description = "Sets the restart probability when using the random walk oracle", defaultValue = "0.05")
     private Double restartProbability;
-    @CommandLine.Option(names = {"--depth", "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
+    @CommandLine.Option(names = {"--depth",
+            "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
     private Integer depth;
 
     private final LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository;
     private final OracleRepository oracleRepository;
 
-    public LearnCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository, OracleRepository oracleRepository) {
+    public LearnCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository,
+            OracleRepository oracleRepository) {
         this.learnerRepository = learnerRepository;
         this.oracleRepository = oracleRepository;
     }
@@ -119,7 +118,8 @@ public class LearnCommand implements Callable<Integer> {
             finalSul = bajerSul;
         }
 
-        var oracle = oracleRepository.getLearnerFactory(oracleName).createOracle(finalSul,  new OracleConfig(maxSteps, restartProbability, depth));
+        var oracle = oracleRepository.getLearnerFactory(oracleName).createOracle(finalSul,
+                new OracleConfig(maxSteps, restartProbability, depth));
 
         if (oracle == null) {
             System.err.format(
