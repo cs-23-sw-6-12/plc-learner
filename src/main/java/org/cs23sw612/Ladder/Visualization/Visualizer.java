@@ -89,6 +89,12 @@ public class Visualizer {
         return svg;
     }
 
+    /**
+     * Show an svg in the browser or, if that fails, your default svg-application.
+     *
+     * @param svg The svg to display.
+     * @throws IOException If the SVG file could not be created.
+     */
     public static void showSVG(SVGGraphics2D svg) throws IOException {
         var svgDocumentString = svg.getSVGDocument();
         var imageURI = "data:image/svg+xml;charset=utf-8;base64,"
