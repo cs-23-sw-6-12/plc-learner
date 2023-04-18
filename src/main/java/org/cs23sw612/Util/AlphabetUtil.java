@@ -39,15 +39,14 @@ public class AlphabetUtil {
         return Alphabets.fromCollection(arr);
     }
 
-    public static String toBinaryString(Object b) {
-        if (b instanceof Boolean)
-            return (Boolean) b ? "1" : "0";
-        else if (b instanceof Number)
-            return ((Number) b).longValue() != 0 ? "1" : "0";
-        else if (b instanceof Word<?>)
-            return ((Word<?>) b).stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining());
+    public static String toBinaryString(Object obj) {
+        if (obj instanceof Boolean)
+            return (Boolean) obj ? "1" : "0";
+        else if (obj instanceof Number)
+            return ((Number) obj).longValue() != 0 ? "1" : "0";
+        else if (obj instanceof Word<?>)
+            return ((Word<?>) obj).stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining());
         else
-            throw new TypeNotPresentException("lol", new Throwable());
+            throw new TypeNotPresentException("Not accepted type", new Throwable());
     }
-
 }
