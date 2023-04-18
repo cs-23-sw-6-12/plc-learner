@@ -91,9 +91,9 @@ public class Visualizer {
 
     /**
      * Show an svg in the browser or, if that fails, your default svg-application.
-         *
-       * @param svg
- *            The svg to display.
+ *
+     * @param svg
+     *            The svg to display.
      * @throws IOException
      *             If the SVG file could not be created.
      */
