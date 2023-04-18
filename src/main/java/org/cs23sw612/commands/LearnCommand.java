@@ -6,19 +6,22 @@ import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.graphs.Graph;
 import net.automatalib.serialization.dot.DOTSerializationProvider;
-import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
+import org.cs23sw612.Ladder.EquationCollection;
+import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.OracleConfig;
-import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
+import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
+
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
 
@@ -168,7 +171,16 @@ public class LearnCommand implements Callable<Integer> {
         }
 
         if (visualize) {
-            Visualization.visualize(result, alphabet);
+            try {
+                var e = new EquationCollection(result, alphabet);
+                var l = new Ladder(e);
+
+                Visualizer.showSVG(l);
+            } catch (Exception ex) {
+                System.err.println("Could not visualize the given model");
+                System.err.println(ex.getMessage());
+                return 1;
+            }
         }
 
         return 0;
