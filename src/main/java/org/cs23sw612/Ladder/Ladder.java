@@ -17,8 +17,7 @@ public class Ladder {
 
         for (Equation<Word<Boolean>, IO, IO> equation : ec) {
             boolean first = true;
-            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation
-                    .getFullList()) {
+            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation.getFullList()) {
                 Rung rung;
                 if ((long) equation.getFullList().size() > 1 && !first)
                     rung = new ORRung();
@@ -33,9 +32,7 @@ public class Ladder {
                     inputParam++;
                 }
                 for (int i = 0; i < eqVals.getFirst().length(); i++) {
-                    rung.add(eqVals.getFirst().asList().get(i)
-                            ? new NOC("S" + (i + 1))
-                            : new NCC("S" + (i + 1)));
+                    rung.add(eqVals.getFirst().asList().get(i) ? new NOC("S" + (i + 1)) : new NCC("S" + (i + 1)));
                 }
 
                 for (Boolean word : eqVals.getSecond()) {

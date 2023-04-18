@@ -35,8 +35,8 @@ public class Equation<S extends Word<Boolean>, I extends Word<?>, O extends Word
     }
 
     /**
-     * Method used to extend how the output can be produced. Can be viewed as a triple
-     * ({@code s, s', i}) that (also) produces {@code output}.
+     * Method used to extend how the output can be produced. Can be viewed as a
+     * triple ({@code s, s', i}) that (also) produces {@code output}.
      *
      * @param in
      *            The input to extend {@code output} with

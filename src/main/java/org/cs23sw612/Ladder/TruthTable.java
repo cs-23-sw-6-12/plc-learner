@@ -45,8 +45,8 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
     private final StateIDs<S> stateIds;
     private int varCount = 0;
     private List<TruthRow<Word<Boolean>, I, O>> equations = null;
-    private final Function<String, String> latexHeader = ph ->
-            new String(new char[inputCount]).replace("\0", "|" + ph) + "|" + // Input
+    private final Function<String, String> latexHeader = ph -> new String(new char[inputCount]).replace("\0", "|" + ph)
+            + "|" + // Input
             new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Vars/state
             new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // vars/nextstates
             "|" + new String(new char[outputs.get(0).length()]).replace("\0", "|" + ph) + "|"; // Output
@@ -141,10 +141,12 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
     }
 
     private String asString(String sep, String catSep, String lineSep, String headerSep) {
-        return IntStream.range(0, inputCount).boxed().map(i -> String.format("$I_%d$ %s ", i, sep)).collect(Collectors.joining())
+        return IntStream.range(0, inputCount).boxed().map(i -> String.format("$I_%d$ %s ", i, sep))
+                .collect(Collectors.joining())
                 + IntStream.range(0, varCount).boxed().map(i -> String.format("$S_%d$ %s ", i, sep))
                         .collect(Collectors.joining())
-                + IntStream.range(0, varCount).boxed().map(i -> String.format("$S'_%d$ %s ", i, sep)).collect(Collectors.joining())
+                + IntStream.range(0, varCount).boxed().map(i -> String.format("$S'_%d$ %s ", i, sep))
+                        .collect(Collectors.joining())
                 + String.join(" " + sep + " ",
                         IntStream.range(0, outputs.get(0).length()).boxed().map(i -> String.format("$O_%d$", i))
                                 .toList())
@@ -180,8 +182,7 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                     new String[]{
                             input.stream().map(conv).map(s -> String.format("%s %s ", s, catSep))
                                     .collect(Collectors.joining()),
-                            conv.apply(state), " " + catSep + " ",
-                            conv.apply(nextState), " " + catSep + " ",
+                            conv.apply(state), " " + catSep + " ", conv.apply(nextState), " " + catSep + " ",
                             String.join(" " + catSep + " ",
                                     output.stream().map(conv).map(s -> String.format("%s", s)).toList())});
         }

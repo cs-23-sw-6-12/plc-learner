@@ -3,7 +3,6 @@ package org.cs23sw612.Ladder.Visualization;
 import org.cs23sw612.Ladder.Ladder;
 import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUnits;
-import org.jfree.svg.SVGUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -90,12 +89,12 @@ public class Visualizer {
         return svg;
     }
 
-
-
     public static void showSVG(SVGGraphics2D svg) throws IOException {
         var svgDocumentString = svg.getSVGDocument();
-        var imageURI = "data:image/svg+xml;charset=utf-8;base64," + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
-        //Maximum length of a URI in firefox, chrome has 2MB but firefox is the bottleneck
+        var imageURI = "data:image/svg+xml;charset=utf-8;base64,"
+                + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
+        // Maximum length of a URI in firefox, chrome has 2MB but firefox is the
+        // bottleneck
         if (imageURI.length() < 65535) {
             try {
                 showSVG(new URI(imageURI));
