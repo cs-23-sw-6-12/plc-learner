@@ -17,8 +17,7 @@ public class Ladder {
 
         for (Equation<Word<Boolean>, IO, IO> equation : ec) {
             boolean first = true;
-            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation
-                    .getFullList()) {
+            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation.getFullList()) {
                 Rung rung;
                 if ((long) equation.getFullList().size() > 1 && !first)
                     rung = new ORRung();
