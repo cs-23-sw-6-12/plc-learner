@@ -1,13 +1,19 @@
 package org.cs23sw612.commands;
 
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
+import net.automatalib.commons.util.Pair;
 import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 @CommandLine.Command(name = "visualize", mixinStandardHelpOptions = true, version = "0.1.0", description = "Visualizes a PLC loaded from a DOT file")
 public class VisualizeCommand implements Callable<Integer> {
@@ -25,11 +31,11 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
 
-        CompactMealy<String, String> model;
-        Alphabet<String> alphabet;
+        CompactMealy<Word<Integer>, Word<Integer>> model;
+        Alphabet<Word<Integer>> alphabet;
 
         try {
-            var parsed = DOTParsers.mealy().readModel(file);
+            var parsed = DOTParsers.mealy(this::ParseInt).readModel(file);
             model = parsed.model;
             alphabet = parsed.alphabet;
         } catch (Exception ex) {
@@ -46,5 +52,19 @@ public class VisualizeCommand implements Callable<Integer> {
         }
 
         return 0;
+    }
+
+    Pair<@Nullable Word<Integer>, @Nullable Word<Integer>> ParseInt(Map<String, String> attr) {
+        String label = attr.get("label");
+        if (label == null) {
+            return Pair.of(null, null);
+        } else {
+            String[] tokens = label.split("/");
+            return tokens.length != 2 ? Pair.of(null, null) : Pair.of(getWord(tokens[0]), getWord(tokens[1]));
+        }
+    }
+    private static Word<Integer> getWord(String token) {
+        return Word.fromList(
+                Arrays.stream(token.trim().split(" ")).map(s -> s.equals("1") ? 1 : 0).collect(Collectors.toList()));
     }
 }

@@ -1,41 +1,60 @@
 package org.cs23sw612.commands;
 
 import de.learnlib.api.SUL;
+import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
+import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.graphs.Graph;
+import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
+import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
 import org.cs23sw612.OracleConfig;
-import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
+import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
+
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
 public class LearnCommand implements Callable<Integer> {
-    @CommandLine.Parameters(index = "0", description = "Number of inputs")
-    private int inputCount;
 
-    @CommandLine.Parameters(index = "1", description = "Number of outputs")
-    private int outputCount;
+    @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
+    private SULSource source;
 
-    @CommandLine.Parameters(index = "2", description = "BAjER server address")
-    private String bajerServerAddress;
+    static class SULSource {
+        @CommandLine.ArgGroup(exclusive = false)
+        BajerSulConnectionOptions connectionOptions;
 
-    @CommandLine.Option(names = {"--port",
-            "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private int bajerServerPort;
+        @CommandLine.Option(names = "--dot-path", description = "Load a SUL from a DOT file to test the learning setup.")
+        private String path;
+    }
+
+    static class BajerSulConnectionOptions {
+        @CommandLine.Parameters(index = "0", description = "Number of inputs")
+        private int inputCount;
+
+        @CommandLine.Parameters(index = "1", description = "Number of outputs")
+        private int outputCount;
+
+        @CommandLine.Parameters(index = "2", description = "BAjER server address")
+        private String bajerServerAddress;
+        @CommandLine.Option(names = {"--port",
+                "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+        private int bajerServerPort;
+    }
 
     @CommandLine.Option(names = {"--learner",
             "-l"}, description = "Learner to use (case insensitive)", defaultValue = "DHC", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
@@ -91,26 +110,54 @@ public class LearnCommand implements Callable<Integer> {
             return 1;
         }
 
-        var bajerClient = new BAjERClient();
-        try {
-            bajerClient.Connect(bajerServerAddress, bajerServerPort);
-        } catch (Exception ex) {
-            System.err.println("Could not connect to BAjER server");
-            System.err.println(ex.getMessage());
-            return 1;
+        CompactMealy<Word<Integer>, Word<Integer>> model;
+        Alphabet<Word<Integer>> alphabet;
+        SUL<Word<Integer>, Word<Integer>> bajerSul;
+
+        if (source.path != null) {
+            FileInputStream file;
+            try {
+                file = new FileInputStream(source.path);
+            } catch (Exception ex) {
+                System.err.println("Could not open the given file");
+                System.err.println(ex.getMessage());
+                return 1;
+            }
+
+            try {
+                var parsed = DOTParsers.mealy(AlphabetUtil::ParseInt).readModel(file);
+                model = parsed.model;
+                alphabet = parsed.alphabet;
+                bajerSul = new MealySimulatorSUL<>(model);
+            } catch (Exception ex) {
+                System.err.println("Could not parse the given file");
+                System.err.println(ex.getMessage());
+                return 1;
+            }
+
+        } else {
+            var bajerClient = new BAjERClient();
+            try {
+                bajerClient.Connect(source.connectionOptions.bajerServerAddress,
+                        source.connectionOptions.bajerServerPort);
+            } catch (Exception ex) {
+                System.err.println("Could not connect to BAjER server");
+                System.err.println(ex.getMessage());
+                return 1;
+            }
+
+            alphabet = AlphabetUtil.createIntAlphabet(source.connectionOptions.inputCount);
+            bajerSul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(), new IntegerWordOutputAdapter(),
+                    (byte) source.connectionOptions.inputCount, (byte) source.connectionOptions.outputCount);
+
         }
-
-        var alphabet = AlphabetUtil.createIntAlphabet(inputCount);
-
-        SUL<Word<Integer>, Word<Integer>> bajerSul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(),
-                new IntegerWordOutputAdapter(), (byte) inputCount, (byte) outputCount);
 
         var bajerMetricsSul = new PerformanceMetricSUL<>(bajerSul);
         if (benchmark) {
             bajerSul = bajerMetricsSul;
         }
 
-        SUL<Word<Integer>, Word<Integer>> finalSul = null;
+        de.learnlib.api.SUL<Word<Integer>, Word<Integer>> finalSul = null;
 
         if (cacheSul) {
             finalSul = SULCache.createTreeCache(alphabet, bajerSul);
@@ -173,4 +220,5 @@ public class LearnCommand implements Callable<Integer> {
 
         return 0;
     }
+
 }
