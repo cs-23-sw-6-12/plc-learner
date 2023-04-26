@@ -81,7 +81,8 @@ public class Visualizer {
                 point.y = height - RUNG_HEIGHT - V_SPACING * 2;
                 endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2, point.y);
             } else
-                coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputgate.gate);
+                //todo fix this
+                coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputGates.stream().toList().get(0).gate);
 
             new SVGRung(height, point, endpoint, coil, gates).draw(svg);
         }
@@ -103,14 +104,14 @@ public class Visualizer {
                 + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
         // Maximum length of a URI in firefox, chrome has 2MB but firefox is the
         // bottleneck
-        if (imageURI.length() < 65535) {
+        /*if (imageURI.length() < 65535) {
             try {
                 showSVG(new URI(imageURI));
             } catch (URISyntaxException e) {
                 throw new RuntimeException("Invalid image URI", e);
             }
             return;
-        }
+        }*/
 
         var tempfile = File.createTempFile("plc-learner-", "-ladder.svg");
 
