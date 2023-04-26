@@ -6,7 +6,6 @@ import net.automatalib.commons.util.Triple;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,10 +28,10 @@ public class Ladder {
                     rung.outputGates.add(new Coil(String.format("%S", convertState(equation.output))));
                 }
 
-                if(eqVals.getSecond().toString().contains("true")){
+                if (eqVals.getSecond().toString().contains("true")) {
                     for (int i = 0; i < eqVals.getSecond().length(); i++) {
                         if (eqVals.getSecond().asList().get(i).equals(true)) {
-                            mainRung.outputGates.add(new Coil("S"+(i+1)));
+                            mainRung.outputGates.add(new Coil("S" + (i + 1)));
                         }
                     }
                 }
@@ -46,7 +45,7 @@ public class Ladder {
                     rung.add(eqVals.getFirst().asList().get(i) ? new NOC("S" + (i + 1)) : new NCC("S" + (i + 1)));
                 }
 
-                if(!first)
+                if (!first)
                     mainRung.ORRungs.add(rung);
                 else
                     rungs.add(rung);
@@ -65,9 +64,9 @@ public class Ladder {
         public LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
         public final ArrayList<Gate> gates = new ArrayList<>();
         @Override
-        public String toString() { //todo fix ift outputGates
-            return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----" + String.join("---", outputGates.stream().map(Gate::toString).toList())
-                    + "--|" + ORRungs;
+        public String toString() { // todo fix ift outputGates
+            return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----"
+                    + String.join("---", outputGates.stream().map(Gate::toString).toList()) + "--|" + ORRungs;
         }
         public void add(Gate gate) {
             this.gates.add(gate);
@@ -77,8 +76,8 @@ public class Ladder {
     public class ORRung extends Rung {
         @Override
         public String toString() {
-            return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ" + String.join("---", outputGates.stream().map(Gate::toString).toList())
-      ;
+            return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ"
+                    + String.join("---", outputGates.stream().map(Gate::toString).toList());
         }
         @Override
         public void add(Gate gate) {
@@ -98,12 +97,12 @@ public class Ladder {
         }
 
         @Override
-        public int hashCode(){
+        public int hashCode() {
             return gate.hashCode();
         }
 
         @Override
-        public boolean equals(Object obj){
+        public boolean equals(Object obj) {
             return ((Gate) obj).gate.equals(gate);
         }
     }
