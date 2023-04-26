@@ -69,7 +69,7 @@ public class Visualizer {
             }
 
             var point = new Point2D.Double(GATE_WIDTH / 2, height - RUNG_HEIGHT - V_SPACING * 2);
-            SVGCoil coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputs().stream().toList().get(0).gate); // todo
+            SVGCoil coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputGates.stream().toList().get(0).gate); // todo
                                                                                                                         // fix
                                                                                                                         // this
             Point2D.Double endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2,

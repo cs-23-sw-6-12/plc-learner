@@ -26,9 +26,9 @@ public class Ladder {
     }
 
     public class Rung {
-        private final ArrayList<Something> orRungs = new ArrayList<>();
-        private final LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
-        public Something gates;
+        public final ArrayList<GateSequence> orRungs = new ArrayList<>();
+        public final LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
+        public GateSequence gates;
 
         public <IO extends Word<Boolean>> Rung(Equation<Word<Boolean>, IO, IO> equation) {
             this.outputGates.add(new Coil(convertState(equation.output))); // todo: fix
@@ -38,28 +38,24 @@ public class Ladder {
         }
 
         private <IO extends Word<Boolean>> Rung(Triple<Word<Boolean>, Word<Boolean>, IO> eqVals) {
-            gates = new Something(eqVals.getThird());
+            gates = new GateSequence(eqVals.getThird()); //Inputs added
 
             int inputParam = 1;
             for (Boolean b : eqVals.getFirst())
-                gates.add(new Gate("S" + inputParam++, b));
+                gates.add(new Gate("S" + inputParam++, b)); //States added
 
             inputParam = 1;
             for (Boolean b : eqVals.getSecond()) {
                 if (b)
-                    this.outputGates.add(new Coil("S" + inputParam++));
+                    this.outputGates.add(new Coil("S" + inputParam++)); // Output states added
             }
-        }
-
-        public LinkedHashSet<Gate> outputs() {
-            return outputGates;
         }
 
         @Override
         public String toString() { // todo fix ift outputGates
             return "\n|----" + gates + "----" + String.join("---", outputGates.stream().map(Gate::toString).toList())
                     + "--|\n" + String.join("\n",
-                            orRungs.stream().map(Something::toString).map(s -> "  ᒻ--" + s + "--ᒽ").toList());
+                            orRungs.stream().map(GateSequence::toString).map(s -> "  ᒻ--" + s + "--ᒽ").toList());
         }
 
         private void add(Rung rung) {
@@ -71,14 +67,14 @@ public class Ladder {
         }
     }
 
-    public class Something {
+    public class GateSequence {
         private final ArrayList<Gate> gates;
 
-        public Something() {
+        public GateSequence() {
             gates = new ArrayList<>();
         }
 
-        public Something(Word<Boolean> gates) {
+        public GateSequence(Word<Boolean> gates) {
             this();
             int i = 1;
             for (Boolean b : gates) {
@@ -115,7 +111,7 @@ public class Ladder {
         }
         @Override
         public String toString() {
-            return (open ? "" : "/") + gate;
+            return String.format("|%s%s|",open ? " " : "/", gate);
         }
 
         @Override
