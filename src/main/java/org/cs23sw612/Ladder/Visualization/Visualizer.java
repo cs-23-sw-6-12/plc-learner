@@ -42,7 +42,7 @@ public class Visualizer {
         double ladder_height = ladder.rungs.size() * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
 
         for (var rung : ladder.rungs) {
-            var len = rung.gates.size() * (GATE_WIDTH + H_SPACING) + END_SPACING + GATE_WIDTH;
+            var len = rung.gates.count() * (GATE_WIDTH + H_SPACING) + END_SPACING + GATE_WIDTH;
             if (rung_length < len)
                 rung_length = len;
         }
@@ -53,35 +53,29 @@ public class Visualizer {
 
             var rung = ladder.rungs.get(i);
             var gates = new ArrayList<SVGRungElement>();
-            var isOrRung = rung instanceof Ladder.ORRung;
             var height = (V_SPACING * 2 + RUNG_HEIGHT) * (i + 1);
 
-            for (int j = 0; j < rung.gates.size(); j++) {
+            for (int j = 0; j < rung.gates.count(); j++) {
                 Ladder.Gate ladderGate = rung.gates.get(j);
                 SVGRungElement svgGate;
                 var x = (j + 1) * (GATE_WIDTH + H_SPACING);
 
-                if (ladderGate instanceof Ladder.NOC)
+                if (ladderGate.isOpen())
                     svgGate = new SVGNOC(x, height, ladderGate.gate);
-                else if (ladderGate instanceof Ladder.NCC)
-                    svgGate = new SVGNCC(x, height, ladderGate.gate);
                 else
-                    throw new RuntimeException("Unexpected gate type");
+                    svgGate = new SVGNCC(x, height, ladderGate.gate);
 
                 gates.add(svgGate);
             }
 
-            var point = new Point2D.Double(0, 0);
-            SVGCoil coil = null;
-            Point2D.Double endpoint = null;
+            var point = new Point2D.Double(GATE_WIDTH / 2, height - RUNG_HEIGHT - V_SPACING * 2);
+            SVGCoil coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputs().stream().toList().get(0).gate); // todo
+                                                                                                                        // fix
+                                                                                                                        // this
+            Point2D.Double endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2,
+                    point.y);
 
-            if (isOrRung) {
-                point.x = GATE_WIDTH / 2;
-                point.y = height - RUNG_HEIGHT - V_SPACING * 2;
-                endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2, point.y);
-            } else
-                // todo fix this
-                coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputGates.stream().toList().get(0).gate);
+            // TODO: Ors
 
             new SVGRung(height, point, endpoint, coil, gates).draw(svg);
         }
