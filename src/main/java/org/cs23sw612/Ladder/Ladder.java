@@ -17,41 +17,7 @@ public class Ladder {
         rungs = new ArrayList<>();
 
         for (Equation<Word<Boolean>, IO, IO> equation : ec) {
-            boolean first = true;
-            Rung mainRung = new Rung();
-            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation.getFullList()) {
-                Rung rung;
-                if ((long) equation.getFullList().size() > 1 && !first)
-                    rung = new ORRung();
-                else {
-                    rung = mainRung;
-                    rung.outputGates.add(new Coil(String.format("%S", convertState(equation.output))));
-                }
-
-                if (eqVals.getSecond().toString().contains("true")) {
-                    for (int i = 0; i < eqVals.getSecond().length(); i++) {
-                        if (eqVals.getSecond().asList().get(i).equals(true)) {
-                            mainRung.outputGates.add(new Coil("S" + (i + 1)));
-                        }
-                    }
-                }
-
-                int inputParam = 1;
-                for (Boolean word : eqVals.getThird()) {
-                    rung.add(word ? new NOC(Integer.toString(inputParam)) : new NCC((Integer.toString(inputParam))));
-                    inputParam++;
-                }
-                for (int i = 0; i < eqVals.getFirst().length(); i++) {
-                    rung.add(eqVals.getFirst().asList().get(i) ? new NOC("S" + (i + 1)) : new NCC("S" + (i + 1)));
-                }
-
-                if (!first)
-                    mainRung.ORRungs.add(rung);
-                else
-                    rungs.add(rung);
-
-                first = false;
-            }
+            rungs.add(new Rung(equation));
         }
 
     }
@@ -60,40 +26,92 @@ public class Ladder {
     }
 
     public class Rung {
-        public ArrayList<Rung> ORRungs = new ArrayList<>();
-        public LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
-        public final ArrayList<Gate> gates = new ArrayList<>();
+        public final ArrayList<GateSequence> orRungs = new ArrayList<>();
+        public final LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
+        public GateSequence gates;
+
+        public <IO extends Word<Boolean>> Rung(Equation<Word<Boolean>, IO, IO> equation) {
+            this.outputGates.add(new Coil(convertState(equation.output))); // todo: fix
+            for (Triple<Word<Boolean>, Word<Boolean>, IO> eqVals : equation.getFullList()) {
+                this.add(new Rung(eqVals));
+            }
+        }
+
+        private <IO extends Word<Boolean>> Rung(Triple<Word<Boolean>, Word<Boolean>, IO> eqVals) {
+            gates = new GateSequence(eqVals.getThird()); //Inputs added
+
+            int inputParam = 1;
+            for (Boolean b : eqVals.getFirst())
+                gates.add(new Gate("S" + inputParam++, b)); //States added
+
+            inputParam = 1;
+            for (Boolean b : eqVals.getSecond()) {
+                if (b)
+                    this.outputGates.add(new Coil("S" + inputParam++)); // Output states added
+            }
+        }
+
         @Override
         public String toString() { // todo fix ift outputGates
-            return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----"
-                    + String.join("---", outputGates.stream().map(Gate::toString).toList()) + "--|" + ORRungs;
+            return "\n|----" + gates + "----" + String.join("---", outputGates.stream().map(Gate::toString).toList())
+                    + "--|\n" + String.join("\n",
+                            orRungs.stream().map(GateSequence::toString).map(s -> "  ᒻ--" + s + "--ᒽ").toList());
         }
-        public void add(Gate gate) {
-            this.gates.add(gate);
+
+        private void add(Rung rung) {
+            if (this.gates == null) {
+                this.gates = rung.gates;
+                this.outputGates.addAll(rung.outputGates);
+            } else
+                this.orRungs.add(rung.gates);
         }
     }
 
-    public class ORRung extends Rung {
-        @Override
-        public String toString() {
-            return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ"
-                    + String.join("---", outputGates.stream().map(Gate::toString).toList());
+    public class GateSequence {
+        private final ArrayList<Gate> gates;
+
+        public GateSequence() {
+            gates = new ArrayList<>();
         }
-        @Override
+
+        public GateSequence(Word<Boolean> gates) {
+            this();
+            int i = 1;
+            for (Boolean b : gates) {
+                this.gates.add(new Gate(Integer.toString(i++), b));
+            }
+        }
+
         public void add(Gate gate) {
             this.gates.add(gate);
+        }
+
+        public int count() {
+            return gates.size();
+        }
+        public Gate get(int i) {
+            return gates.get(i);
+        }
+        @Override
+        public String toString() { // todo fix ift outputGates
+            return String.join("---", gates.stream().map(Gate::toString).toList());
         }
     }
 
     public class Gate {
         public final String gate;
-        public Gate(String gate) {
+        private final boolean open;
+        public Gate(String gate, boolean open) {
             this.gate = gate;
+            this.open = open;
         }
 
+        public final boolean isOpen() {
+            return open;
+        }
         @Override
         public String toString() {
-            return gate;
+            return String.format("|%s%s|",open ? " " : "/", gate);
         }
 
         @Override
@@ -103,37 +121,14 @@ public class Ladder {
 
         @Override
         public boolean equals(Object obj) {
-            return ((Gate) obj).gate.equals(gate);
+            return obj instanceof Gate && ((Gate) obj).gate.equals(gate);
         }
     }
 
-    public class NOC extends Gate {
-
-        public NOC(String variable) {
-            super(variable);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("| %s|", gate);
-        }
-    }
-
-    public class NCC extends Gate {
-
-        public NCC(String variable) {
-            super(variable);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("|/%s|", gate);
-        }
-    }
     public class Coil extends Gate {
 
         public Coil(String variable) {
-            super(variable);
+            super(variable, true);
         }
 
         @Override
