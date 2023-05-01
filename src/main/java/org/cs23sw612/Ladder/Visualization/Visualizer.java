@@ -40,7 +40,6 @@ public class Visualizer {
     public static double RUNG_HEIGHT = 15d;
 
     private static double rung_length = 0;
-    private static double ladder_height = 0;
     private static int currentRungNumber = 1;
 
 
@@ -61,7 +60,7 @@ public class Visualizer {
         for (Ladder.Rung rung : ladder.rungs){
             numberOfOrRungs += rung.orRungs.size();
         }
-        ladder_height = (ladder.rungs.size() + numberOfOrRungs) * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
+        double ladder_height = (ladder.rungs.size() + numberOfOrRungs) * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
 
         rung_length = 0;
         for (Ladder.Rung rung : ladder.rungs) {
