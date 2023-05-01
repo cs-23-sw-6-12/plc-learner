@@ -1,4 +1,4 @@
-package org.cs23sw612.Ladder.Visualization;
+package org.cs23sw612.Ladder.Visualization.SVG;
 
 import org.jfree.svg.SVGGraphics2D;
 

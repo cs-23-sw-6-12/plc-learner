@@ -31,7 +31,7 @@ public class Ladder {
         public GateSequence gates;
 
         public <IO extends Word<Boolean>> Rung(Equation<Word<Boolean>, IO, IO> equation) {
-            this.outputGates.add(new Coil(convertState(equation.output))); // todo: fix
+            this.outputGates.add(new Coil(convertState(equation.output))); //todo: overvej om output skal ændres
             for (Triple<Word<Boolean>, Word<Boolean>, IO> eqVals : equation.getFullList()) {
                 this.add(new Rung(eqVals));
             }
@@ -52,7 +52,7 @@ public class Ladder {
         }
 
         @Override
-        public String toString() { // todo fix ift outputGates
+        public String toString() {
             return "\n|----" + gates + "----" + String.join("---", outputGates.stream().map(Gate::toString).toList())
                     + "--|\n" + String.join("\n",
                             orRungs.stream().map(GateSequence::toString).map(s -> "  ᒻ--" + s + "--ᒽ").toList());

@@ -1,6 +1,7 @@
 package org.cs23sw612.Ladder.Visualization;
 
 import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.Visualization.SVG.*;
 import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUnits;
 
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedHashSet;
 
 public class Visualizer {
     /**
@@ -37,50 +39,76 @@ public class Visualizer {
      */
     public static double RUNG_HEIGHT = 15d;
 
-    public static SVGGraphics2D layoutSVG(Ladder ladder) {
-        double rung_length = 0;
-        double ladder_height = ladder.rungs.size() * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
+    private static double rung_length = 0;
+    private static double ladder_height = 0;
+    private static int currentRungNumber = 1;
 
-        for (var rung : ladder.rungs) {
-            var len = rung.gates.count() * (GATE_WIDTH + H_SPACING) + END_SPACING + GATE_WIDTH;
+
+    public static SVGGraphics2D layoutSVG(Ladder ladder){
+        var svg = GenerateNewSVGFromLadderDimensions(ladder);
+
+        for (Ladder.Rung rung : ladder.rungs){
+            addRungsToSVG(rung.gates, svg, true, rung.outputGates);
+            for(Ladder.GateSequence orRung : rung.orRungs){
+                addRungsToSVG(orRung,svg, false, null);
+            }
+        }
+        return svg;
+    }
+
+    private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder){
+        int numberOfOrRungs = 0;
+        for (Ladder.Rung rung : ladder.rungs){
+            numberOfOrRungs += rung.orRungs.size();
+        }
+        ladder_height = (ladder.rungs.size() + numberOfOrRungs) * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
+
+        rung_length = 0;
+        for (Ladder.Rung rung : ladder.rungs) {
+            double len = rung.gates.count() * (GATE_WIDTH + H_SPACING) + END_SPACING + GATE_WIDTH;
             if (rung_length < len)
                 rung_length = len;
         }
+        return new SVGGraphics2D(rung_length, ladder_height, SVGUnits.PX);
+    }
 
-        var svg = new SVGGraphics2D(rung_length, ladder_height, SVGUnits.PX);
+    private static void addRungsToSVG(Ladder.GateSequence gateSequence, SVGGraphics2D svg, boolean mainRung, LinkedHashSet<Ladder.Gate> outputGates){
+        double height = (V_SPACING * 2 + RUNG_HEIGHT) * (currentRungNumber);
+        ArrayList<SVGRungElement> gates = addGateSequence(gateSequence, height);
 
-        for (int i = 0; i < ladder.rungs.size(); i++) {
+        Point2D.Double point = new Point2D.Double(0, 0);
+        SVGCoil coil = null;
+        Point2D.Double endpoint = null;
 
-            var rung = ladder.rungs.get(i);
-            var gates = new ArrayList<SVGRungElement>();
-            var height = (V_SPACING * 2 + RUNG_HEIGHT) * (i + 1);
-
-            for (int j = 0; j < rung.gates.count(); j++) {
-                Ladder.Gate ladderGate = rung.gates.get(j);
-                SVGRungElement svgGate;
-                var x = (j + 1) * (GATE_WIDTH + H_SPACING);
-
-                if (ladderGate.isOpen())
-                    svgGate = new SVGNOC(x, height, ladderGate.gate);
-                else
-                    svgGate = new SVGNCC(x, height, ladderGate.gate);
-
-                gates.add(svgGate);
-            }
-
-            var point = new Point2D.Double(GATE_WIDTH / 2, height - RUNG_HEIGHT - V_SPACING * 2);
-            SVGCoil coil = new SVGCoil(rung_length - GATE_WIDTH, height, rung.outputGates.stream().toList().get(0).gate); // todo
-                                                                                                                        // fix
-                                                                                                                        // this
-            Point2D.Double endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2,
-                    point.y);
-
-            // TODO: Ors
-
-            new SVGRung(height, point, endpoint, coil, gates).draw(svg);
+        if (mainRung){
+            coil = addOutputCoils(outputGates, height);
+        }
+        else {
+            point.x = GATE_WIDTH / 2;
+            point.y = height - RUNG_HEIGHT - V_SPACING * 2;
+            endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2, point.y);
         }
 
-        return svg;
+        new SVGRung(height, point, endpoint, coil, gates).draw(svg);
+        currentRungNumber++;
+    }
+
+    private static ArrayList<SVGRungElement> addGateSequence(Ladder.GateSequence gateSequence, double height){
+        var gates = new ArrayList<SVGRungElement>();
+
+        for (int j = 0; j < gateSequence.count(); j++) {
+            Ladder.Gate ladderGate = gateSequence.get(j);
+            SVGRungElement svgGate;
+            double x = (j + 1) * (GATE_WIDTH + H_SPACING);
+
+            svgGate = new SVGGate(x, height, ladderGate.gate, ladderGate.isOpen());
+            gates.add(svgGate);
+        }
+        return gates;
+    }
+
+    private static SVGCoil addOutputCoils(LinkedHashSet<Ladder.Gate> outputGates, double height){
+        return new SVGCoil(rung_length - GATE_WIDTH, height, outputGates.stream().toList().get(0).gate);// todo add all
     }
 
     /**
