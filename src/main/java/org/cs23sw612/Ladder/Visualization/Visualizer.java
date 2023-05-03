@@ -30,7 +30,7 @@ public class Visualizer {
      */
     public static final double END_SPACING_Y = H_SPACING * 5;
 
-    public static final double END_SPACING_X  = 40d;
+    public static final double END_SPACING_X = 40d;
     /**
      * The horizontal length of a gate on the rung.
      */
@@ -43,22 +43,21 @@ public class Visualizer {
     private static double rung_length = 0;
     private static int currentRungNumber = 1;
 
-
-    public static SVGGraphics2D layoutSVG(Ladder ladder){
+    public static SVGGraphics2D layoutSVG(Ladder ladder) {
         var svg = GenerateNewSVGFromLadderDimensions(ladder);
 
-        for (Ladder.Rung rung : ladder.rungs){
+        for (Ladder.Rung rung : ladder.rungs) {
             addRungsToSVG(rung.gates, svg, true, rung.outputGates);
-            for(Ladder.GateSequence orRung : rung.orRungs){
-                addRungsToSVG(orRung,svg, false, null);
+            for (Ladder.GateSequence orRung : rung.orRungs) {
+                addRungsToSVG(orRung, svg, false, null);
             }
         }
         return svg;
     }
 
-    private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder){
+    private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder) {
         int numberOfOrRungs = 0;
-        for (Ladder.Rung rung : ladder.rungs){
+        for (Ladder.Rung rung : ladder.rungs) {
             numberOfOrRungs += Math.max(rung.orRungs.size(), rung.outputGates.size());
         }
         double ladder_height = (ladder.rungs.size() + numberOfOrRungs) * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
@@ -72,7 +71,8 @@ public class Visualizer {
         return new SVGGraphics2D(rung_length + END_SPACING_X, ladder_height, SVGUnits.PX);
     }
 
-    private static void addRungsToSVG(Ladder.GateSequence gateSequence, SVGGraphics2D svg, boolean mainRung, LinkedHashSet<Ladder.Gate> outputGates){
+    private static void addRungsToSVG(Ladder.GateSequence gateSequence, SVGGraphics2D svg, boolean mainRung,
+            LinkedHashSet<Ladder.Gate> outputGates) {
         double height = (V_SPACING * 2 + RUNG_HEIGHT) * currentRungNumber;
         ArrayList<SVGRungElement> gates = addGateSequence(gateSequence, height);
 
@@ -80,10 +80,9 @@ public class Visualizer {
         ArrayList<SVGRungElement> coils = null;
         Point2D.Double endpoint = null;
 
-        if (mainRung){
+        if (mainRung) {
             coils = addOutputCoils(outputGates, height);
-        }
-        else {
+        } else {
             point.x = GATE_WIDTH / 2;
             point.y = height - RUNG_HEIGHT - V_SPACING * 2;
             endpoint = new Point2D.Double((GATE_WIDTH + H_SPACING) * (gates.size() + 1) + GATE_WIDTH / 2, point.y);
@@ -93,7 +92,7 @@ public class Visualizer {
         currentRungNumber++;
     }
 
-    private static ArrayList<SVGRungElement> addGateSequence(Ladder.GateSequence gateSequence, double height){
+    private static ArrayList<SVGRungElement> addGateSequence(Ladder.GateSequence gateSequence, double height) {
         var gates = new ArrayList<SVGRungElement>();
 
         for (int i = 0; i < gateSequence.count(); i++) {
@@ -106,11 +105,11 @@ public class Visualizer {
         return gates;
     }
 
-    private static ArrayList<SVGRungElement> addOutputCoils(LinkedHashSet<Ladder.Gate> outputGates, double height){
+    private static ArrayList<SVGRungElement> addOutputCoils(LinkedHashSet<Ladder.Gate> outputGates, double height) {
         ArrayList<SVGRungElement> coils = new ArrayList<>();
-        for (int i =0; i < outputGates.size(); i++){
+        for (int i = 0; i < outputGates.size(); i++) {
             Ladder.Gate outputGate = outputGates.stream().toList().get(i);
-            double y = height + (RUNG_HEIGHT + V_SPACING * 2) * i ;
+            double y = height + (RUNG_HEIGHT + V_SPACING * 2) * i;
             SVGRungElement svgCoil = new SVGCoil(rung_length - GATE_WIDTH, y, outputGate.gate);
             coils.add(svgCoil);
         }

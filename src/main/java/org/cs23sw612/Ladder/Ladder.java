@@ -38,11 +38,11 @@ public class Ladder {
         }
 
         private <IO extends Word<Boolean>> Rung(Triple<Word<Boolean>, Word<Boolean>, IO> eqVals) {
-            gates = new GateSequence(eqVals.getThird()); //Inputs added
+            gates = new GateSequence(eqVals.getThird()); // Inputs added
 
             int inputParam = 1;
             for (Boolean b : eqVals.getFirst())
-                gates.add(new Gate("S" + inputParam++, b)); //States added
+                gates.add(new Gate("S" + inputParam++, b)); // States added
 
             inputParam = 1;
             for (Boolean b : eqVals.getSecond()) {
@@ -111,7 +111,7 @@ public class Ladder {
         }
         @Override
         public String toString() {
-            return String.format("|%s%s|",open ? " " : "/", gate);
+            return String.format("|%s%s|", open ? " " : "/", gate);
         }
 
         @Override

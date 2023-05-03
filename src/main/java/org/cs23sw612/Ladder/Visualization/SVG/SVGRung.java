@@ -50,19 +50,18 @@ public class SVGRung {
         } else {
             path.lineTo(coils.get(0).x, coils.get(0).y);
             path.append(coils.get(0).getShape(), true);
-            svg.drawString(coils.get(0).text, (float) (coils.get(0).x + TEXT_OFFSET),
-                    (float) (coils.get(0).y - 20));
-            path.lineTo(path.getCurrentPoint().getX() + Visualizer.H_SPACING+10, coils.get(0).y);
+            svg.drawString(coils.get(0).text, (float) (coils.get(0).x + TEXT_OFFSET), (float) (coils.get(0).y - 20));
+            path.lineTo(path.getCurrentPoint().getX() + Visualizer.H_SPACING + 10, coils.get(0).y);
 
-            for(int i = 1; i < coils.size(); i++){
-                path.moveTo(coils.get(i-1).x - OUTPUT_START_SPACING, coils.get(i-1).y);
+            for (int i = 1; i < coils.size(); i++) {
+                path.moveTo(coils.get(i - 1).x - OUTPUT_START_SPACING, coils.get(i - 1).y);
                 path.lineTo(coils.get(i).x - OUTPUT_START_SPACING, coils.get(i).y);
                 path.lineTo(coils.get(i).x, coils.get(i).y);
                 path.append(coils.get(i).getShape(), true);
                 svg.drawString(coils.get(i).text, (float) (coils.get(i).x + TEXT_OFFSET),
                         (float) (coils.get(i).y - 20));
                 path.lineTo(coils.get(i).x + OUTPUT_END_SPACING, coils.get(i).y);
-                path.lineTo(coils.get(i-1).x + OUTPUT_END_SPACING, coils.get(i-1).y);
+                path.lineTo(coils.get(i - 1).x + OUTPUT_END_SPACING, coils.get(i - 1).y);
             }
         }
         svg.draw(path);

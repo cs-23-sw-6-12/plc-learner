@@ -16,7 +16,7 @@ public class SVGGate extends SVGRungElement {
         path.lineTo(x + 6.25, y);
         path.moveTo(x + 6.25, y - 15);
         path.lineTo(x + 6.25, y + 15);
-        if (!open){
+        if (!open) {
             path.moveTo(x + 6.45, y + 14.9);
             path.lineTo(x + 18.55, y - 14.9);
         }
