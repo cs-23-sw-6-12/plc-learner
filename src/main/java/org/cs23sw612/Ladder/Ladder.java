@@ -33,19 +33,19 @@ public class Ladder {
         public <IO extends Word<Boolean>> Rung(Equation<Word<Boolean>, IO, IO> equation) {
             this.outputGates.add(new Coil(convertState(equation.output)));
             for (Triple<Word<Boolean>, Word<Boolean>, IO> eqVals : equation.getFullList()) {
-                this.add(new Rung(eqVals));
+                this.add(new Rung(eqVals.getFirst(), eqVals.getSecond(), eqVals.getThird()));
             }
         }
 
-        private <IO extends Word<Boolean>> Rung(Triple<Word<Boolean>, Word<Boolean>, IO> eqVals) {
-            gates = new GateSequence(eqVals.getThird()); // Inputs added
+        private <IO extends Word<Boolean>> Rung(Word<Boolean> states, Word<Boolean> nextState, IO inputs) {
+            gates = new GateSequence(inputs); // Inputs added
 
             int inputParam = 1;
-            for (Boolean b : eqVals.getFirst())
+            for (Boolean b : states)
                 gates.add(new Gate("S" + inputParam++, b)); // States added
 
             inputParam = 1;
-            for (Boolean b : eqVals.getSecond()) {
+            for (Boolean b : nextState) {
                 if (b)
                     this.outputGates.add(new Coil("S" + inputParam++)); // Output states added
             }

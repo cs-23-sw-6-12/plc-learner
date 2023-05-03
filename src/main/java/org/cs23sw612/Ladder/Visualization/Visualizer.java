@@ -128,13 +128,6 @@ public class Visualizer {
         var svgDocumentString = svg.getSVGDocument();
         var imageURI = "data:image/svg+xml;charset=utf-8;base64,"
                 + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
-        // Maximum length of a URI in firefox, chrome has 2MB but firefox is the
-        // bottleneck
-        /*
-         * if (imageURI.length() < 65535) { try { showSVG(new URI(imageURI)); } catch
-         * (URISyntaxException e) { throw new RuntimeException("Invalid image URI", e);
-         * } return; }
-         */
 
         var tempfile = File.createTempFile("plc-learner-", "-ladder.svg");
 
