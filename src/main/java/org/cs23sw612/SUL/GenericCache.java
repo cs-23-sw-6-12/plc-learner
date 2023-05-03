@@ -23,7 +23,8 @@ public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
 
     final Logger logger = LoggerFactory.getLogger(GenericCache.class);
 
-    public GenericCache(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul) throws SQLException {
+    public GenericCache(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul)
+            throws SQLException {
         this.cacheStorage = cacheStorage;
         this.underlyingSul = underlyingSul;
         lastInputCacheRecordId = null;
@@ -68,7 +69,8 @@ public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
             cachedResponse = cacheStorage.InsertCacheEntry(lastInputCacheRecordId, input, responseString);
         }
 
-        var array = cachedResponse.response().chars().boxed().map(c -> (Integer) (c == '0' ? 0 : 1)).collect(Collectors.toList());
+        var array = cachedResponse.response().chars().boxed().map(c -> (Integer) (c == '0' ? 0 : 1))
+                .collect(Collectors.toList());
         response = Word.fromList(array);
         lastInputCacheRecordId = cachedResponse.id();
 

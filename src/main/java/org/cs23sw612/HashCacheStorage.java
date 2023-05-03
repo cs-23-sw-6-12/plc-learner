@@ -1,7 +1,6 @@
 package org.cs23sw612;
 
 import org.cs23sw612.Interfaces.CacheStorage;
-import org.cs23sw612.SUL.SULClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,8 @@ public class HashCacheStorage implements CacheStorage {
         var record = new CacheStorageRecord(idCounter++, output);
         map.put(createKey(previousInputId, input), record);
         try {
-            outputStream.write(String.format("%d,%s,%s,%s\n", record.id(), input, record.response(), previousInputId == null ? "null" : previousInputId.toString()));
+            outputStream.write(String.format("%d,%s,%s,%s\n", record.id(), input, record.response(),
+                    previousInputId == null ? "null" : previousInputId.toString()));
             outputStream.flush();
         } catch (IOException e) {
             logger.warn("Could not append to cache file: {}", e.getMessage());
