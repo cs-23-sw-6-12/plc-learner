@@ -9,7 +9,7 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
 
-public class CompleteExplorationOracleFactory implements OracleFactory {
+public class CompleteExplorationOracleFactory implements OracleFactory<Word<Integer>, Word<Integer>> {
     @Override
     public String getName() {
         return "complete-exploration";

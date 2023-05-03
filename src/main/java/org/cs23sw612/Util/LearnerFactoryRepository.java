@@ -5,6 +5,7 @@ import org.cs23sw612.LearnerFactories.DHCLearnerFactory;
 import org.cs23sw612.LearnerFactories.LStarLearnerFactory;
 import org.cs23sw612.LearnerFactories.TTTLearnerFactory;
 
+import java.nio.file.ProviderNotFoundException;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
@@ -25,8 +26,13 @@ public class LearnerFactoryRepository<I, O> {
         factories.put(factory.getName().toLowerCase(), factory);
     }
 
-    public MealyLearnerFactory<I, O> getLearnerFactory(String name) {
-        return factories.get(name.toLowerCase());
+    public MealyLearnerFactory<I, O> getLearnerFactory(String name) throws ProviderNotFoundException {
+        var factory = factories.get(name.toLowerCase());
+
+        if (factory == null)
+            throw new ProviderNotFoundException("Learner " + name + " was not present in the repository");
+
+        return factory;
     }
 
     public Stream<String> getLearnerNames() {
