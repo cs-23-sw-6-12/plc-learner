@@ -1,7 +1,6 @@
 package org.cs23sw612.commands;
 
 import de.learnlib.api.SUL;
-import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.graphs.Graph;
@@ -11,14 +10,18 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
+import org.cs23sw612.HashCacheStorage;
 import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
+import org.cs23sw612.SUL.GenericCache;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
 
@@ -113,12 +116,12 @@ public class LearnCommand implements Callable<Integer> {
         SUL<Word<Integer>, Word<Integer>> finalSul = null;
 
         if (cacheSul) {
-            finalSul = SULCache.createTreeCache(alphabet, bajerSul);
+            finalSul = new GenericCache(new HashCacheStorage(new File("bob.csv")), bajerSul);
         } else {
             finalSul = bajerSul;
         }
 
-        var oracle = oracleRepository.getLearnerFactory(oracleName).createOracle(finalSul,
+        var oracle = oracleRepository.getOracleFactory(oracleName).createOracle(finalSul,
                 new OracleConfig(maxSteps, restartProbability, depth));
 
         if (oracle == null) {
