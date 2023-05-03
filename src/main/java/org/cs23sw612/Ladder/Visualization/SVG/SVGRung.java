@@ -1,5 +1,6 @@
 package org.cs23sw612.Ladder.Visualization.SVG;
 
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.jfree.svg.SVGGraphics2D;
 
 import java.awt.geom.Path2D;
@@ -13,17 +14,19 @@ public class SVGRung {
      */
     private final static double TEXT_OFFSET = 7d;
     private final List<SVGRungElement> gates;
-    private final SVGRungElement coil;
+    private final List<SVGRungElement> coils;
     private final Point2D.Double attachmentPoint;
     private final Point2D.Double endAttachmentPoint;
+    private final double OUTPUT_END_SPACING = Visualizer.GATE_WIDTH + Visualizer.H_SPACING;
+    private final double OUTPUT_START_SPACING = Visualizer.H_SPACING;
 
     public SVGRung(double height, Point2D.Double startAttachmentPoint, Point2D.Double endAttachmentPoint,
-            SVGRungElement coil, List<SVGRungElement> gates) {
+            List<SVGRungElement> coils, List<SVGRungElement> gates) {
         this.height = height;
         this.attachmentPoint = startAttachmentPoint;
         this.endAttachmentPoint = endAttachmentPoint;
         this.gates = gates;
-        this.coil = coil;
+        this.coils = coils;
     }
 
     /**
@@ -45,9 +48,22 @@ public class SVGRung {
             path.lineTo(endAttachmentPoint.x, height);
             path.lineTo(endAttachmentPoint.x, endAttachmentPoint.y);
         } else {
-            path.lineTo(coil.x, coil.y);
-            path.append(coil.getShape(), true);
-            svg.drawString(coil.text, (float) (coil.x + TEXT_OFFSET), (float) (coil.y - 20));
+            path.lineTo(coils.get(0).x, coils.get(0).y);
+            path.append(coils.get(0).getShape(), true);
+            svg.drawString(coils.get(0).text, (float) (coils.get(0).x + TEXT_OFFSET),
+                    (float) (coils.get(0).y - 20));
+            path.lineTo(path.getCurrentPoint().getX() + Visualizer.H_SPACING+10, coils.get(0).y);
+
+            for(int i = 1; i < coils.size(); i++){
+                path.moveTo(coils.get(i-1).x - OUTPUT_START_SPACING, coils.get(i-1).y);
+                path.lineTo(coils.get(i).x - OUTPUT_START_SPACING, coils.get(i).y);
+                path.lineTo(coils.get(i).x, coils.get(i).y);
+                path.append(coils.get(i).getShape(), true);
+                svg.drawString(coils.get(i).text, (float) (coils.get(i).x + TEXT_OFFSET),
+                        (float) (coils.get(i).y - 20));
+                path.lineTo(coils.get(i).x + OUTPUT_END_SPACING, coils.get(i).y);
+                path.lineTo(coils.get(i-1).x + OUTPUT_END_SPACING, coils.get(i-1).y);
+            }
         }
         svg.draw(path);
     }
