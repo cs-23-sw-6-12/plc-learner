@@ -122,7 +122,7 @@ public class LearnCommand implements Callable<Integer> {
         if (noCache) {
             finalSul = bajerSul;
         } else {
-            finalSul = new GenericCache(new HashCacheStorage(new File("bob.csv")), bajerSul);
+            finalSul = new GenericCache(new HashCacheStorage(new File(cacheFilePath)), bajerSul);
         }
 
         var oracle = oracleRepository.getOracleFactory(oracleName).createOracle(finalSul,
