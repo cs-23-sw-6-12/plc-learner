@@ -57,6 +57,12 @@ public class Visualizer {
                 addRungsToSVG(orRung, svg, false, null);
             }
         }
+        for (Ladder.Rung rung : ladder.stateUpd) {
+            addRungsToSVG(rung.gates, svg, true, rung.outputGates);
+            for (Ladder.GateSequence orRung : rung.orRungs) {
+                addRungsToSVG(orRung, svg, false, null);
+            }
+        }
         return svg;
     }
 
@@ -66,12 +72,15 @@ public class Visualizer {
         int numberOfOrRungs = ladder.outRungs.stream().reduce(0,
                 (i, r) -> Math.max(r.orRungs.size(), r.outputGates.size()) + i, Integer::sum)
                 + ladder.stateRungs.stream().reduce(0, (i, r) -> Math.max(r.orRungs.size(), r.outputGates.size()) + i,
+                        Integer::sum)
+                + ladder.stateUpd.stream().reduce(0, (i, r) -> Math.max(r.orRungs.size(), r.outputGates.size()) + i,
                         Integer::sum);
 
-        rung_length = Math.max(
+        rung_length = Math.max(Math.max(
                 ladder.outRungs.stream().reduce(0.0, (i, r) -> Math.max(i, calc.apply(r.gates.count())), Double::sum),
                 ladder.stateRungs.stream().reduce(0.0, (i, r) -> Math.max(i, calc.apply(r.gates.count())),
-                        Double::sum));
+                        Double::sum)),
+                ladder.stateUpd.stream().reduce(0.0, (i, r) -> Math.max(i, calc.apply(r.gates.count())), Double::sum));
 
         double ladder_height = (ladder.outRungs.size() + ladder.stateRungs.size() + numberOfOrRungs)
                 * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
