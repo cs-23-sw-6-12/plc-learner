@@ -59,6 +59,10 @@ public class LearnCommand implements Callable<Integer> {
             "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String cacheFilePath;
 
+    @CommandLine.Option(names = {"--no-cache",
+            "-nc"}, description = "disable cache", defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private boolean noCache;
+
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
     private String oracleName;
@@ -115,7 +119,11 @@ public class LearnCommand implements Callable<Integer> {
 
         SUL<Word<Integer>, Word<Integer>> finalSul = null;
 
-        finalSul = new GenericCache(new HashCacheStorage(new File(cacheFilePath)), bajerSul);
+        if (noCache) {
+            finalSul = bajerSul;
+        } else {
+            finalSul = new GenericCache(new HashCacheStorage(new File("bob.csv")), bajerSul);
+        }
 
         var oracle = oracleRepository.getOracleFactory(oracleName).createOracle(finalSul,
                 new OracleConfig(maxSteps, restartProbability, depth));
