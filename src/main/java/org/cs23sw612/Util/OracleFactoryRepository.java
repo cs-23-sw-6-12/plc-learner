@@ -1,6 +1,7 @@
 package org.cs23sw612.Util;
 
 import org.cs23sw612.Interfaces.OracleFactory;
+import org.cs23sw612.OracleFactories.CompleteExplorationOracleFactory;
 import org.cs23sw612.OracleFactories.RandomWalkOracleFactory;
 
 import java.nio.file.ProviderNotFoundException;
@@ -18,6 +19,7 @@ public class OracleFactoryRepository<I, O> {
 
     public void addDefaultFactories() {
         addFactory(new RandomWalkOracleFactory());
+        addFactory(new CompleteExplorationOracleFactory());
     }
 
     public void addFactory(OracleFactory<I, O> factory) {

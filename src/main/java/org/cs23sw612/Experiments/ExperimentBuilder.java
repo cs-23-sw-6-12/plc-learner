@@ -1,12 +1,12 @@
 package org.cs23sw612.Experiments;
 
 import de.learnlib.api.SUL;
-import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.membership.SULOracle;
 import net.automatalib.words.Alphabet;
 import org.cs23sw612.Interfaces.MealyLearnerFactory;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
+import org.cs23sw612.Util.CacheFactoryRepository;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
 
@@ -47,8 +47,8 @@ public class ExperimentBuilder<I, O> {
         return withLearner(learnerRepository.getLearnerFactory(learnerName));
     }
 
-    public ExperimentBuilder<I, O> withCache() {
-        this.sul = SULCache.createTreeCache(alphabet, sul);
+    public ExperimentBuilder<I, O> withCache(String cachePath) {
+        this.sul = CacheFactoryRepository.getCacheSULFactory().create(cachePath, sul);
         return this;
     }
 

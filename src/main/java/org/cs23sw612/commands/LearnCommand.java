@@ -74,9 +74,17 @@ public class LearnCommand implements Callable<Integer> {
             "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
-    @CommandLine.Option(names = {
-            "--no-cache"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private boolean cacheSul;
+    @CommandLine.Option(names = {"--benchmark",
+            "-b"}, description = "Measure performance metrics and print them when learning has finished")
+    private boolean benchmark;
+
+    @CommandLine.Option(names = {"--cache",
+            "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private String cacheFilePath;
+
+    @CommandLine.Option(names = {"--no-cache",
+            "-nc"}, description = "disable cache", defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private boolean noCache;
 
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
@@ -108,8 +116,8 @@ public class LearnCommand implements Callable<Integer> {
                 .withConfiguration(maxSteps, restartProbability, depth).withLearner(learnerRepository, learnerName)
                 .outputDOT(outputFileName);
 
-        if (cacheSul) {
-            experimentBuilder = experimentBuilder.withCache();
+        if (!noCache) {
+            experimentBuilder = experimentBuilder.withCache(cacheFilePath);
         }
 
         if (visualize) {
