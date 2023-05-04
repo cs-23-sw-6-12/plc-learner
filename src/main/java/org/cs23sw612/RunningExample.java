@@ -23,17 +23,11 @@ import org.cs23sw612.SUL.ExampleSUL;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.function.Consumer;
 
 public class RunningExample {
-
-    // private static final Alphabet<Word<Boolean>> alphabet =
-    // AlphabetUtil.createAlphabet(2);
     private static void p(Object s) {
         System.out.println(s);
     }
-    private static Consumer<? super Object> p = System.out::println;
-
     public static void main(String[] args) throws IOException {
         CompactMealy<Word<Boolean>, Object> example = ExampleSUL.createExample();
         Alphabet<Word<Boolean>> alphabet = ExampleSUL.alphabet;
@@ -76,8 +70,6 @@ public class RunningExample {
         p("TTT (Sp & DT):");
         actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getHypothesisDS(), actualDT);
-        // p(actualDT);
-        // actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getDiscriminationTree(), actualDT);
         p(actualDT);
 
@@ -94,7 +86,8 @@ public class RunningExample {
 
         p("Rungs:");
         var ladder = new Ladder(ec);
-        ladder.rungs.forEach(System.out::print);
+        ladder.outRungs.forEach(System.out::print);
+        ladder.stateRungs.forEach(System.out::print);
 
         var visualizedSvg = Visualizer.layoutSVG(ladder);
 

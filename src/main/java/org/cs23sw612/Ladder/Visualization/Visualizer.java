@@ -11,10 +11,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.LinkedHashSet;
+import java.util.function.Function;
 
 public class Visualizer {
     /**
@@ -46,7 +45,13 @@ public class Visualizer {
     public static SVGGraphics2D layoutSVG(Ladder ladder) {
         var svg = GenerateNewSVGFromLadderDimensions(ladder);
 
-        for (Ladder.Rung rung : ladder.rungs) {
+        for (Ladder.Rung rung : ladder.outRungs) {
+            addRungsToSVG(rung.gates, svg, true, rung.outputGates);
+            for (Ladder.GateSequence orRung : rung.orRungs) {
+                addRungsToSVG(orRung, svg, false, null);
+            }
+        }
+        for (Ladder.Rung rung : ladder.stateRungs) {
             addRungsToSVG(rung.gates, svg, true, rung.outputGates);
             for (Ladder.GateSequence orRung : rung.orRungs) {
                 addRungsToSVG(orRung, svg, false, null);
@@ -56,18 +61,21 @@ public class Visualizer {
     }
 
     private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder) {
-        int numberOfOrRungs = 0;
-        for (Ladder.Rung rung : ladder.rungs) {
-            numberOfOrRungs += Math.max(rung.orRungs.size(), rung.outputGates.size());
-        }
-        double ladder_height = (ladder.rungs.size() + numberOfOrRungs) * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
+        Function<Integer, Double> calc = (i) -> i * (GATE_WIDTH + H_SPACING) + END_SPACING_Y + GATE_WIDTH;
 
-        rung_length = 0;
-        for (Ladder.Rung rung : ladder.rungs) {
-            double len = rung.gates.count() * (GATE_WIDTH + H_SPACING) + END_SPACING_Y + GATE_WIDTH;
-            if (rung_length < len)
-                rung_length = len;
-        }
+        int numberOfOrRungs = ladder.outRungs.stream().reduce(0,
+                (i, r) -> Math.max(r.orRungs.size(), r.outputGates.size()) + i, Integer::sum)
+                + ladder.stateRungs.stream().reduce(0, (i, r) -> Math.max(r.orRungs.size(), r.outputGates.size()) + i,
+                        Integer::sum);
+
+        rung_length = Math.max(
+                ladder.outRungs.stream().reduce(0.0, (i, r) -> Math.max(i, calc.apply(r.gates.count())), Double::sum),
+                ladder.stateRungs.stream().reduce(0.0, (i, r) -> Math.max(i, calc.apply(r.gates.count())),
+                        Double::sum));
+
+        double ladder_height = (ladder.outRungs.size() + ladder.stateRungs.size() + numberOfOrRungs)
+                * (RUNG_HEIGHT + V_SPACING * 2) + V_SPACING;
+
         return new SVGGraphics2D(rung_length + END_SPACING_X, ladder_height, SVGUnits.PX);
     }
 
@@ -99,7 +107,7 @@ public class Visualizer {
             Ladder.Gate ladderGate = gateSequence.get(i);
             SVGRungElement svgGate;
             double x = (i + 1) * (GATE_WIDTH + H_SPACING);
-            svgGate = new SVGGate(x, height, ladderGate.gate, ladderGate.isOpen());
+            svgGate = new SVGGate(x, height, ladderGate.getSymbol(), ladderGate.open());
             gates.add(svgGate);
         }
         return gates;
@@ -110,14 +118,14 @@ public class Visualizer {
         for (int i = 0; i < outputGates.size(); i++) {
             Ladder.Gate outputGate = outputGates.stream().toList().get(i);
             double y = height + (RUNG_HEIGHT + V_SPACING * 2) * i;
-            SVGRungElement svgCoil = new SVGCoil(rung_length - GATE_WIDTH, y, outputGate.gate);
+            SVGRungElement svgCoil = new SVGCoil(rung_length - GATE_WIDTH, y, outputGate.getSymbol());
             coils.add(svgCoil);
         }
         return coils;
     }
 
     /**
-     * Show an svg in the browser or, if that fails, your default svg-application.
+     * Show a svg in the browser or, if that fails, your default svg-application.
      *
      * @param svg
      *            The svg to display.
@@ -125,10 +133,6 @@ public class Visualizer {
      *             If the SVG file could not be created.
      */
     public static void showSVG(SVGGraphics2D svg) throws IOException {
-        var svgDocumentString = svg.getSVGDocument();
-        var imageURI = "data:image/svg+xml;charset=utf-8;base64,"
-                + Base64.getEncoder().encodeToString(svgDocumentString.getBytes(StandardCharsets.UTF_8));
-
         var tempfile = File.createTempFile("plc-learner-", "-ladder.svg");
 
         var tempFileWriter = new FileWriter(tempfile);
