@@ -16,16 +16,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class PLCExperimentImpl<I, O> implements IPLCExperiment<I, O> {
+public class PLCExperimentImpl implements IPLCExperiment {
 
-    private final Alphabet<I> alphabet;
+    private final Alphabet<Word<Integer>> alphabet;
     private final String outputFileName;
     private final boolean visualize;
     private final Logger logger;
 
-    public PLCExperimentImpl(LearningAlgorithm<? extends MealyMachine<?, I, ?, O>, I, Word<O>> learningAlgorithm,
-            EquivalenceOracle<? super MealyMachine<?, I, ?, O>, I, Word<O>> equivalenceOracle, Alphabet<I> alphabet,
-            String outputFileName, boolean visualize) {
+    public PLCExperimentImpl(
+            LearningAlgorithm<? extends MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> learningAlgorithm,
+            EquivalenceOracle<? super MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> equivalenceOracle,
+            Alphabet<Word<Integer>> alphabet, String outputFileName, boolean visualize) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
         this.visualize = visualize;
@@ -33,7 +34,7 @@ public class PLCExperimentImpl<I, O> implements IPLCExperiment<I, O> {
         this.experiment = new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }
 
-    private final Experiment.MealyExperiment<I, O> experiment;
+    private final Experiment.MealyExperiment<Word<Integer>, Word<Integer>> experiment;
 
     @Override
     public void run() {
@@ -49,7 +50,7 @@ public class PLCExperimentImpl<I, O> implements IPLCExperiment<I, O> {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void saveResultAsDot(MealyMachine<?, I, ?, O> result) {
+    private void saveResultAsDot(MealyMachine<?, Word<Integer>, ?, Word<Integer>> result) {
         FileOutputStream outFile;
         try {
             outFile = new FileOutputStream(outputFileName);

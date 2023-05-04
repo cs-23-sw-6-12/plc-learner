@@ -74,10 +74,6 @@ public class LearnCommand implements Callable<Integer> {
             "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
-    @CommandLine.Option(names = {"--benchmark",
-            "-b"}, description = "Measure performance metrics and print them when learning has finished")
-    private boolean benchmark;
-
     @CommandLine.Option(names = {"--cache",
             "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String cacheFilePath;
@@ -136,8 +132,7 @@ public class LearnCommand implements Callable<Integer> {
         return 0;
     }
 
-    private ExperimentBuilder<Word<Integer>, Word<Integer>> getExperimentBuilder(LearnCommand.SULSource source)
-            throws IOException {
+    private ExperimentBuilder getExperimentBuilder(LearnCommand.SULSource source) throws IOException {
         Alphabet<Word<Integer>> alphabet;
         SUL<Word<Integer>, Word<Integer>> sul;
 
@@ -159,7 +154,7 @@ public class LearnCommand implements Callable<Integer> {
             sul = new SULClient<>(bajerClient, new IntegerWordInputAdapter(), new IntegerWordOutputAdapter(),
                     (byte) source.connectionOptions.inputCount, (byte) source.connectionOptions.outputCount);
         }
-        return new ExperimentBuilder<>(sul, alphabet);
+        return new ExperimentBuilder(sul, alphabet);
     }
 
 }

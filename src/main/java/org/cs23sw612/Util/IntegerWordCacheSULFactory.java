@@ -7,7 +7,7 @@ import org.cs23sw612.SUL.IntegerWordCacheSUL;
 
 import java.io.File;
 
-public class IntegerWordCacheSULFactory extends CacheSULFactory<Word<Integer>, Word<Integer>> {
+public class IntegerWordCacheSULFactory extends CacheSULFactory {
 
     public static SUL<Word<Integer>, Word<Integer>> create(String cachePath, SUL<Word<Integer>, Word<Integer>> sul) {
         return new IntegerWordCacheSUL(new HashCacheStorage(new File(cachePath)), sul);

@@ -2,6 +2,7 @@ package org.cs23sw612.Experiments;
 
 import de.learnlib.api.SUL;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 import org.cs23sw612.Experiments.Util.Benchmark.BenchmarkResult;
 import org.cs23sw612.Experiments.Util.Benchmark.EQStatisticsOracle;
 import org.cs23sw612.Experiments.Util.Benchmark.MQStatisticsOracle;
@@ -11,18 +12,20 @@ import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
 import org.cs23sw612.Util.Stopwatch;
 
-public class BenchmarkExperiment<I, O> implements IPLCExperiment<I, O> {
+public class BenchmarkExperiment implements IPLCExperiment {
 
-    private final SUL<I, O> sul;
-    private final MealyLearnerFactory<I, O> learnerFactory;
-    private final OracleFactory<I, O> oracleFactory;
+    private final SUL<Word<Integer>, Word<Integer>> sul;
+    private final MealyLearnerFactory<Word<Integer>, Word<Integer>> learnerFactory;
+    private final OracleFactory<Word<Integer>, Word<Integer>> oracleFactory;
     private final OracleConfig config;
-    Alphabet<I> alphabet;
+    Alphabet<Word<Integer>> alphabet;
     private final int repetitions;
     private final int warmupRounds;
 
-    public BenchmarkExperiment(MealyLearnerFactory<I, O> learnerFactory, OracleFactory<I, O> oracleFactory,
-            OracleConfig config, SUL<I, O> sul, Alphabet<I> alphabet, int repetitions, int warmupRounds) {
+    public BenchmarkExperiment(MealyLearnerFactory<Word<Integer>, Word<Integer>> learnerFactory,
+            OracleFactory<Word<Integer>, Word<Integer>> oracleFactory, OracleConfig config,
+            SUL<Word<Integer>, Word<Integer>> sul, Alphabet<Word<Integer>> alphabet, int repetitions,
+            int warmupRounds) {
         this.learnerFactory = learnerFactory;
         this.oracleFactory = oracleFactory;
         this.config = config;
@@ -55,7 +58,7 @@ public class BenchmarkExperiment<I, O> implements IPLCExperiment<I, O> {
         var learningAlgorithm = learnerFactory.createLearner(alphabet, sulOracle);
         var equivalenceOracle = oracleFactory.createOracle(sul, config);
         var eqStatOracle = new EQStatisticsOracle<>(equivalenceOracle);
-        var experiment = new PLCExperimentImpl<>(learningAlgorithm, eqStatOracle, alphabet, null, false);
+        var experiment = new PLCExperimentImpl(learningAlgorithm, eqStatOracle, alphabet, null, false);
 
         Stopwatch experimentTimer = new Stopwatch();
         experimentTimer.start();

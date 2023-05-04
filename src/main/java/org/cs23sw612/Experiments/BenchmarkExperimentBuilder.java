@@ -2,16 +2,17 @@ package org.cs23sw612.Experiments;
 
 import de.learnlib.api.SUL;
 import net.automatalib.words.Alphabet;
+import net.automatalib.words.Word;
 
-public class BenchmarkExperimentBuilder<I, O> extends ExperimentBuilder<I, O> {
+public class BenchmarkExperimentBuilder extends ExperimentBuilder {
     private int runs;
     private int warmup_rounds;
 
-    public BenchmarkExperimentBuilder(SUL<I, O> sul, Alphabet<I> alphabet) {
+    public BenchmarkExperimentBuilder(SUL<Word<Integer>, Word<Integer>> sul, Alphabet<Word<Integer>> alphabet) {
         super(sul, alphabet);
     }
 
-    public BenchmarkExperimentBuilder(ExperimentBuilder<I, O> experimentBuilder) {
+    public BenchmarkExperimentBuilder(ExperimentBuilder experimentBuilder) {
         super(experimentBuilder.sul, experimentBuilder.alphabet);
         this.learnerFactory = experimentBuilder.learnerFactory;
         this.oracleFactory = experimentBuilder.oracleFactory;
@@ -20,19 +21,19 @@ public class BenchmarkExperimentBuilder<I, O> extends ExperimentBuilder<I, O> {
         this.visualize = experimentBuilder.visualize;
     }
 
-    public BenchmarkExperimentBuilder<I, O> withRunAmount(int runs) {
+    public BenchmarkExperimentBuilder withRunAmount(int runs) {
         this.runs = runs;
         return this;
     }
 
-    public BenchmarkExperimentBuilder<I, O> withWarmupRounds(int runs) {
+    public BenchmarkExperimentBuilder withWarmupRounds(int runs) {
         warmup_rounds = runs;
         return this;
     }
 
     @Override
-    public BenchmarkExperiment<I, O> build() {
-        return new BenchmarkExperiment<>(this.learnerFactory, this.oracleFactory, this.EqOracleConfig, this.sul,
+    public BenchmarkExperiment build() {
+        return new BenchmarkExperiment(this.learnerFactory, this.oracleFactory, this.EqOracleConfig, this.sul,
                 this.alphabet, runs, warmup_rounds);
     }
 }
