@@ -23,8 +23,7 @@ public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
 
     final Logger logger = LoggerFactory.getLogger(GenericCache.class);
 
-    public GenericCache(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul)
-            throws SQLException {
+    public GenericCache(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul) {
         this.cacheStorage = cacheStorage;
         this.underlyingSul = underlyingSul;
         lastInputCacheRecordId = null;
