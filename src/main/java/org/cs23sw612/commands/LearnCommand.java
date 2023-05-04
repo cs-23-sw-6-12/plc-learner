@@ -5,6 +5,7 @@ import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.graphs.Graph;
 import net.automatalib.serialization.dot.DOTSerializationProvider;
+import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
@@ -30,53 +31,72 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
 public class LearnCommand implements Callable<Integer> {
+    @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "0", description = "Number of inputs")
     private int inputCount;
 
+    @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "1", description = "Number of outputs")
     private int outputCount;
 
+    @SuppressWarnings("unused")
     @CommandLine.Parameters(index = "2", description = "BAjER server address")
     private String bajerServerAddress;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--port",
             "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private int bajerServerPort;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--learner",
             "-l"}, description = "Learner to use (case insensitive)", defaultValue = "DHC", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String learnerName;
 
-    @CommandLine.Option(names = {"--visualize", "-v"}, description = "Visualize the automaton when done")
-    private boolean visualize;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--visualize-machine", "-vm"}, description = "Visualize the automaton when done")
+    private boolean visualizeMachine;
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--visualize-ladder", "-vl"}, description = "Visualize the ladder program when done")
+    private boolean visualizeLadder;
+
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--out",
             "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--benchmark",
             "-b"}, description = "Measure performance metrics and print them when learning has finished")
     private boolean benchmark;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--cache",
             "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String cacheFilePath;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--no-cache",
             "-nc"}, description = "disable cache", defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private boolean noCache;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
     private String oracleName;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--max-steps",
             "-n"}, description = "Sets the max steps when using the random walk oracle", defaultValue = "10000")
     private Integer maxSteps;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {
             "--restart-probability"}, description = "Sets the restart probability when using the random walk oracle", defaultValue = "0.05")
     private Double restartProbability;
+
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--depth",
             "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
     private Integer depth;
@@ -120,7 +140,7 @@ public class LearnCommand implements Callable<Integer> {
             bajerSul = bajerMetricsSul;
         }
 
-        SUL<Word<Integer>, Word<Integer>> finalSul = null;
+        SUL<Word<Integer>, Word<Integer>> finalSul;
 
         if (noCache) {
             finalSul = bajerSul;
@@ -177,13 +197,14 @@ public class LearnCommand implements Callable<Integer> {
             System.out.format("longest word during experiment: %s\n", bajerMetricsSul.getLongestWordLength());
         }
 
-        if (visualize) {
+        if (visualizeMachine) {
+            Visualization.visualize(result, alphabet);
+        }
+
+        if (visualizeLadder) {
             try {
-                var equationCollection = new EquationCollection(result, alphabet);
-                var ladder = new Ladder(equationCollection);
-
+                var ladder = new Ladder(new EquationCollection(result, alphabet));
                 var ladderSvg = Visualizer.layoutSVG(ladder);
-
                 Visualizer.showSVG(ladderSvg);
             } catch (Exception ex) {
                 System.err.println("Could not visualize the given model");

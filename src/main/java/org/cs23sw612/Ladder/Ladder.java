@@ -126,7 +126,7 @@ public class Ladder {
             return new Gate(symbol, true);
         }
 
-        public String getSymbol(){
+        public String getSymbol() {
             return gate;
         }
 
