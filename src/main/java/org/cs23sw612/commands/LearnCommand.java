@@ -56,8 +56,8 @@ public class LearnCommand implements Callable<Integer> {
     private boolean benchmark;
 
     @CommandLine.Option(names = {"--cache",
-            "-c"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private boolean cacheSul;
+            "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private String cacheFilePath;
 
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
@@ -115,11 +115,7 @@ public class LearnCommand implements Callable<Integer> {
 
         SUL<Word<Integer>, Word<Integer>> finalSul = null;
 
-        if (cacheSul) {
-            finalSul = new GenericCache(new HashCacheStorage(new File("bob.csv")), bajerSul);
-        } else {
-            finalSul = bajerSul;
-        }
+        finalSul = new GenericCache(new HashCacheStorage(new File(cacheFilePath)), bajerSul);
 
         var oracle = oracleRepository.getOracleFactory(oracleName).createOracle(finalSul,
                 new OracleConfig(maxSteps, restartProbability, depth));
