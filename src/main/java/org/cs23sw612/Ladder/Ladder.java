@@ -10,17 +10,15 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class Ladder {
-    public ArrayList<Rung> outRungs, stateRungs;
+    public final ArrayList<Rung> outRungs, stateRungs;
 
     public <S extends Number, IO extends Word<Boolean>, T extends CompactMealyTransition<? super IO>> Ladder(
             EquationCollection<S, IO, T, IO, ? extends TransitionOutputAutomaton<S, IO, T, ? super IO>, Alphabet<IO>> ec) {
-        // outRungs = new ArrayList<>();
         SnoopDoggContainer snoop = new SnoopDoggContainer();
 
-        for (Equation<Word<Boolean>, IO, IO> equation : ec) {
-            // outRungs.add(new Rung(equation));
+        for (Equation<Word<Boolean>, IO, IO> equation : ec)
             snoop.add(equation);
-        }
+
         outRungs = snoop.getOutRungs();
         stateRungs = snoop.getStateRungs();
     }
