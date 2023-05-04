@@ -13,8 +13,6 @@ import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -24,7 +22,6 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
 public class LearnCommand implements Callable<Integer> {
 
-    private final Logger logger;
     @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
     private SULSource source;
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "0..1")
@@ -103,12 +100,10 @@ public class LearnCommand implements Callable<Integer> {
             OracleFactoryRepository<Word<Integer>, Word<Integer>> oracleRepository) {
         this.learnerRepository = learnerRepository;
         this.oracleRepository = oracleRepository;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     @Override
     public Integer call() throws Exception {
-
         var experimentBuilder = getExperimentBuilder(source).withOracle(oracleRepository, oracleName)
                 .withConfiguration(maxSteps, restartProbability, depth).withLearner(learnerRepository, learnerName)
                 .outputDOT(outputFileName);
