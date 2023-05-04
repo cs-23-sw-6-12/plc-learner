@@ -1,6 +1,7 @@
 package org.cs23sw612.Util;
 
 import org.cs23sw612.Interfaces.OracleFactory;
+import org.cs23sw612.OracleFactories.CompleteExplorationOracleFactory;
 import org.cs23sw612.OracleFactories.RandomWalkOracleFactory;
 
 import java.util.HashMap;
@@ -17,13 +18,14 @@ public class OracleRepository {
 
     public void addDefaultFactories() {
         addFactory(new RandomWalkOracleFactory());
+        addFactory(new CompleteExplorationOracleFactory());
     }
 
     public void addFactory(OracleFactory factory) {
         oracleFactories.put(factory.getName().toLowerCase(), factory);
     }
 
-    public OracleFactory getLearnerFactory(String name) {
+    public OracleFactory getOracleFactory(String name) {
         return oracleFactories.get(name.toLowerCase());
     }
 

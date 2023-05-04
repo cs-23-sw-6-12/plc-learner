@@ -1,7 +1,6 @@
 package org.cs23sw612.commands;
 
 import de.learnlib.api.SUL;
-import de.learnlib.filter.cache.sul.SULCache;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.graphs.Graph;
@@ -10,17 +9,21 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Adapters.Input.IntegerWordInputAdapter;
 import org.cs23sw612.Adapters.Output.IntegerWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
+import org.cs23sw612.HashCacheStorage;
 import org.cs23sw612.Ladder.EquationCollection;
 import org.cs23sw612.Ladder.Ladder;
 import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
+import org.cs23sw612.SUL.GenericCache;
 import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleRepository;
 import org.cs23sw612.Util.Stopwatch;
 import picocli.CommandLine;
+
+import java.io.File;
 
 import java.io.FileOutputStream;
 import java.util.concurrent.Callable;
@@ -56,8 +59,12 @@ public class LearnCommand implements Callable<Integer> {
     private boolean benchmark;
 
     @CommandLine.Option(names = {"--cache",
-            "-c"}, description = "Cache experiment results from BAjER, improves performance when learner queries the same string multiple times", defaultValue = "true", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private boolean cacheSul;
+            "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private String cacheFilePath;
+
+    @CommandLine.Option(names = {"--no-cache",
+            "-nc"}, description = "disable cache", defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private boolean noCache;
 
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
@@ -115,13 +122,13 @@ public class LearnCommand implements Callable<Integer> {
 
         SUL<Word<Integer>, Word<Integer>> finalSul = null;
 
-        if (cacheSul) {
-            finalSul = SULCache.createTreeCache(alphabet, bajerSul);
-        } else {
+        if (noCache) {
             finalSul = bajerSul;
+        } else {
+            finalSul = new GenericCache(new HashCacheStorage(new File(cacheFilePath)), bajerSul);
         }
 
-        var oracle = oracleRepository.getLearnerFactory(oracleName).createOracle(finalSul,
+        var oracle = oracleRepository.getOracleFactory(oracleName).createOracle(finalSul,
                 new OracleConfig(maxSteps, restartProbability, depth));
 
         if (oracle == null) {
