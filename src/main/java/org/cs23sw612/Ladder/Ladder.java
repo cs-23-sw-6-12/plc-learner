@@ -27,8 +27,9 @@ public class Ladder {
     private static class SnoopDoggContainer {
         private final HashMap<Integer, ArrayList<GateSequence>> outs, states;
         private ArrayList<Rung> outRungs = null, stateRungs = null;
-        private final ArrayList<Rung> stateUpd = null;
-        int stateCount = 0;
+        private ArrayList<Rung> stateUpd = null;
+        private int stateCount = 0;
+        private boolean checked = false;
 
         public SnoopDoggContainer() {
             outs = new HashMap<>();
@@ -44,7 +45,6 @@ public class Ladder {
                 GateSequence gs = new GateSequence(e.getThird(), e.getFirst());
 
                 IntStream.range(0, e.getSecond().size()).filter(i -> e.getSecond().getSymbol(i)).forEach(i -> {
-                    // TODO: Temp vars
                     if (states.containsKey(i))
                         states.get(i).add(gs);
                     else
@@ -60,13 +60,26 @@ public class Ladder {
             }
         }
 
+        private void singleStatePreCheck() {
+            if (!checked) {
+                if (states.isEmpty()) {
+                    outs.values().forEach(r -> r.forEach(gs -> gs.gates.removeIf(g -> g.state)));
+                    stateUpd = new ArrayList<>();
+                }
+                checked = true;
+            }
+
+        }
+
         ArrayList<Rung> getOutRungs() {
+            singleStatePreCheck();
             if (outRungs == null)
                 outRungs = new ArrayList<>(
                         outs.entrySet().stream().map(e -> new Rung(e.getKey(), e.getValue(), "O")).toList());
             return outRungs;
         }
         ArrayList<Rung> getStateRungs() {
+            singleStatePreCheck();
             if (stateRungs == null)
                 stateRungs = new ArrayList<>(
                         states.entrySet().stream().map(e -> new Rung(e.getKey(), e.getValue(), "S'")).toList());
@@ -74,10 +87,11 @@ public class Ladder {
         }
 
         ArrayList<Rung> getUpdates() {
+            singleStatePreCheck();
             if (stateUpd == null)
-                stateRungs = new ArrayList<>(
-                        IntStream.range(0, stateCount).mapToObj(i -> new Rung(i, "S'", "S")).toList());
-            return stateRungs;
+                stateUpd = new ArrayList<>(
+                        IntStream.range(0, stateCount).mapToObj(i -> new Rung(i, "S'", "S", true)).toList());
+            return stateUpd;
         }
     }
 
@@ -91,10 +105,10 @@ public class Ladder {
             this.gates = gates.get(0);
             orRungs.addAll(gates.subList(1, gates.size()));
         }
-        Rung(Integer output, String symbol, String symbolOut) {
+        Rung(Integer output, String symbol, String symbolOut, boolean state) {
             this.outputGates.add(Gate.coil(String.format("%s[%d]", symbolOut, output)));
             this.gates = new GateSequence();
-            var gate = new Gate(String.format("%s[%d]", symbol, output), true);
+            var gate = new Gate(String.format("%s[%d]", symbol, output), true, state);
             gates.add(gate);
         }
 
@@ -117,11 +131,11 @@ public class Ladder {
             this();
             int i = 0;
             for (Boolean b : inputGates) {
-                this.gates.add(new Gate(String.format("I[%d]", i++), b));
+                this.gates.add(new Gate(String.format("I[%d]", i++), b, false));
             }
             i = 0;
             for (Boolean b : stateGates) {
-                this.gates.add(new Gate(String.format("S[%d]", i++), b));
+                this.gates.add(new Gate(String.format("S[%d]", i++), b, true));
             }
         }
 
@@ -142,9 +156,9 @@ public class Ladder {
         }
     }
 
-    public record Gate(String gate, boolean open) {
+    public record Gate(String gate, boolean open, boolean state) {
         static Gate coil(String symbol) {
-            return new Gate(symbol, true);
+            return new Gate(symbol, true, false);
         }
 
         public String getSymbol() {

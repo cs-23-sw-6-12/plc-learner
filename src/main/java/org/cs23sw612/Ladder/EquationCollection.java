@@ -71,10 +71,6 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
         return table.toLatexTabularString();
     }
 
-    public String getTabularXLatex(String width) {
-        return table.toLatexTabularXString(width);
-    }
-
     // region overrides
     @Override
     public String toString() {
