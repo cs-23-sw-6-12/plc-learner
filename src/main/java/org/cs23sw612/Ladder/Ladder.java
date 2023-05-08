@@ -14,7 +14,7 @@ public class Ladder {
 
     public <S extends Number, IO extends Word<Boolean>, T extends CompactMealyTransition<? super IO>> Ladder(
             EquationCollection<S, IO, T, IO, ? extends TransitionOutputAutomaton<S, IO, T, ? super IO>, Alphabet<IO>> ec) {
-        SnoopDoggContainer snoop = new SnoopDoggContainer();
+        LadderConstructor snoop = new LadderConstructor();
 
         for (Equation<Word<Boolean>, IO, IO> equation : ec)
             snoop.add(equation);
@@ -24,14 +24,14 @@ public class Ladder {
         stateUpd = snoop.getUpdates();
     }
 
-    private static class SnoopDoggContainer {
+    private static class LadderConstructor {
         private final HashMap<Integer, ArrayList<GateSequence>> outs, states;
         private ArrayList<Rung> outRungs = null, stateRungs = null;
         private ArrayList<Rung> stateUpd = null;
         private int stateCount = 0;
         private boolean checked = false;
 
-        public SnoopDoggContainer() {
+        public LadderConstructor() {
             outs = new HashMap<>();
             states = new HashMap<>();
         }

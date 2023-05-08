@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.function.Function;
 
 public class Visualizer {
@@ -45,24 +46,17 @@ public class Visualizer {
     public static SVGGraphics2D layoutSVG(Ladder ladder) {
         var svg = GenerateNewSVGFromLadderDimensions(ladder);
 
-        for (Ladder.Rung rung : ladder.outRungs) {
+        ArrayList<Ladder.Rung> arr = new ArrayList<>(ladder.outRungs);
+        arr.addAll(ladder.stateRungs);
+        arr.addAll(ladder.stateUpd);
+
+        for (Ladder.Rung rung : arr) {
             addRungsToSVG(rung.gates, svg, true, rung.outputGates);
             for (Ladder.GateSequence orRung : rung.orRungs) {
                 addRungsToSVG(orRung, svg, false, null);
             }
         }
-        for (Ladder.Rung rung : ladder.stateRungs) {
-            addRungsToSVG(rung.gates, svg, true, rung.outputGates);
-            for (Ladder.GateSequence orRung : rung.orRungs) {
-                addRungsToSVG(orRung, svg, false, null);
-            }
-        }
-        for (Ladder.Rung rung : ladder.stateUpd) {
-            addRungsToSVG(rung.gates, svg, true, rung.outputGates);
-            for (Ladder.GateSequence orRung : rung.orRungs) {
-                addRungsToSVG(orRung, svg, false, null);
-            }
-        }
+
         return svg;
     }
 
