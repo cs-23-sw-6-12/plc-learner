@@ -21,6 +21,7 @@ public class BenchmarkExperiment implements IPLCExperiment {
     Alphabet<Word<Integer>> alphabet;
     private final int repetitions;
     private final int warmupRounds;
+    private int roundsRun = 0;
 
     public BenchmarkExperiment(MealyLearnerFactory<Word<Integer>, Word<Integer>> learnerFactory,
             OracleFactory<Word<Integer>, Word<Integer>> oracleFactory, OracleConfig config,
@@ -53,6 +54,8 @@ public class BenchmarkExperiment implements IPLCExperiment {
     }
 
     private void runExperiment(BenchmarkResult result) {
+        if (roundsRun > warmupRounds) // This is not a warmup round.
+            System.out.println("Running Experiment " + (roundsRun - warmupRounds));
 
         var sulOracle = new MQStatisticsOracle<>(new PerformanceMetricSUL<>(sul));
         var learningAlgorithm = learnerFactory.createLearner(alphabet, sulOracle);
@@ -64,6 +67,7 @@ public class BenchmarkExperiment implements IPLCExperiment {
         experimentTimer.start();
         experiment.run();
         experimentTimer.stop();
+        roundsRun++;
 
         if (result != null)
             result.addRun(experimentTimer.getTotalDuration(), eqStatOracle.getCounter(), sulOracle.getMqCounter());

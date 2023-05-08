@@ -52,6 +52,7 @@ public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
     public void pre() {
         currentWordLength = new Counter("Longest word", "# of symbols");
         experimentCounter.increment();
+        System.out.println("Starting experiment " + experimentCounter.getCount());
         preTimer.start();
         sul.pre();
         preTimer.stop();

@@ -26,6 +26,7 @@ public class EQStatisticsOracle<I, O> implements EquivalenceOracle<MealyMachine<
     public @Nullable DefaultQuery<I, Word<O>> findCounterExample(MealyMachine<?, I, ?, O> a,
             Collection<? extends I> collection) {
         counter.increment();
+        System.out.println("Answering EQ " + counter.getCount());
         return oracle.findCounterExample(a, collection);
     }
 }
