@@ -9,6 +9,9 @@ import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.EquationCollection;
+import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,16 +23,17 @@ public class PLCExperimentImpl implements IPLCExperiment {
 
     private final Alphabet<Word<Boolean>> alphabet;
     private final String outputFileName;
-    private final boolean visualize;
+    private final boolean visualizeMachine, visualizeLadder;
     private final Logger logger;
 
     public PLCExperimentImpl(
             LearningAlgorithm<? extends MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> learningAlgorithm,
             EquivalenceOracle<? super MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> equivalenceOracle,
-            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualize) {
+            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualizeMachine, boolean visualizeLadder) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
-        this.visualize = visualize;
+        this.visualizeMachine = visualizeMachine;
+        this.visualizeLadder = visualizeLadder;
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.experiment = new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }
@@ -40,13 +44,18 @@ public class PLCExperimentImpl implements IPLCExperiment {
     public void run() {
         experiment.run();
 
-        var result = experiment.getFinalHypothesis();
+        MealyMachine result = experiment.getFinalHypothesis();
 
         if (outputFileName != null)
             saveResultAsDot(result);
 
-        if (visualize)
+        if (visualizeMachine)
             Visualization.visualize(result, alphabet);
+
+        if (visualizeLadder) {
+            var ec = new EquationCollection<>(result, alphabet);
+            Visualizer.layoutSVG(new Ladder(ec));
+        }
     }
 
     @SuppressWarnings({"unchecked"})

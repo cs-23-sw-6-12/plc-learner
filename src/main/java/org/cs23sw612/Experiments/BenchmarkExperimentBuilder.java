@@ -18,7 +18,7 @@ public class BenchmarkExperimentBuilder extends ExperimentBuilder {
         this.oracleFactory = experimentBuilder.oracleFactory;
         this.EqOracleConfig = experimentBuilder.EqOracleConfig;
         this.dotOutputLocation = experimentBuilder.dotOutputLocation;
-        this.visualize = experimentBuilder.visualize;
+        this.visualizeMachine = experimentBuilder.visualizeMachine;
     }
 
     public BenchmarkExperimentBuilder withRunAmount(int runs) {

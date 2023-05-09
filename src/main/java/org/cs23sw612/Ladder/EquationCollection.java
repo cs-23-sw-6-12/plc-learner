@@ -1,12 +1,12 @@
 package org.cs23sw612.Ladder;
 
-import java.util.*;
-
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+
+import java.util.*;
 
 /**
  * A collection of {@link Equation}s. From a given {@link MealyMachine}, it
@@ -26,7 +26,7 @@ import net.automatalib.words.Word;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>>
+public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends MealyMachine<S, I, T, ? super O>, A extends Alphabet<I>>
         implements
             Collection<Equation<Word<Boolean>, I, O>> {
     private final List<Equation<Word<Boolean>, I, O>> equations = new ArrayList<>();
@@ -69,10 +69,6 @@ public class EquationCollection<S extends Number, I extends Word<?>, T extends C
 
     public String getTabularLatex() {
         return table.toLatexTabularString();
-    }
-
-    public String getTabularXLatex(String width) {
-        return table.toLatexTabularXString(width);
     }
 
     // region overrides

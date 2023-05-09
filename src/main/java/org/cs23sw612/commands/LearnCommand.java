@@ -21,78 +21,103 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "learn", mixinStandardHelpOptions = true, version = "0.1.0", description = "Learns a PLCs logic")
 public class LearnCommand implements Callable<Integer> {
-
+    @SuppressWarnings("unused")
     @CommandLine.ArgGroup(exclusive = true, multiplicity = "1")
     private SULSource source;
+    @SuppressWarnings("unused")
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "0..1")
     private BenchmarkOptions benchmarkOptions;
 
     private static class SULSource {
+        @SuppressWarnings("unused")
         @CommandLine.ArgGroup(exclusive = false)
         BajerSulConnectionOptions connectionOptions;
 
+        @SuppressWarnings("unused")
         @CommandLine.Option(names = "--dot-path", description = "Load a SUL from a DOT file to test the learning setup.")
         String path;
     }
 
     private static class BajerSulConnectionOptions {
-        @CommandLine.Parameters(index = "0", description = "Number of inputs")
-        int inputCount;
+    @SuppressWarnings("unused")
+    @CommandLine.Parameters(index = "0", description = "Number of inputs")
+    private int inputCount;
 
-        @CommandLine.Parameters(index = "1", description = "Number of outputs")
-        int outputCount;
+    @SuppressWarnings("unused")
+    @CommandLine.Parameters(index = "1", description = "Number of outputs")
+    private int outputCount;
 
-        @CommandLine.Parameters(index = "2", description = "BAjER server address")
-        String bajerServerAddress;
-        @CommandLine.Option(names = {"--port",
-                "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        int bajerServerPort;
+    @SuppressWarnings("unused")
+    @CommandLine.Parameters(index = "2", description = "BAjER server address")
+    private String bajerServerAddress;
+
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--port",
+            "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private int bajerServerPort;
     }
 
     static class BenchmarkOptions {
+        @SuppressWarnings("unused")
         @CommandLine.Option(names = {"--benchmark",
                 "-b"}, description = "Measure performance metrics and print them when learning has finished.")
         private boolean benchmark;
+        @SuppressWarnings("unused")
         @CommandLine.Option(names = {"--warmup-rounds",
                 "-w"}, defaultValue = "5", description = "How many learning experiments should be performed before measuring.")
         private int warmup_rounds;
 
+        @SuppressWarnings("unused")
         @CommandLine.Option(names = {
                 "--run-amount"}, defaultValue = "10", description = "How many learning experiments should be performed while measuring.")
         private int run_amount;
 
     }
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--learner",
             "-l"}, description = "Learner to use (case insensitive)", defaultValue = "DHC", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String learnerName;
 
-    @CommandLine.Option(names = {"--visualize", "-v"}, description = "Visualize the automaton when done")
-    private boolean visualize;
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--visualize-machine", "-vm"}, description = "Visualize the automaton when done")
+    private boolean visualizeMachine;
 
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"--visualize-ladder", "-vl"}, description = "Visualize the ladder program when done")
+    private boolean visualizeLadder;
+
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--out",
             "-o"}, description = "Where the learned automaton should be saved", defaultValue = "automaton.dot", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String outputFileName;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--cache",
             "-c"}, description = "Cache file location", defaultValue = "SULCache.csv", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private String cacheFilePath;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--no-cache",
             "-nc"}, description = "disable cache", defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private boolean noCache;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--oracle",
             "-r"}, description = "Chooses the oracle to be used", defaultValue = "random-walk")
     private String oracleName;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--max-steps",
             "-n"}, description = "Sets the max steps when using the random walk oracle", defaultValue = "10000")
     private Integer maxSteps;
 
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {
             "--restart-probability"}, description = "Sets the restart probability when using the random walk oracle", defaultValue = "0.05")
     private Double restartProbability;
+
+    @SuppressWarnings("unused")
     @CommandLine.Option(names = {"--depth",
             "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
     private Integer depth;
@@ -112,13 +137,19 @@ public class LearnCommand implements Callable<Integer> {
                 .withConfiguration(maxSteps, restartProbability, depth).withLearner(learnerRepository, learnerName)
                 .outputDOT(outputFileName);
 
-        if (!noCache) {
+        if (!noCache)
             experimentBuilder = experimentBuilder.withCache(cacheFilePath);
-        }
 
-        if (visualize) {
-            experimentBuilder = experimentBuilder.withVisualization();
-        }
+
+        if (!noCache)
+            experimentBuilder = experimentBuilder.withCache(cacheFilePath);
+
+
+        if (visualizeMachine)
+            experimentBuilder = experimentBuilder.withMachineVisualization();
+
+        if (visualizeLadder)
+            experimentBuilder = experimentBuilder.withLadderVisualization();
 
         if (benchmarkOptions != null) {
             experimentBuilder = experimentBuilder.intoBenchmark().withRunAmount(benchmarkOptions.run_amount)

@@ -17,7 +17,7 @@ public class ExperimentBuilder {
     MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory;
     OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory;
     String dotOutputLocation;
-    boolean visualize;
+    boolean visualizeMachine, visualizeLadder;
 
     public ExperimentBuilder(SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet) {
         this.sul = sul;
@@ -59,8 +59,13 @@ public class ExperimentBuilder {
         return this;
     }
 
-    public ExperimentBuilder withVisualization() {
-        this.visualize = true;
+    public ExperimentBuilder withMachineVisualization() {
+        this.visualizeMachine = true;
+        return this;
+    }
+
+    public ExperimentBuilder withLadderVisualization() {
+        this.visualizeLadder = true;
         return this;
     }
 
@@ -73,6 +78,6 @@ public class ExperimentBuilder {
 
     public IPLCExperiment build() {
         return new PLCExperimentImpl(learnerFactory.createLearner(alphabet, new SULOracle<>(sul)),
-                oracleFactory.createOracle(sul, EqOracleConfig), alphabet, dotOutputLocation, visualize);
+                oracleFactory.createOracle(sul, EqOracleConfig), alphabet, dotOutputLocation, visualizeMachine, visualizeLadder);
     }
 }

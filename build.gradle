@@ -26,6 +26,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
     implementation "de.learnlib.testsupport:learnlib-learning-examples:$learnLibVersion"
     implementation 'org.slf4j:slf4j-simple:1.7.29'
+    implementation 'org.jfree:org.jfree.svg:5.0.5'
     implementation 'info.picocli:picocli:4.7.1'
     implementation 'org.xerial:sqlite-jdbc:3.30.1'
 }

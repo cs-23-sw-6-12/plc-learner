@@ -10,11 +10,6 @@ import de.learnlib.driver.util.MealySimulatorSUL;
 import de.learnlib.oracle.equivalence.MealySimulatorEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Collections;
-import java.util.function.Consumer;
-
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.serialization.dot.GraphDOT;
@@ -22,17 +17,17 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.cs23sw612.Ladder.EquationCollection;
 import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.SUL.ExampleSUL;
 
-public class RunningExample {
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Collections;
 
-    // private static final Alphabet<Word<Boolean>> alphabet =
-    // AlphabetUtil.createAlphabet(2);
+public class RunningExample {
     private static void p(Object s) {
         System.out.println(s);
     }
-    private static Consumer<? super Object> p = System.out::println;
-
     public static void main(String[] args) throws IOException {
         CompactMealy<Word<Boolean>, Object> example = ExampleSUL.createExample();
         Alphabet<Word<Boolean>> alphabet = ExampleSUL.alphabet;
@@ -75,8 +70,6 @@ public class RunningExample {
         p("TTT (Sp & DT):");
         actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getHypothesisDS(), actualDT);
-        // p(actualDT);
-        // actualDT = new StringWriter();
         GraphDOT.write(learnerTTT.getDiscriminationTree(), actualDT);
         p(actualDT);
 
@@ -92,6 +85,12 @@ public class RunningExample {
         ec.forEach(e -> p("\\item[]" + e));
 
         p("Rungs:");
-        new Ladder(ec).rungs.forEach(System.out::print);
+        var ladder = new Ladder(ec);
+        ladder.outRungs.forEach(System.out::print);
+        ladder.stateRungs.forEach(System.out::print);
+
+        var visualizedSvg = Visualizer.layoutSVG(ladder);
+
+        Visualizer.showSVG(visualizedSvg);
     }
 }
