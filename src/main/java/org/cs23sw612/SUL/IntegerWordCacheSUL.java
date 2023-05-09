@@ -6,12 +6,11 @@ import org.cs23sw612.Interfaces.CacheStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
+public class IntegerWordCacheSUL implements SUL<Word<Integer>, Word<Integer>> {
     private final SUL<Word<Integer>, Word<Integer>> underlyingSul;
     private final CacheStorage cacheStorage;
 
@@ -21,9 +20,9 @@ public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
 
     Integer lastInputCacheRecordId;
 
-    final Logger logger = LoggerFactory.getLogger(GenericCache.class);
+    final Logger logger = LoggerFactory.getLogger(IntegerWordCacheSUL.class);
 
-    public GenericCache(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul) {
+    public IntegerWordCacheSUL(CacheStorage cacheStorage, SUL<Word<Integer>, Word<Integer>> underlyingSul) {
         this.cacheStorage = cacheStorage;
         this.underlyingSul = underlyingSul;
         lastInputCacheRecordId = null;
@@ -68,8 +67,7 @@ public class GenericCache implements SUL<Word<Integer>, Word<Integer>> {
             cachedResponse = cacheStorage.InsertCacheEntry(lastInputCacheRecordId, input, responseString);
         }
 
-        var array = cachedResponse.response().chars().boxed().map(c -> (Integer) (c == '0' ? 0 : 1))
-                .collect(Collectors.toList());
+        var array = cachedResponse.response().chars().boxed().map(c -> (c == '0' ? 0 : 1)).collect(Collectors.toList());
         response = Word.fromList(array);
         lastInputCacheRecordId = cachedResponse.id();
 

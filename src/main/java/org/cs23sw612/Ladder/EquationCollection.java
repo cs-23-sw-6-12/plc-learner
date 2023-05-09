@@ -26,7 +26,7 @@ import java.util.*;
  * @param <A>
  *            Alphabet over {@code I}
  */
-public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>>
+public class EquationCollection<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends MealyMachine<S, I, T, ? super O>, A extends Alphabet<I>>
         implements
             Collection<Equation<Word<Boolean>, I, O>> {
     private final List<Equation<Word<Boolean>, I, O>> equations = new ArrayList<>();

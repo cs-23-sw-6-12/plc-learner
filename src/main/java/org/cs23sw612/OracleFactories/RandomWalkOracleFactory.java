@@ -10,7 +10,7 @@ import org.cs23sw612.OracleConfig;
 
 import java.util.Random;
 
-public class RandomWalkOracleFactory implements OracleFactory {
+public class RandomWalkOracleFactory<I, O> implements OracleFactory<I, O> {
     public RandomWalkOracleFactory() {
 
     }
@@ -21,8 +21,8 @@ public class RandomWalkOracleFactory implements OracleFactory {
     }
 
     @Override
-    public EquivalenceOracle<MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> createOracle(
-            SUL<Word<Integer>, Word<Integer>> sul, OracleConfig oracleConfig) {
+    public EquivalenceOracle<MealyMachine<?, I, ?, O>, I, Word<O>> createOracle(SUL<I, O> sul,
+            OracleConfig oracleConfig) {
         return new RandomWalkEQOracle<>(sul, oracleConfig.restartProbability, oracleConfig.maxSteps, false,
                 new Random());
     }

@@ -9,15 +9,15 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
 
-public class CompleteExplorationOracleFactory implements OracleFactory {
+public class CompleteExplorationOracleFactory<I, O> implements OracleFactory<I, O> {
     @Override
     public String getName() {
         return "complete-exploration";
     }
 
     @Override
-    public EquivalenceOracle<MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> createOracle(
-            SUL<Word<Integer>, Word<Integer>> sul, OracleConfig oracleConfig) {
+    public EquivalenceOracle<MealyMachine<?, I, ?, O>, I, Word<O>> createOracle(SUL<I, O> sul,
+            OracleConfig oracleConfig) {
         return new CompleteExplorationEQOracle<>(new SULOracle<>(sul), oracleConfig.depth);
     }
 }

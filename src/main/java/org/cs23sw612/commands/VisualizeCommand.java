@@ -42,7 +42,7 @@ public class VisualizeCommand implements Callable<Integer> {
         Alphabet<Word<Boolean>> alphabet;
 
         try {
-            var parsed = DOTParsers.mealy(this::ParseIntegerWords).readModel(file);
+            var parsed = DOTParsers.mealy(this::ParseBool).readModel(file);
             model = parsed.model;
             alphabet = parsed.alphabet;
         } catch (Exception ex) {
@@ -77,7 +77,7 @@ public class VisualizeCommand implements Callable<Integer> {
         return 0;
     }
 
-    Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> ParseIntegerWords(Map<String, String> attr) {
+    Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> ParseBool(Map<String, String> attr) {
         String label = attr.get("label");
         if (label == null) {
 
