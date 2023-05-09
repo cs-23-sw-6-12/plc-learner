@@ -39,22 +39,22 @@ public class LearnCommand implements Callable<Integer> {
     }
 
     private static class BajerSulConnectionOptions {
-    @SuppressWarnings("unused")
-    @CommandLine.Parameters(index = "0", description = "Number of inputs")
-    private int inputCount;
+        @SuppressWarnings("unused")
+        @CommandLine.Parameters(index = "0", description = "Number of inputs")
+        private int inputCount;
 
-    @SuppressWarnings("unused")
-    @CommandLine.Parameters(index = "1", description = "Number of outputs")
-    private int outputCount;
+        @SuppressWarnings("unused")
+        @CommandLine.Parameters(index = "1", description = "Number of outputs")
+        private int outputCount;
 
-    @SuppressWarnings("unused")
-    @CommandLine.Parameters(index = "2", description = "BAjER server address")
-    private String bajerServerAddress;
+        @SuppressWarnings("unused")
+        @CommandLine.Parameters(index = "2", description = "BAjER server address")
+        private String bajerServerAddress;
 
-    @SuppressWarnings("unused")
-    @CommandLine.Option(names = {"--port",
-            "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private int bajerServerPort;
+        @SuppressWarnings("unused")
+        @CommandLine.Option(names = {"--port",
+                "-p"}, description = "port for the BAjER server", defaultValue = "1337", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+        private int bajerServerPort;
     }
 
     static class BenchmarkOptions {
@@ -140,10 +140,8 @@ public class LearnCommand implements Callable<Integer> {
         if (!noCache)
             experimentBuilder = experimentBuilder.withCache(cacheFilePath);
 
-
         if (!noCache)
             experimentBuilder = experimentBuilder.withCache(cacheFilePath);
-
 
         if (visualizeMachine)
             experimentBuilder = experimentBuilder.withMachineVisualization();

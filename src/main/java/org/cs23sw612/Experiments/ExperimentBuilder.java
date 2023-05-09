@@ -78,6 +78,7 @@ public class ExperimentBuilder {
 
     public IPLCExperiment build() {
         return new PLCExperimentImpl(learnerFactory.createLearner(alphabet, new SULOracle<>(sul)),
-                oracleFactory.createOracle(sul, EqOracleConfig), alphabet, dotOutputLocation, visualizeMachine, visualizeLadder);
+                oracleFactory.createOracle(sul, EqOracleConfig), alphabet, dotOutputLocation, visualizeMachine,
+                visualizeLadder);
     }
 }

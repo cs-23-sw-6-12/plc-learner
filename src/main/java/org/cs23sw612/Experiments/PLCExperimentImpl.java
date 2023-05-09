@@ -29,7 +29,8 @@ public class PLCExperimentImpl implements IPLCExperiment {
     public PLCExperimentImpl(
             LearningAlgorithm<? extends MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> learningAlgorithm,
             EquivalenceOracle<? super MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> equivalenceOracle,
-            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualizeMachine, boolean visualizeLadder) {
+            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualizeMachine,
+            boolean visualizeLadder) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
         this.visualizeMachine = visualizeMachine;
