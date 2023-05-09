@@ -6,11 +6,8 @@ import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.BAjER.IBAjERClient;
 import org.cs23sw612.Interfaces.SULTimed;
-import org.cs23sw612.Util.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.Instant;
 
 public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> implements SULTimed<I, O> {
     private final Logger logger = LoggerFactory.getLogger(SULClient.class);
