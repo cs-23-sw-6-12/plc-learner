@@ -59,7 +59,7 @@ public class BenchmarkExperiment implements IPLCExperiment {
         var learningAlgorithm = learnerFactory.createLearner(alphabet, sulOracle);
         var equivalenceOracle = oracleFactory.createOracle(sul, config);
         var eqStatOracle = new EQStatisticsOracle<>(equivalenceOracle);
-        var experiment = new PLCExperimentImpl(learningAlgorithm, eqStatOracle, alphabet, null, false);
+        var experiment = new PLCExperimentImpl(learningAlgorithm, eqStatOracle, alphabet, null, false, false);
 
         Stopwatch experimentTimer = new Stopwatch();
         experimentTimer.start();

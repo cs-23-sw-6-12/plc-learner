@@ -1,78 +1,183 @@
 package org.cs23sw612.Ladder;
 
+import com.google.common.collect.Lists;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
-import net.automatalib.commons.util.Triple;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class Ladder {
-    public ArrayList<Rung> rungs;
+    public final ArrayList<Rung> outRungs, stateRungs, stateUpd;
+
     public <S extends Number, IO extends Word<Boolean>, T extends CompactMealyTransition<? super IO>> Ladder(
             EquationCollection<S, IO, T, IO, ? extends TransitionOutputAutomaton<S, IO, T, ? super IO>, Alphabet<IO>> ec) {
-        rungs = new ArrayList<>();
+        LadderConstructor snoop = new LadderConstructor();
 
-        for (Equation<Word<Boolean>, IO, IO> equation : ec) {
-            boolean first = true;
-            for (Triple<Word<Boolean>, Word<Boolean>, ? extends Word<Boolean>> eqVals : equation.getFullList()) {
-                Rung rung;
-                if ((long) equation.getFullList().size() > 1 && !first)
-                    rung = new ORRung();
-                else {
-                    rung = new Rung();
-                    rung.outputgate = new Gate(String.format("(%S)", convertState(equation.output)));
-                }
-                int inputParam = 1;
-                for (Boolean word : eqVals.getSecond()) {
-                    rung.add(new Gate(word ? String.format("| %s|", inputParam) : String.format("|/%s|", inputParam)));
-                    inputParam++;
-                }
-                rung.add(new Gate(String.format("|State %s|", convertState(eqVals.getFirst()))));
-                rungs.add(rung);
-                first = false;
+        for (Equation<Word<Boolean>, IO, IO> equation : ec)
+            snoop.add(equation);
+
+        outRungs = snoop.getOutRungs();
+        stateRungs = snoop.getStateRungs();
+        stateUpd = snoop.getUpdates();
+    }
+
+    private static class LadderConstructor {
+        private final HashMap<Integer, ArrayList<GateSequence>> outs, states;
+        private ArrayList<Rung> outRungs = null, stateRungs = null;
+        private ArrayList<Rung> stateUpd = null;
+        private int stateCount = 0;
+        private boolean checked = false;
+
+        public LadderConstructor() {
+            outs = new HashMap<>();
+            states = new HashMap<>();
+        }
+
+        <IO extends Word<Boolean>> void add(Equation<Word<Boolean>, IO, IO> equation) {
+            int[] outBits = IntStream.range(0, equation.output.size()).filter(equation.output::getSymbol).toArray();
+            ArrayList<GateSequence> ins = new ArrayList<>(equation.getFullList().size());
+
+            for (var e : equation.getFullList()) {
+                stateCount = Math.max(stateCount, e.getFirst().size());
+                GateSequence gs = new GateSequence(e.getThird(), e.getFirst());
+
+                IntStream.range(0, e.getSecond().size()).filter(i -> e.getSecond().getSymbol(i)).forEach(i -> {
+                    if (states.containsKey(i))
+                        states.get(i).add(gs);
+                    else
+                        states.put(i, Lists.newArrayList(gs));
+                });
+                ins.add(gs);
+            }
+            for (int i : outBits) {
+                if (outs.containsKey(i))
+                    outs.get(i).addAll(ins);
+                else
+                    outs.put(i, ins);
             }
         }
-    }
-    private String convertState(Word<Boolean> state) {
-        return state.stream().map(i -> i ? "1" : "0").collect(Collectors.joining(""));
+
+        private void singleStatePreCheck() {
+            if (!checked) {
+                if (states.isEmpty()) {
+                    outs.values().forEach(r -> r.forEach(gs -> gs.gates.removeIf(g -> g.state)));
+                    stateUpd = new ArrayList<>();
+                }
+                checked = true;
+            }
+
+        }
+
+        ArrayList<Rung> getOutRungs() {
+            singleStatePreCheck();
+            if (outRungs == null)
+                outRungs = new ArrayList<>(
+                        outs.entrySet().stream().map(e -> new Rung(e.getKey(), e.getValue(), "O")).toList());
+            return outRungs;
+        }
+        ArrayList<Rung> getStateRungs() {
+            singleStatePreCheck();
+            if (stateRungs == null)
+                stateRungs = new ArrayList<>(
+                        states.entrySet().stream().map(e -> new Rung(e.getKey(), e.getValue(), "S'")).toList());
+            return stateRungs;
+        }
+
+        ArrayList<Rung> getUpdates() {
+            singleStatePreCheck();
+            if (stateUpd == null)
+                stateUpd = new ArrayList<>(
+                        IntStream.range(0, stateCount).mapToObj(i -> new Rung(i, "S'", "S", true)).toList());
+            return stateUpd;
+        }
     }
 
-    public class Rung {
-        private Gate outputgate;
-        private final ArrayList<Gate> gates = new ArrayList<>();
+    public static class Rung {
+        public final ArrayList<GateSequence> orRungs = new ArrayList<>();
+        public final LinkedHashSet<Gate> outputGates = new LinkedHashSet<>();
+        public GateSequence gates;
+
+        Rung(Integer output, ArrayList<GateSequence> gates, String symbol) {
+            outputGates.add(Gate.coil(String.format("%s[%d]", symbol, output)));
+            this.gates = gates.get(0);
+            orRungs.addAll(gates.subList(1, gates.size()));
+        }
+        Rung(Integer output, String symbol, String symbolOut, boolean state) {
+            this.outputGates.add(Gate.coil(String.format("%s[%d]", symbolOut, output)));
+            this.gates = new GateSequence();
+            var gate = new Gate(String.format("%s[%d]", symbol, output), true, state);
+            gates.add(gate);
+        }
+
         @Override
         public String toString() {
-            return "\n|----" + String.join("---", gates.stream().map(Gate::toString).toList()) + "----" + outputgate
-                    + "--|";
-        }
-        public void add(Gate gate) {
-            this.gates.add(gate);
+            return "\n|----" + gates + "----" + String.join("---", outputGates.stream().map(Gate::toString).toList())
+                    + "--|\n" + String.join("\n",
+                            orRungs.stream().map(GateSequence::toString).map(s -> "  ᒻ--" + s + "--ᒽ").toList());
         }
     }
 
-    private class ORRung extends Rung {
-        private final ArrayList<Gate> gates = new ArrayList<>();
-        @Override
-        public String toString() {
-            return "\n  ᒻ--" + String.join("---", gates.stream().map(Gate::toString).toList()) + "--ᒽ";
+    public static class GateSequence {
+        private final ArrayList<Gate> gates;
+
+        public GateSequence() {
+            gates = new ArrayList<>();
         }
+
+        public GateSequence(Word<Boolean> inputGates, Word<Boolean> stateGates) {
+            this();
+            int i = 0;
+            for (Boolean b : inputGates) {
+                this.gates.add(new Gate(String.format("I[%d]", i++), b, false));
+            }
+            i = 0;
+            for (Boolean b : stateGates) {
+                this.gates.add(new Gate(String.format("S[%d]", i++), b, true));
+            }
+        }
+
+        public int count() {
+            return gates.size();
+        }
+        public Gate get(int i) {
+            return gates.get(i);
+        }
+
+        public void add(Gate g) {
+            gates.add(g);
+        }
+
         @Override
-        public void add(Gate gate) {
-            this.gates.add(gate);
+        public String toString() { // todo fix ift outputGates
+            return String.join("---", gates.stream().map(Gate::toString).toList());
         }
     }
 
-    private class Gate {
-        private final String gate;
-        public Gate(String gate) {
-            this.gate = gate;
+    public record Gate(String gate, boolean open, boolean state) {
+        static Gate coil(String symbol) {
+            return new Gate(symbol, true, false);
         }
-        @Override
-        public String toString() {
+
+        public String getSymbol() {
             return gate;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("|%s%s|", open ? " " : "/", gate);
+        }
+
+        @Override
+        public int hashCode() {
+            return gate.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Gate && ((Gate) obj).gate.equals(gate);
         }
     }
 }
