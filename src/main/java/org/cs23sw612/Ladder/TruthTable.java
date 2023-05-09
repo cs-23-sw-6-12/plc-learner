@@ -1,10 +1,5 @@
 package org.cs23sw612.Ladder;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import net.automatalib.automata.concepts.StateIDs;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
@@ -13,6 +8,14 @@ import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.cs23sw612.Util.AlphabetUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 // TODO: Transitions for outputs is defined to only be of this type. Maybe be better, lol
 // TODO: Remove next_states
