@@ -6,8 +6,11 @@ import org.cs23sw612.Adapters.InputAdapter;
 import org.cs23sw612.Adapters.OutputAdapter;
 import org.cs23sw612.BAjER.IBAjERClient;
 import org.cs23sw612.Interfaces.SULTimed;
+import org.cs23sw612.Util.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
 
 public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapter<O>> implements SULTimed<I, O> {
     private final Logger logger = LoggerFactory.getLogger(SULClient.class);
@@ -40,7 +43,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void pre() {
-        logger.info(String.format("PLC Experiment %d", experimentCount++));
+        System.out.printf("PLC Experiment %d%n", experimentCount++);
 
         try {
             bajerClient.Reset();

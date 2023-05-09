@@ -41,7 +41,6 @@ public class MQStatisticsOracle<I, O> extends SULOracle<I, O> {
 
     public Word<O> answerQuery(Word<I> prefix, Word<I> suffix) {
         mqCounter.increment();
-        System.out.println("Answering MQ " + mqCounter.getCount());
         return super.answerQuery(prefix, suffix);
     }
 
