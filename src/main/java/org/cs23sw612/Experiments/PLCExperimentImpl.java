@@ -18,15 +18,15 @@ import java.io.IOException;
 
 public class PLCExperimentImpl implements IPLCExperiment {
 
-    private final Alphabet<Word<Integer>> alphabet;
+    private final Alphabet<Word<Boolean>> alphabet;
     private final String outputFileName;
     private final boolean visualize;
     private final Logger logger;
 
     public PLCExperimentImpl(
-            LearningAlgorithm<? extends MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> learningAlgorithm,
-            EquivalenceOracle<? super MealyMachine<?, Word<Integer>, ?, Word<Integer>>, Word<Integer>, Word<Word<Integer>>> equivalenceOracle,
-            Alphabet<Word<Integer>> alphabet, String outputFileName, boolean visualize) {
+            LearningAlgorithm<? extends MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> learningAlgorithm,
+            EquivalenceOracle<? super MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> equivalenceOracle,
+            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualize) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
         this.visualize = visualize;
@@ -34,7 +34,7 @@ public class PLCExperimentImpl implements IPLCExperiment {
         this.experiment = new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }
 
-    private final Experiment.MealyExperiment<Word<Integer>, Word<Integer>> experiment;
+    private final Experiment.MealyExperiment<Word<Boolean>, Word<Boolean>> experiment;
 
     @Override
     public void run() {
@@ -50,7 +50,7 @@ public class PLCExperimentImpl implements IPLCExperiment {
     }
 
     @SuppressWarnings({"unchecked"})
-    private void saveResultAsDot(MealyMachine<?, Word<Integer>, ?, Word<Integer>> result) {
+    private void saveResultAsDot(MealyMachine<?, Word<Boolean>, ?, Word<Boolean>> result) {
         FileOutputStream outFile;
         try {
             outFile = new FileOutputStream(outputFileName);

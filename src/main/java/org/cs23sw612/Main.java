@@ -9,13 +9,11 @@ import org.cs23sw612.commands.PlcLearnerCommand;
 import org.cs23sw612.commands.VisualizeCommand;
 import picocli.CommandLine;
 
-import java.io.IOException;
-
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         var oracleRepository = new OracleFactoryRepository();
         oracleRepository.addDefaultFactories();
-        var learnerRepository = new LearnerFactoryRepository<Word<Integer>, Word<Integer>>();
+        var learnerRepository = new LearnerFactoryRepository<Word<Boolean>, Word<Boolean>>();
         learnerRepository.addDefaultFactories();
 
         int exitCode = new CommandLine(new PlcLearnerCommand())

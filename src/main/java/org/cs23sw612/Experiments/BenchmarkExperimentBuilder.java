@@ -8,7 +8,7 @@ public class BenchmarkExperimentBuilder extends ExperimentBuilder {
     private int runs;
     private int warmup_rounds;
 
-    public BenchmarkExperimentBuilder(SUL<Word<Integer>, Word<Integer>> sul, Alphabet<Word<Integer>> alphabet) {
+    public BenchmarkExperimentBuilder(SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet) {
         super(sul, alphabet);
     }
 

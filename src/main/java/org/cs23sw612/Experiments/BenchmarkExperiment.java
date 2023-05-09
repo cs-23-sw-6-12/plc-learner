@@ -14,18 +14,18 @@ import org.cs23sw612.Util.Stopwatch;
 
 public class BenchmarkExperiment implements IPLCExperiment {
 
-    private final SUL<Word<Integer>, Word<Integer>> sul;
-    private final MealyLearnerFactory<Word<Integer>, Word<Integer>> learnerFactory;
-    private final OracleFactory<Word<Integer>, Word<Integer>> oracleFactory;
+    private final SUL<Word<Boolean>, Word<Boolean>> sul;
+    private final MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory;
+    private final OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory;
     private final OracleConfig config;
-    Alphabet<Word<Integer>> alphabet;
+    Alphabet<Word<Boolean>> alphabet;
     private final int repetitions;
     private final int warmupRounds;
     private int roundsRun = 0;
 
-    public BenchmarkExperiment(MealyLearnerFactory<Word<Integer>, Word<Integer>> learnerFactory,
-            OracleFactory<Word<Integer>, Word<Integer>> oracleFactory, OracleConfig config,
-            SUL<Word<Integer>, Word<Integer>> sul, Alphabet<Word<Integer>> alphabet, int repetitions,
+    public BenchmarkExperiment(MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory,
+            OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory, OracleConfig config,
+            SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet, int repetitions,
             int warmupRounds) {
         this.learnerFactory = learnerFactory;
         this.oracleFactory = oracleFactory;
