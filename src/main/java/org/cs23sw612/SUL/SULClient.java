@@ -40,7 +40,7 @@ public class SULClient<I, IA extends InputAdapter<I>, O, OA extends OutputAdapte
 
     @Override
     public void pre() {
-        logger.info(String.format("PLC Experiment %d", experimentCount++));
+        System.out.printf("PLC Experiment %d%n", experimentCount++);
 
         try {
             bajerClient.Reset();

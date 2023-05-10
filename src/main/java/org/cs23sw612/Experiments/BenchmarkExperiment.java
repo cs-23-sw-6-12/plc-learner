@@ -54,8 +54,6 @@ public class BenchmarkExperiment implements IPLCExperiment {
     }
 
     private void runExperiment(BenchmarkResult result) {
-        if (roundsRun > warmupRounds) // This is not a warmup round.
-            System.out.println("Running Experiment " + (roundsRun - warmupRounds));
 
         var sulOracle = new MQStatisticsOracle<>(new PerformanceMetricSUL<>(sul));
         var learningAlgorithm = learnerFactory.createLearner(alphabet, sulOracle);

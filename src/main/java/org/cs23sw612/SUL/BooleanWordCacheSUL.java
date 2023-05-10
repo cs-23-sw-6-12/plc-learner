@@ -63,7 +63,7 @@ public class BooleanWordCacheSUL implements SUL<Word<Boolean>, Word<Boolean>> {
                 isUnderlyingSULSynced = true;
             }
             response = underlyingSul.step(in);
-            var responseString = response.stream().map(c -> c? "1" : "0").collect(Collectors.joining());
+            var responseString = response.stream().map(c -> c ? "1" : "0").collect(Collectors.joining());
             cachedResponse = cacheStorage.InsertCacheEntry(lastInputCacheRecordId, input, responseString);
         }
 
