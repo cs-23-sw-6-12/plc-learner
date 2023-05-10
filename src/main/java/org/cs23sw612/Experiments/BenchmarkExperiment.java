@@ -17,6 +17,7 @@ public class BenchmarkExperiment implements IPLCExperiment {
     private final SUL<Word<Boolean>, Word<Boolean>> sul;
     private final MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory;
     private final OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory;
+    private final String outputFileName;
     private final OracleConfig config;
     Alphabet<Word<Boolean>> alphabet;
     private final int repetitions;
@@ -25,12 +26,13 @@ public class BenchmarkExperiment implements IPLCExperiment {
 
     public BenchmarkExperiment(MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory,
             OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory, OracleConfig config,
-            SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet, int repetitions,
-            int warmupRounds) {
+            SUL<Word<Boolean>, Word<Boolean>> sul, String outputFileName, Alphabet<Word<Boolean>> alphabet,
+            int repetitions, int warmupRounds) {
         this.learnerFactory = learnerFactory;
         this.oracleFactory = oracleFactory;
         this.config = config;
         this.sul = sul;
+        this.outputFileName = outputFileName;
         this.alphabet = alphabet;
         this.repetitions = repetitions;
         this.warmupRounds = warmupRounds;
@@ -59,7 +61,7 @@ public class BenchmarkExperiment implements IPLCExperiment {
         var learningAlgorithm = learnerFactory.createLearner(alphabet, sulOracle);
         var equivalenceOracle = oracleFactory.createOracle(sul, config);
         var eqStatOracle = new EQStatisticsOracle<>(equivalenceOracle);
-        var experiment = new PLCExperimentImpl(learningAlgorithm, eqStatOracle, alphabet, null, false, false);
+        var experiment = new PLCExperimentImpl(learningAlgorithm, eqStatOracle, alphabet, outputFileName, false, false);
 
         Stopwatch experimentTimer = new Stopwatch();
         experimentTimer.start();
