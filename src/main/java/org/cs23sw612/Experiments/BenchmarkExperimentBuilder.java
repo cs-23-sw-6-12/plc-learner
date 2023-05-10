@@ -34,6 +34,6 @@ public class BenchmarkExperimentBuilder extends ExperimentBuilder {
     @Override
     public BenchmarkExperiment build() {
         return new BenchmarkExperiment(this.learnerFactory, this.oracleFactory, this.EqOracleConfig, this.sul,
-                this.alphabet, runs, warmup_rounds);
+                this.dotOutputLocation, this.alphabet, runs, warmup_rounds);
     }
 }
