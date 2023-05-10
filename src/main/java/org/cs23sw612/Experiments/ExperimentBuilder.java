@@ -4,11 +4,15 @@ import de.learnlib.api.SUL;
 import de.learnlib.oracle.membership.SULOracle;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.HashCacheStorage;
 import org.cs23sw612.Interfaces.MealyLearnerFactory;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
+import org.cs23sw612.SUL.BooleanWordCacheSUL;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
+
+import java.io.File;
 
 public class ExperimentBuilder {
     SUL<Word<Boolean>, Word<Boolean>> sul;
@@ -49,8 +53,7 @@ public class ExperimentBuilder {
     }
 
     public ExperimentBuilder withCache(String cachePath) {
-        // this.sul = new IntegerWordCacheSUL(new HashCacheStorage(new File(cachePath)),
-        // sul);
+        this.sul = new BooleanWordCacheSUL(new HashCacheStorage(new File(cachePath)), sul);
         return this;
     }
 
