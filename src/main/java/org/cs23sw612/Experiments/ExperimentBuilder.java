@@ -53,8 +53,7 @@ public class ExperimentBuilder {
     }
 
     public ExperimentBuilder withCache(String cachePath) {
-         this.sul = new BooleanWordCacheSUL(new HashCacheStorage(new File(cachePath)),
-         sul);
+        this.sul = new BooleanWordCacheSUL(new HashCacheStorage(new File(cachePath)), sul);
         return this;
     }
 
