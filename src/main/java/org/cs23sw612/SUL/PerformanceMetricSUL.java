@@ -1,6 +1,7 @@
 package org.cs23sw612.SUL;
 
 import de.learnlib.api.SUL;
+import de.learnlib.filter.statistic.Counter;
 import org.cs23sw612.Util.Stopwatch;
 
 import java.time.Duration;
@@ -8,13 +9,14 @@ import java.time.Duration;
 public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
 
     private final SUL<I, O> sul;
-    private long stepCounter = 0;
-    private long experimentCounter = 0;
-    private long longestWordLength = 0;
-    private long currentWordLength = 0;
+    private Counter stepCounter = new Counter("SUL Steps", "#");
+    private Counter experimentCounter = new Counter("Experiments", "#");
+    private Counter longestWordLength = new Counter("Longest word", "# of symbols");
+    private Counter currentWordLength = new Counter("Longest word", "# of symbols");
     private final Stopwatch preTimer;
     private final Stopwatch postTimer;
     private final Stopwatch stepTimer;
+
     public PerformanceMetricSUL(SUL<I, O> sul) {
         this.sul = sul;
         preTimer = new Stopwatch();
@@ -34,22 +36,23 @@ public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
         return preTimer.getTotalDuration();
     }
 
-    public long getExperimentCounter() {
+    public Counter getExperimentCounter() {
         return experimentCounter;
     }
 
-    public long getStepCounter() {
+    public Counter getStepCounter() {
         return stepCounter;
     }
 
-    public long getLongestWordLength() {
+    public Counter getLongestWordLength() {
         return longestWordLength;
     }
 
     @Override
     public void pre() {
-        currentWordLength = 0;
-        experimentCounter++;
+        currentWordLength = new Counter("Longest word", "# of symbols");
+        experimentCounter.increment();
+        System.out.println("Starting experiment " + experimentCounter.getCount());
         preTimer.start();
         sul.pre();
         preTimer.stop();
@@ -57,7 +60,7 @@ public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
 
     @Override
     public void post() {
-        if (currentWordLength > longestWordLength) {
+        if (currentWordLength.getCount() > longestWordLength.getCount()) {
             longestWordLength = currentWordLength;
         }
         postTimer.start();
@@ -67,8 +70,8 @@ public class PerformanceMetricSUL<I, O> implements SUL<I, O> {
 
     @Override
     public O step(I i) {
-        currentWordLength++;
-        stepCounter++;
+        currentWordLength.increment();
+        stepCounter.increment();
         stepTimer.start();
         var rv = sul.step(i);
         stepTimer.stop();

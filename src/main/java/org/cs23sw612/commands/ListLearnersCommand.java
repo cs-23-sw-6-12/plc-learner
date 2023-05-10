@@ -8,9 +8,9 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "list-learners", mixinStandardHelpOptions = true, version = "0.1.0", description = "Lists available learners")
 public class ListLearnersCommand implements Callable<Integer> {
-    private final LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository;
+    private final LearnerFactoryRepository<Word<Boolean>, Word<Boolean>> learnerRepository;
 
-    public ListLearnersCommand(LearnerFactoryRepository<Word<Integer>, Word<Integer>> learnerRepository) {
+    public ListLearnersCommand(LearnerFactoryRepository<Word<Boolean>, Word<Boolean>> learnerRepository) {
         this.learnerRepository = learnerRepository;
     }
 
