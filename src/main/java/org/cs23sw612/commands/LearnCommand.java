@@ -140,9 +140,6 @@ public class LearnCommand implements Callable<Integer> {
         if (!noCache)
             experimentBuilder = experimentBuilder.withCache(cacheFilePath);
 
-        if (!noCache)
-            experimentBuilder = experimentBuilder.withCache(cacheFilePath);
-
         if (visualizeMachine)
             experimentBuilder = experimentBuilder.withMachineVisualization();
 
