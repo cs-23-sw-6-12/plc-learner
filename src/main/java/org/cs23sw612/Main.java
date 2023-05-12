@@ -3,10 +3,7 @@ package org.cs23sw612;
 import net.automatalib.words.Word;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
-import org.cs23sw612.commands.LearnCommand;
-import org.cs23sw612.commands.ListLearnersCommand;
-import org.cs23sw612.commands.PlcLearnerCommand;
-import org.cs23sw612.commands.VisualizeCommand;
+import org.cs23sw612.commands.*;
 import picocli.CommandLine;
 
 public class Main {
@@ -18,6 +15,7 @@ public class Main {
 
         int exitCode = new CommandLine(new PlcLearnerCommand())
                 .addSubcommand(new LearnCommand(learnerRepository, oracleRepository))
+                .addSubcommand(new ListOraclesCommand(oracleRepository))
                 .addSubcommand(new ListLearnersCommand(learnerRepository)).addSubcommand(new VisualizeCommand())
                 .execute(args);
         System.exit(exitCode);

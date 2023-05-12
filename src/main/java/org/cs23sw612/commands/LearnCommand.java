@@ -140,9 +140,6 @@ public class LearnCommand implements Callable<Integer> {
         if (!noCache)
             experimentBuilder = experimentBuilder.withCache(cacheFilePath);
 
-        if (!noCache)
-            experimentBuilder = experimentBuilder.withCache(cacheFilePath);
-
         if (visualizeMachine)
             experimentBuilder = experimentBuilder.withMachineVisualization();
 
@@ -167,7 +164,7 @@ public class LearnCommand implements Callable<Integer> {
 
         if (source.path != null) {
             var file = new FileInputStream(source.path);
-            var parsed = DOTParsers.mealy(AlphabetUtil::ParseBool).readModel(file);
+            var parsed = DOTParsers.mealy(AlphabetUtil::parseBool).readModel(file);
             var model = parsed.model;
 
             alphabet = parsed.alphabet;
