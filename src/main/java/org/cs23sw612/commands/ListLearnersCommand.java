@@ -15,12 +15,12 @@ public class ListLearnersCommand implements Callable<Integer> {
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
         System.err.println("Available learners:");
 
-        learnerRepository.getLearnerNames().forEach(learnerName -> {
-            System.err.format("- %s\n", learnerName);
-        });
+        learnerRepository.getLearnerNames().forEach(learnerName ->
+            System.err.format("- %s\n", learnerName)
+        );
         return 0;
     }
 }

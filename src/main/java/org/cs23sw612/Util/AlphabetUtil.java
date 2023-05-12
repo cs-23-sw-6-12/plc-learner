@@ -53,7 +53,7 @@ public class AlphabetUtil {
             throw new TypeNotPresentException("Not accepted type", new Throwable());
     }
 
-    public static Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> ParseBool(Map<String, String> attr) {
+    public static Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> parseBool(Map<String, String> attr) {
         String label = attr.get("label");
         if (label == null) {
             return Pair.of(null, null);
@@ -64,7 +64,7 @@ public class AlphabetUtil {
     }
 
     private static Word<Boolean> getWord(String token) {
-        return Word.fromList(Arrays.stream(token.trim().split(" ")).map(s -> s.equals("1") ? true : false)
+        return Word.fromList(Arrays.stream(token.trim().split(" ")).map(s -> s.equals("true"))
                 .collect(Collectors.toList()));
     }
 }
