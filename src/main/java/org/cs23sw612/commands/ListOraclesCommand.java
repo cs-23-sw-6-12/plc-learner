@@ -17,9 +17,7 @@ public class ListOraclesCommand implements Callable<Integer> {
     public Integer call() {
         System.err.println("Available oracles:");
 
-        oracleRepository.getLearnerNames().forEach(oracleName ->
-            System.err.format("- %s\n", oracleName)
-        );
+        oracleRepository.getLearnerNames().forEach(oracleName -> System.err.format("- %s\n", oracleName));
         return 0;
     }
 

@@ -64,7 +64,7 @@ public class AlphabetUtil {
     }
 
     private static Word<Boolean> getWord(String token) {
-        return Word.fromList(Arrays.stream(token.trim().split(" ")).map(s -> s.equals("true"))
-                .collect(Collectors.toList()));
+        return Word.fromList(
+                Arrays.stream(token.trim().split(" ")).map(s -> s.equals("true")).collect(Collectors.toList()));
     }
 }
