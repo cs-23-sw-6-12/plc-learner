@@ -30,18 +30,6 @@ public class AlphabetUtil {
         return bs;
     }
 
-    public static Alphabet<Word<Integer>> createIntAlphabet(int num) {
-        if (num <= 0)
-            return Alphabets.fromList(Collections.emptyList());
-        ArrayList<Word<Integer>> arr = new ArrayList<>((int) Math.pow(num, 2));
-        int decr = (1 << num) - 1;
-        assert Integer.bitCount(decr) == num;
-        for (; decr >= 0; decr--)
-            arr.add(Word.fromList(Arrays.stream(booleanArrayFromInt(decr, num)).map(bool -> bool ? 1 : 0)
-                    .collect(Collectors.toList())));
-        return Alphabets.fromCollection(arr);
-    }
-
     public static String toBinaryString(Object obj) {
         if (obj instanceof Boolean)
             return (Boolean) obj ? "1" : "0";
