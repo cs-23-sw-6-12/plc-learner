@@ -33,6 +33,8 @@ public class AlphabetUtil {
     public static String toBinaryString(Object obj) {
         if (obj instanceof Boolean)
             return (Boolean) obj ? "1" : "0";
+        else if (obj instanceof Bit)
+            return ((Bit) obj).value ? "1" : "0";
         else if (obj instanceof Number)
             return ((Number) obj).longValue() != 0 ? "1" : "0";
         else if (obj instanceof Word<?>)

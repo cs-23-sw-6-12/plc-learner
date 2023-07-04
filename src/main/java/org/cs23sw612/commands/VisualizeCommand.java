@@ -4,16 +4,10 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.Ladder.EquationCollection;
-import org.cs23sw612.Ladder.Ladder;
-import org.cs23sw612.Ladder.Visualization.Visualizer;
-import org.cs23sw612.Util.AlphabetUtil;
+import org.cs23sw612.Util.Bit;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "visualize", mixinStandardHelpOptions = true, version = "0.1.0", description = "Visualizes a PLC loaded from a DOT file")
@@ -37,11 +31,11 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
 
-        CompactMealy<Word<Boolean>, Word<Boolean>> model;
-        Alphabet<Word<Boolean>> alphabet;
+        CompactMealy<Word<Bit>, Word<Bit>> model;
+        Alphabet<Word<Bit>> alphabet;
 
         try {
-            var parsed = DOTParsers.mealy(AlphabetUtil::parseBool).readModel(file);
+            var parsed = DOTParsers.mealy(Bit::parseBit).readModel(file);
             model = parsed.model;
             alphabet = parsed.alphabet;
         } catch (Exception ex) {
@@ -50,6 +44,7 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
         try {
+            /* TODO: Redo with the optimized structure
             var equationCollection = new EquationCollection<>(model, alphabet);
             var ladder = new Ladder(equationCollection);
             var ladderSvg = Visualizer.layoutSVG(ladder);
@@ -67,6 +62,7 @@ public class VisualizeCommand implements Callable<Integer> {
                 }
             }
             Visualizer.showSVG(ladderSvg);
+             */
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");
             System.err.println(ex.getMessage());

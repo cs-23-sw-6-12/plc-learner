@@ -6,6 +6,7 @@ import net.automatalib.util.automata.builders.AutomatonBuilders;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.cs23sw612.Util.AlphabetUtil;
+import org.cs23sw612.Util.Bit;
 
 public class ExampleSUL {
 
@@ -22,8 +23,22 @@ public class ExampleSUL {
                 .withOutput(Word.fromSymbols(true, true)).to("s1").from("s1").on(Word.fromSymbols(true, false))
                 .withOutput(Word.fromSymbols(false, true)).to("s1").create();
     }
+    public static CompactMealy<Word<Bit>, Object> createBitExample() {
+        return AutomatonBuilders.newMealy(Bit.createAlphabet(2)).withInitial("s0").from("s0").on(Word.fromSymbols(Bit.LOW(), Bit.LOW()))
+                .withOutput(Word.fromSymbols(Bit.HIGH(), Bit.LOW())).to("s0").from("s0").on(Word.fromSymbols(Bit.LOW(), Bit.HIGH()))
+                .withOutput(Word.fromSymbols(Bit.HIGH(), Bit.LOW())).to("s0").from("s0").on(Word.fromSymbols(Bit.HIGH(), Bit.HIGH()))
+                .withOutput(Word.fromSymbols(Bit.LOW(), Bit.LOW())).to("s0").from("s0").on(Word.fromSymbols(Bit.HIGH(), Bit.LOW()))
+                .withOutput(Word.fromSymbols(Bit.LOW(), Bit.HIGH())).to("s1").from("s1").on(Word.fromSymbols(Bit.LOW(), Bit.HIGH()))
+                .withOutput(Word.fromSymbols(Bit.HIGH(), Bit.LOW())).to("s0").from("s1").on(Word.fromSymbols(Bit.HIGH(), Bit.HIGH()))
+                .withOutput(Word.fromSymbols(Bit.LOW(), Bit.LOW())).to("s0").from("s1").on(Word.fromSymbols(Bit.LOW(), Bit.LOW()))
+                .withOutput(Word.fromSymbols(Bit.HIGH(), Bit.HIGH())).to("s1").from("s1").on(Word.fromSymbols(Bit.HIGH(), Bit.LOW()))
+                .withOutput(Word.fromSymbols(Bit.LOW(), Bit.HIGH())).to("s1").create();
+    }
 
     public static MealySimulatorSUL<Word<Boolean>, Object> createExampleSUL() {
         return new MealySimulatorSUL<>(createExample());
+    }
+    public static MealySimulatorSUL<Word<Bit>, Object> createBitExampleSUL() {
+        return new MealySimulatorSUL<>(createBitExample());
     }
 }

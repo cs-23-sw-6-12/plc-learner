@@ -5,12 +5,15 @@ import de.learnlib.driver.util.MealySimulatorSUL;
 import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Adapters.Input.BitWordInputAdapter;
 import org.cs23sw612.Adapters.Input.BooleanWordInputAdapter;
+import org.cs23sw612.Adapters.Output.BitWordOutputAdapter;
 import org.cs23sw612.Adapters.Output.BooleanWordOutputAdapter;
 import org.cs23sw612.BAjER.BAjERClient;
 import org.cs23sw612.Experiments.ExperimentBuilder;
 import org.cs23sw612.SUL.SULClient;
 import org.cs23sw612.Util.AlphabetUtil;
+import org.cs23sw612.Util.Bit;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
 import picocli.CommandLine;
@@ -122,11 +125,11 @@ public class LearnCommand implements Callable<Integer> {
             "-d"}, description = "Sets the depth when using the complete exploration oracle", defaultValue = "3")
     private Integer depth;
 
-    private final LearnerFactoryRepository<Word<Boolean>, Word<Boolean>> learnerRepository;
-    private final OracleFactoryRepository<Word<Boolean>, Word<Boolean>> oracleRepository;
+    private final LearnerFactoryRepository<Word<Bit>, Word<Bit>> learnerRepository;
+    private final OracleFactoryRepository<Word<Bit>, Word<Bit>> oracleRepository;
 
-    public LearnCommand(LearnerFactoryRepository<Word<Boolean>, Word<Boolean>> learnerRepository,
-            OracleFactoryRepository<Word<Boolean>, Word<Boolean>> oracleRepository) {
+    public LearnCommand(LearnerFactoryRepository<Word<Bit>, Word<Bit>> learnerRepository,
+            OracleFactoryRepository<Word<Bit>, Word<Bit>> oracleRepository) {
         this.learnerRepository = learnerRepository;
         this.oracleRepository = oracleRepository;
     }
@@ -159,12 +162,12 @@ public class LearnCommand implements Callable<Integer> {
     }
 
     private ExperimentBuilder getExperimentBuilder(LearnCommand.SULSource source) throws IOException {
-        Alphabet<Word<Boolean>> alphabet;
-        SUL<Word<Boolean>, Word<Boolean>> sul;
+        Alphabet<Word<Bit>> alphabet;
+        SUL<Word<Bit>, Word<Bit>> sul;
 
         if (source.path != null) {
             var file = new FileInputStream(source.path);
-            var parsed = DOTParsers.mealy(AlphabetUtil::parseBool).readModel(file);
+            var parsed = DOTParsers.mealy(Bit::parseBit).readModel(file);
             var model = parsed.model;
 
             alphabet = parsed.alphabet;
@@ -175,9 +178,9 @@ public class LearnCommand implements Callable<Integer> {
 
             bajerClient.Connect(source.connectionOptions.bajerServerAddress, source.connectionOptions.bajerServerPort);
 
-            alphabet = AlphabetUtil.createAlphabet(source.connectionOptions.inputCount);
-
-            sul = new SULClient(bajerClient, new BooleanWordInputAdapter(), new BooleanWordOutputAdapter(),
+            //alphabet = AlphabetUtil.createAlphabet(source.connectionOptions.inputCount);
+            alphabet = Bit.createAlphabet(source.connectionOptions.inputCount);
+            sul = new SULClient(bajerClient, new BitWordInputAdapter(), new BitWordOutputAdapter(),
                     (byte) source.connectionOptions.inputCount, (byte) source.connectionOptions.outputCount);
         }
         return new ExperimentBuilder(sul, alphabet);
