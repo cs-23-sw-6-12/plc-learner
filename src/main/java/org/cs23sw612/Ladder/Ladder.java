@@ -12,6 +12,40 @@ import java.util.stream.IntStream;
 public class Ladder {
     public final ArrayList<Rung> outRungs, stateRungs, stateUpd;
 
+    public static Ladder newSimp(){
+        Ladder out = new Ladder();
+
+        GateSequence g0 = new GateSequence();
+        g0.gates.add(new Gate("I[0]", false, false));
+        Rung o0 = new Rung(0, Lists.newArrayList(g0) , "O");
+        out.outRungs.add(o0);
+
+        GateSequence g1 = new GateSequence();
+        g1.gates.add(new Gate("I[1]", false, false));
+        g1.gates.add(new Gate("I[0]", false, false));
+        g1.gates.add(new Gate("S[0]", true, true));
+
+        Rung o1 = new Rung(1, Lists.newArrayList(g1) , "O");
+        GateSequence g2 = new GateSequence();
+        g2.gates.add(new Gate("I[1]", false, false));
+        g2.gates.add(new Gate("I[0]", true, false));
+        o1.orRungs.add(g2);
+        o1.outputGates.add(new Gate("S'[0]", true, false));
+        out.outRungs.add(o1);
+
+
+
+        out.stateUpd.add(new Rung(0, "S'", "S", true));
+
+        return out;
+    }
+
+    private Ladder() {
+        outRungs = new ArrayList<>();
+        stateRungs = new ArrayList<>();
+        stateUpd = new ArrayList<>();
+    }
+
     public <S extends Number, IO extends Word<Boolean>, T extends CompactMealyTransition<? super IO>> Ladder(
             EquationCollection<S, IO, T, IO, ? extends TransitionOutputAutomaton<S, IO, T, ? super IO>, Alphabet<IO>> ec) {
         LadderConstructor snoop = new LadderConstructor();

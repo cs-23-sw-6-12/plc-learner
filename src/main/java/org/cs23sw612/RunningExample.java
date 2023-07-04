@@ -88,6 +88,7 @@ public class RunningExample {
         var ladder = new Ladder(ec);
         ladder.outRungs.forEach(System.out::print);
         ladder.stateRungs.forEach(System.out::print);
+        ladder.stateUpd.forEach(System.out::print);
 
         var visualizedSvg = Visualizer.layoutSVG(ladder);
 
