@@ -14,6 +14,8 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.BDD.BDDNode;
+import org.cs23sw612.Ladder.NewTruthTable;
 import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
@@ -21,6 +23,7 @@ import org.cs23sw612.Util.Bit;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class RunningExample {
     private static void p(Object s) {
@@ -76,6 +79,15 @@ public class RunningExample {
 
         var t = new TruthTable(example, alphabet);
         p(t.toLatexTabularString());
+        var nt = new NewTruthTable(example, alphabet);
+        p(nt.toLatexTabularString());
+        // p(nt.test());
+        // p(nt.encode().values());
+        HashMap<String, BDDNode> m = nt.encode();
+        p(m.get("O[1]"));
+        p(m.get("O[1]").reduce());
+        //p(m);
+        //p(nt.test());
         /*
          * EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>,
          * Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new

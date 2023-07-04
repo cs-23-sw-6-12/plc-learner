@@ -7,13 +7,10 @@ import net.automatalib.words.impl.Alphabets;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.Serializable;
-import java.lang.constant.Constable;
-import java.lang.constant.ConstantDesc;
-import java.lang.constant.ConstantDescs;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Bit implements Serializable, Comparable<Bit>, Constable {
+public class Bit implements Serializable, Comparable<Boolean> {
     public final boolean value;
 
     public static Bit HIGH() {
@@ -33,13 +30,8 @@ public class Bit implements Serializable, Comparable<Bit>, Constable {
     }
 
     @Override
-    public int compareTo(Bit abit) {
-        return abit.value == value ? 0 : (value ? 1 : -1);
-    }
-
-    @Override
-    public Optional<? extends ConstantDesc> describeConstable() {
-        return Optional.of(value ? ConstantDescs.TRUE : ConstantDescs.FALSE);
+    public int compareTo(Boolean abool) {
+        return abool == value ? 0 : (value ? 1 : -1);
     }
 
     @Override
@@ -64,14 +56,14 @@ public class Bit implements Serializable, Comparable<Bit>, Constable {
         int decr = (1 << num) - 1;
         assert Integer.bitCount(decr) == num;
         for (; decr >= 0; decr--)
-            arr.add(Word.fromArray(byteFromInt(decr, num), 0, num));
+            arr.add(Word.fromList(byteFromInt(decr, num)));
         return Alphabets.fromCollection(arr);
     }
 
-    private static Bit[] byteFromInt(int x, int size) {
-        Bit[] bs = new Bit[size];
+    public static List<Bit> byteFromInt(long x, int size) {
+        ArrayList<Bit> bs = new ArrayList<>();
         for (int i = 0; i < size; i++)
-            bs[i] = new Bit((x & (1 << i)) > 0);
+            bs.add(i, new Bit((x & (1 << i)) > 0));
         return bs;
     }
 
@@ -89,7 +81,7 @@ public class Bit implements Serializable, Comparable<Bit>, Constable {
                 .map(s -> Bit.fromBool(s.equals("true") || s.equals("1"))).collect(Collectors.toList()));
     }
 
-    public static Bit fromBool(Boolean aBoolean) {
-        return new Bit(aBoolean);
+    public static <T extends Comparable<Boolean>> Bit fromBool(T aBoolean) {
+        return new Bit(aBoolean.compareTo(true) == 0);
     }
 }
