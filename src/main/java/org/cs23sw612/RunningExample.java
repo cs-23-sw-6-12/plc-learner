@@ -27,9 +27,9 @@ public class RunningExample {
         System.out.println(s);
     }
     public static void main(String[] args) throws IOException {
-        CompactMealy<Word<Bit>, Object> example = ExampleSUL.createBitExample();
+        CompactMealy<Word<Bit>, Object> example = ExampleSUL.createExample();
         Alphabet<Word<Bit>> alphabet = example.getInputAlphabet();
-        MealySimulatorSUL<Word<Bit>, Object> sul = ExampleSUL.createBitExampleSUL();
+        MealySimulatorSUL<Word<Bit>, Object> sul = ExampleSUL.createExampleSUL();
 
         // Standard mealy membership oracle.
         SULOracle<Word<Bit>, Object> membershipOracle = new SULOracle<>(sul);
@@ -45,8 +45,8 @@ public class RunningExample {
                 AcexAnalyzers.BINARY_SEARCH_BWD);
         MealyDHC<Word<Bit>, Object> learnerDHC = new MealyDHC<>(alphabet, membershipOracle);
 
-        Experiment.MealyExperiment<Word<Bit>, Object> experimentLstar = new Experiment.MealyExperiment<>(
-                learnerLstar, equivalenceOracle, alphabet);
+        Experiment.MealyExperiment<Word<Bit>, Object> experimentLstar = new Experiment.MealyExperiment<>(learnerLstar,
+                equivalenceOracle, alphabet);
         Experiment.MealyExperiment<Word<Bit>, Object> experimentTTT = new Experiment.MealyExperiment<>(learnerTTT,
                 equivalenceOracle, alphabet);
         Experiment.MealyExperiment<Word<Bit>, Object> experimentDHC = new Experiment.MealyExperiment<>(learnerDHC,
@@ -76,22 +76,20 @@ public class RunningExample {
 
         var t = new TruthTable(example, alphabet);
         p(t.toLatexTabularString());
-/*
-        EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>, Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new EquationCollection<>(
-                example, alphabet);
-        p("Truth table:");
-        p(ec.getTabularLatex());
-
-        p("Equations:");
-        ec.forEach(e -> p("\\item[]" + e));
-
-        p("Rungs:");
-        var ladder = new Ladder(ec);
-        ladder.outRungs.forEach(System.out::print);
-        ladder.stateRungs.forEach(System.out::print);
-
-        var visualizedSvg = Visualizer.layoutSVG(ladder);
-        Visualizer.showSVG(visualizedSvg);
-        */
+        /*
+         * EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>,
+         * Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new
+         * EquationCollection<>( example, alphabet); p("Truth table:");
+         * p(ec.getTabularLatex());
+         * 
+         * p("Equations:"); ec.forEach(e -> p("\\item[]" + e));
+         * 
+         * p("Rungs:"); var ladder = new Ladder(ec);
+         * ladder.outRungs.forEach(System.out::print);
+         * ladder.stateRungs.forEach(System.out::print);
+         * 
+         * var visualizedSvg = Visualizer.layoutSVG(ladder);
+         * Visualizer.showSVG(visualizedSvg);
+         */
     }
 }

@@ -44,24 +44,18 @@ public class VisualizeCommand implements Callable<Integer> {
             return 1;
         }
         try {
-            /* TODO: Redo with the optimized structure
-            var equationCollection = new EquationCollection<>(model, alphabet);
-            var ladder = new Ladder(equationCollection);
-            var ladderSvg = Visualizer.layoutSVG(ladder);
-
-            if (svgOutputPath != null) {
-                var f = new File(svgOutputPath);
-                f.getParentFile().mkdirs();
-
-                try {
-                    Visualizer.saveSVG(ladderSvg, new FileWriter(f));
-                } catch (IOException exception) {
-                    System.err.println("Could not save SVG file");
-                    System.err.println(exception.getMessage());
-                    return 1;
-                }
-            }
-            Visualizer.showSVG(ladderSvg);
+            /*
+             * TODO: Redo with the optimized structure var equationCollection = new
+             * EquationCollection<>(model, alphabet); var ladder = new
+             * Ladder(equationCollection); var ladderSvg = Visualizer.layoutSVG(ladder);
+             * 
+             * if (svgOutputPath != null) { var f = new File(svgOutputPath);
+             * f.getParentFile().mkdirs();
+             * 
+             * try { Visualizer.saveSVG(ladderSvg, new FileWriter(f)); } catch (IOException
+             * exception) { System.err.println("Could not save SVG file");
+             * System.err.println(exception.getMessage()); return 1; } }
+             * Visualizer.showSVG(ladderSvg);
              */
         } catch (Exception ex) {
             System.err.println("Could not visualize the given model");

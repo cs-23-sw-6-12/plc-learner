@@ -26,9 +26,8 @@ public class BenchmarkExperiment implements IPLCExperiment {
     private int roundsRun = 0;
 
     public BenchmarkExperiment(MealyLearnerFactory<Word<Bit>, Word<Bit>> learnerFactory,
-            OracleFactory<Word<Bit>, Word<Bit>> oracleFactory, OracleConfig config,
-            SUL<Word<Bit>, Word<Bit>> sul, String outputFileName, Alphabet<Word<Bit>> alphabet,
-            int repetitions, int warmupRounds) {
+            OracleFactory<Word<Bit>, Word<Bit>> oracleFactory, OracleConfig config, SUL<Word<Bit>, Word<Bit>> sul,
+            String outputFileName, Alphabet<Word<Bit>> alphabet, int repetitions, int warmupRounds) {
         this.learnerFactory = learnerFactory;
         this.oracleFactory = oracleFactory;
         this.config = config;

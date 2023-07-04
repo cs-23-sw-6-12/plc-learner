@@ -13,7 +13,7 @@ import java.lang.constant.ConstantDescs;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Bit implements Serializable, Comparable<Bit>, Constable  {
+public class Bit implements Serializable, Comparable<Bit>, Constable {
     public final boolean value;
 
     public static Bit HIGH() {
@@ -85,8 +85,8 @@ public class Bit implements Serializable, Comparable<Bit>, Constable  {
         }
     }
     private static Word<Bit> getWord(String token) {
-        return Word.fromList(
-                Arrays.stream(token.trim().split(" ")).map(s -> Bit.fromBool(s.equals("true") || s.equals("1"))).collect(Collectors.toList()));
+        return Word.fromList(Arrays.stream(token.trim().split(" "))
+                .map(s -> Bit.fromBool(s.equals("true") || s.equals("1"))).collect(Collectors.toList()));
     }
 
     public static Bit fromBool(Boolean aBoolean) {

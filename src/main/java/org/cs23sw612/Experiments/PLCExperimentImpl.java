@@ -9,8 +9,6 @@ import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.Ladder.Ladder;
-import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.Util.Bit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +27,7 @@ public class PLCExperimentImpl implements IPLCExperiment {
     public PLCExperimentImpl(
             LearningAlgorithm<? extends MealyMachine<?, Word<Bit>, ?, Word<Bit>>, Word<Bit>, Word<Word<Bit>>> learningAlgorithm,
             EquivalenceOracle<? super MealyMachine<?, Word<Bit>, ?, Word<Bit>>, Word<Bit>, Word<Word<Bit>>> equivalenceOracle,
-            Alphabet<Word<Bit>> alphabet, String outputFileName, boolean visualizeMachine,
-            boolean visualizeLadder) {
+            Alphabet<Word<Bit>> alphabet, String outputFileName, boolean visualizeMachine, boolean visualizeLadder) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
         this.visualizeMachine = visualizeMachine;
@@ -54,9 +51,7 @@ public class PLCExperimentImpl implements IPLCExperiment {
             Visualization.visualize(result, alphabet);
 
         /*
-        if (visualizeLadder) {
-            // TODO: Redo with new struct
-        }
+         * if (visualizeLadder) { // TODO: Redo with new struct }
          */
     }
 

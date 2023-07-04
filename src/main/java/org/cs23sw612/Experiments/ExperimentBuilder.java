@@ -9,7 +9,6 @@ import org.cs23sw612.Interfaces.MealyLearnerFactory;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.BitWordCacheSUL;
-import org.cs23sw612.SUL.BooleanWordCacheSUL;
 import org.cs23sw612.Util.Bit;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
@@ -39,8 +38,8 @@ public class ExperimentBuilder {
         return new ExperimentBuilder.EQOracleBuilder();
     }
 
-    public ExperimentBuilder.EQOracleBuilder withOracle(
-            OracleFactoryRepository<Word<Bit>, Word<Bit>> oracleRepository, String oracleName) {
+    public ExperimentBuilder.EQOracleBuilder withOracle(OracleFactoryRepository<Word<Bit>, Word<Bit>> oracleRepository,
+            String oracleName) {
         return withOracle(oracleRepository.getOracleFactory(oracleName));
     }
 

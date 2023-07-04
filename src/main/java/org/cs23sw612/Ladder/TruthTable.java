@@ -149,8 +149,7 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
                 + String.join(" " + sep + " ",
                         IntStream.range(0, outputs.get(0).length()).boxed().map(i -> String.format("$O_%d$", i))
                                 .toList())
-                + headerSep + String.join(lineSep,
-                        rows.stream().map(row -> row.asString(catSep)).toList());
+                + headerSep + String.join(lineSep, rows.stream().map(row -> row.asString(catSep)).toList());
     }
 
     /**
