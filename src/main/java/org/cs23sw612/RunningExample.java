@@ -77,33 +77,15 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-
-
         p("TruthTable:");
-        var nt = new NewTruthTable(example, alphabet);
+        var nt = new NewTruthTable<>(example, alphabet);
         p(nt.toLatexTabularString());
-        // p(nt.test());
-        // p(nt.encode().values());
+        p("BDDs:");
         HashMap<String, BDDNode> m = nt.encodeBDDs();
         p(m);
         p(m.get("O[1]").makeRung());
         var lad = new NewLadder(m);
         p("LAD:");
         p(lad.gates.keySet());
-        /*
-         * EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>,
-         * Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new
-         * EquationCollection<>( example, alphabet); p("Truth table:");
-         * p(ec.getTabularLatex());
-         * 
-         * p("Equations:"); ec.forEach(e -> p("\\item[]" + e));
-         * 
-         * p("Rungs:"); var ladder = new Ladder(ec);
-         * ladder.outRungs.forEach(System.out::print);
-         * ladder.stateRungs.forEach(System.out::print);
-         * 
-         * var visualizedSvg = Visualizer.layoutSVG(ladder);
-         * Visualizer.showSVG(visualizedSvg);
-         */
     }
 }
