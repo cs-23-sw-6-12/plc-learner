@@ -15,6 +15,7 @@ import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.cs23sw612.Ladder.BDD.BDDNode;
+import org.cs23sw612.Ladder.NewLadder;
 import org.cs23sw612.Ladder.NewTruthTable;
 import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
@@ -84,10 +85,11 @@ public class RunningExample {
         // p(nt.test());
         // p(nt.encode().values());
         HashMap<String, BDDNode> m = nt.encode();
-        p(m.get("O[1]"));
-        p(m.get("O[1]").reduce());
-        //p(m);
-        //p(nt.test());
+        p(m);
+        p(m.get("O[1]").makeRung());
+        var lad = new NewLadder(m);
+        p("LAD:");
+        p(lad.gates.keySet());
         /*
          * EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>,
          * Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new

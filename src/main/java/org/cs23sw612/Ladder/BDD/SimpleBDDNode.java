@@ -1,30 +1,26 @@
 package org.cs23sw612.Ladder.BDD;
 
 import net.automatalib.commons.util.Pair;
+import org.cs23sw612.Ladder.Rungs.*;
 import org.cs23sw612.Util.Bit;
 
 import java.util.List;
 
 public class SimpleBDDNode extends BDDNode {
     // Left is false, right is true
-    public BDDNode left, right;
+    private BDDNode left, right;
     public String label;
 
     @Override
     public BDDNode reduce() { // TODO: Variable ordering
-        left = left == null ? BDDNode.FALSE : left.reduce();
-        right = right == null ? BDDNode.FALSE : right.reduce();
+        left = left == null ? null : left.reduce();
+        right = right == null ? null : right.reduce();
 
         if (left == right) {
             return left;
         }
 
         return this;
-    }
-
-    @Override
-    public boolean value() { // TODO
-        return false;
     }
 
     @Override
@@ -65,5 +61,30 @@ public class SimpleBDDNode extends BDDNode {
     public String toString() {
         return label + String.format("{\nleft: %s,\nright: %s}", left == null ? "NULL" : left.toString(),
                 right == null ? "NULL" : right.toString());
+    }
+
+    @Override
+    public boolean equalNodes(BDDNode other) {
+        if (other instanceof SimpleBDDNode) {
+            SimpleBDDNode o = ((SimpleBDDNode) other);
+            System.out.println(label + ": " + label.equals(o.label));
+            return label.equals(o.label) &&
+                    left == null ? o.left == null : left.equalNodes(o.left) &&
+                    right == null ? o.right == null : right.equalNodes(o.right);
+        } else {
+            System.out.println(label + ": ");
+        }
+        return false;
+    }
+
+    @Override
+    public NewRung makeRung() {
+        if (left == null) { //If we only have on the right-branch (true branch)
+            return new SimpleRung(label, true, right.makeRung());
+        } else if (right == null) { //If we only have on the left-branch (false branch)
+            return new SimpleRung(label, false, left.makeRung());
+        } else {
+            return new CompositeRung(label, left.makeRung(), right.makeRung());
+        }
     }
 }

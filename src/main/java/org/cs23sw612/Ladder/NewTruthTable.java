@@ -91,15 +91,15 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
 
     public HashMap<String, BDDNode> encode() {
         HashMap<String, BDDNode> map = new HashMap<>();
-        rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get)
-                .forEach(pair -> {
-                    // System.out.println("(" + pair.getFirst() + ", " + pair.getSecond() + ")");
-                    for (String str : pair.getFirst()) {
-                        if (!map.containsKey(str))
-                            map.put(str, new SimpleBDDNode());
-                        map.get(str).insert(pair.getSecond(), true);
-                    }
-                });
+        var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get).toList();
+        for (var pair : list) {
+            for (String str : pair.getFirst()) {
+                if (!map.containsKey(str))
+                    map.put(str, new SimpleBDDNode());
+                map.get(str).insert(pair.getSecond(), true);
+            }
+        }
+        map.values().forEach(BDDNode::reduce);
 
         return map;
     }
