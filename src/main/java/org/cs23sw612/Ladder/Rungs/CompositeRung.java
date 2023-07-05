@@ -4,6 +4,7 @@ public record CompositeRung(String label, NewRung left, NewRung right) implement
 
     @Override
     public String toString() {
-        return "(" + String.format("|/%s|", label) + left.toString() + ") OR (" + String.format("|%s|", label) + right.toString() + ")";
+        return "(" + String.format("|/%s|", label) + left.toString() + ") OR (" + String.format("|%s|", label)
+                + right.toString() + ")";
     }
 }

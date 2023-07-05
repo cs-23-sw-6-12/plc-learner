@@ -13,14 +13,15 @@ public class NewLadder {
 
     public NewLadder(HashMap<String, BDDNode> bdds) {
         var sortedBdds = new HashMap<ArrayList<String>, BDDNode>();
-        for (var pair : bdds.entrySet().stream().map(e -> Pair.of(new ArrayList<>(List.of(e.getKey())), e.getValue())).toList())
+        for (var pair : bdds.entrySet().stream().map(e -> Pair.of(new ArrayList<>(List.of(e.getKey())), e.getValue()))
+                .toList())
             sortedBdds.entrySet().stream().filter(b -> b.getValue().equalNodes(pair.getSecond())).findFirst()
-                    .ifPresentOrElse(e -> e.getKey().addAll(pair.getFirst()), () -> sortedBdds.put(pair.getFirst(), pair.getSecond()));
+                    .ifPresentOrElse(e -> e.getKey().addAll(pair.getFirst()),
+                            () -> sortedBdds.put(pair.getFirst(), pair.getSecond()));
 
         gates = new HashMap<>();
         for (var entry : sortedBdds.entrySet())
             gates.put(entry.getKey(), entry.getValue().makeRung());
-
 
     }
 

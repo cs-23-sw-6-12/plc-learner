@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
 
 /**
  * A truth table over the transitions in the mealy machine
+ * 
  * @param <IO>
  *            Input/Output
  */
@@ -87,7 +88,8 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
 
     public HashMap<String, BDDNode> encodeBDDs() {
         HashMap<String, BDDNode> map = new HashMap<>();
-        var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get).toList();
+        var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get)
+                .toList();
         for (var pair : list) {
             for (String str : pair.getFirst()) {
                 if (!map.containsKey(str))
@@ -165,7 +167,7 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
             if (outs.isEmpty())
                 return Optional.empty();
             else {
-                //System.out.println(outs + " = " + this.asString(" & "));
+                // System.out.println(outs + " = " + this.asString(" & "));
                 // System.out.println(this.encodeInputAndState());
                 return Optional.of(Pair.of(outs, this.encodeInputAndState()));
             }

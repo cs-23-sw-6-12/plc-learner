@@ -67,9 +67,9 @@ public class SimpleBDDNode extends BDDNode {
     public boolean equalNodes(BDDNode other) {
         if (other instanceof SimpleBDDNode o) {
             System.out.println(label + ": " + label.equals(o.label));
-            return label.equals(o.label) &&
-                    left == null ? o.left == null : left.equalNodes(o.left) &&
-                    right == null ? o.right == null : right.equalNodes(o.right);
+            return label.equals(o.label) && left == null
+                    ? o.left == null
+                    : left.equalNodes(o.left) && right == null ? o.right == null : right.equalNodes(o.right);
         } else {
             System.out.println(label + ": ");
         }
@@ -78,9 +78,9 @@ public class SimpleBDDNode extends BDDNode {
 
     @Override
     public NewRung makeRung() {
-        if (left == null) { //If we only have on the right-branch (true branch)
+        if (left == null) { // If we only have on the right-branch (true branch)
             return new SimpleRung(label, true, right.makeRung());
-        } else if (right == null) { //If we only have on the left-branch (false branch)
+        } else if (right == null) { // If we only have on the left-branch (false branch)
             return new SimpleRung(label, false, left.makeRung());
         } else {
             return new CompositeRung(label, left.makeRung(), right.makeRung());

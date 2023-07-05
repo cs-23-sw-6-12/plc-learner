@@ -17,6 +17,7 @@ public class SimpleRung implements NewRung {
 
     @Override
     public String toString() {
-        return String.format("|%s%s|", open ? " " : "/", label) + "(" + String.join(" OR ", followingRungs.stream().map(Object::toString).toList()) + ")";
+        return String.format("|%s%s|", open ? " " : "/", label) + "("
+                + String.join(" OR ", followingRungs.stream().map(Object::toString).toList()) + ")";
     }
 }
