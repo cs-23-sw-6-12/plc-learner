@@ -9,6 +9,7 @@ import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.BDD.SimpleBDDNode;
+import org.cs23sw612.Ladder.Rungs.OutGate;
 import org.cs23sw612.Util.Bit;
 
 import java.util.*;
@@ -86,15 +87,15 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
         return Word.fromList(Bit.byteFromInt(state, varCount));
     }
 
-    public HashMap<String, BDDNode> encodeBDDs() {
-        HashMap<String, BDDNode> map = new HashMap<>();
+    public HashMap<OutGate, BDDNode> encodeBDDs() {
+        HashMap<OutGate, BDDNode> map = new HashMap<>();
         var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get)
                 .toList();
         for (var pair : list) {
-            for (String str : pair.getFirst()) {
-                if (!map.containsKey(str))
-                    map.put(str, new SimpleBDDNode());
-                map.get(str).insert(pair.getSecond(), true);
+            for (OutGate gate : pair.getFirst()) {
+                if (!map.containsKey(gate))
+                    map.put(gate, new SimpleBDDNode());
+                map.get(gate).insert(pair.getSecond(), true);
             }
         }
         map.values().forEach(BDDNode::reduce);
@@ -158,11 +159,13 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
                     String.join(" " + sep + " ", output.stream().map(Object::toString).toList())});
         }
 
-        private Optional<Pair<List<String>, List<Pair<String, Bit>>>> getHighOutputAndStates() {
-            ArrayList<String> outs = new ArrayList<>(IntStream.range(0, output.length()).boxed()
-                    .filter(i -> output.getSymbol(i).value).map(i -> String.format("O[%d]", i)).toList());
+        private Optional<Pair<List<OutGate>, List<Pair<String, Bit>>>> getHighOutputAndStates() {
+            ArrayList<OutGate> outs = new ArrayList<>(
+                    IntStream.range(0, output.length()).boxed().filter(i -> output.getSymbol(i).value)
+                            .map(i -> new OutGate(String.format("O[%d]", i), Optional.empty())).toList());
             outs.addAll(IntStream.range(0, nextState.length()).boxed().filter(i -> nextState.getSymbol(i).value)
-                    .map(i -> String.format("S'[%d]", i)).toList());
+                    .map(i -> new OutGate(String.format("S'[%d]", i), Optional.of(String.format("S[%d]", i))))
+                    .toList());
 
             if (outs.isEmpty())
                 return Optional.empty();
