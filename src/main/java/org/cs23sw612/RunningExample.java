@@ -17,7 +17,6 @@ import net.automatalib.words.Word;
 import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.NewLadder;
 import org.cs23sw612.Ladder.NewTruthTable;
-import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
@@ -78,13 +77,14 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-        var t = new TruthTable(example, alphabet);
-        p(t.toLatexTabularString());
+
+
+        p("TruthTable:");
         var nt = new NewTruthTable(example, alphabet);
         p(nt.toLatexTabularString());
         // p(nt.test());
         // p(nt.encode().values());
-        HashMap<String, BDDNode> m = nt.encode();
+        HashMap<String, BDDNode> m = nt.encodeBDDs();
         p(m);
         p(m.get("O[1]").makeRung());
         var lad = new NewLadder(m);

@@ -18,17 +18,13 @@ import java.util.stream.IntStream;
 
 /**
  * A truth table over the transitions in the mealy machine
- *
- * @param <S>
- *            States
  * @param <IO>
  *            Input/Output
  */
-public class NewTruthTable<S extends Number, IO extends Word<? extends Comparable<Boolean>>> {
+public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
     private int inputCount;
     private final List<IO> outputs = new ArrayList<>();
     private final List<TruthRow<Word<Bit>>> rows = new ArrayList<>();
-    private final StateIDs<S> stateIds;
     private int varCount;
     private final Function<String, String> latexHeader = ph -> new String(new char[inputCount]).replace("\0", "|" + ph)
             + "|" + // Input
@@ -42,7 +38,7 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
      * @param alphabet
      *            The given input-alphabet
      */
-    public <T extends CompactMealyTransition<? super IO>, M extends TransitionOutputAutomaton<S, IO, T, ? super IO>, A extends Alphabet<IO>> NewTruthTable(
+    public <S extends Number, T extends CompactMealyTransition<? super IO>, M extends TransitionOutputAutomaton<S, IO, T, ? super IO>, A extends Alphabet<IO>> NewTruthTable(
             M machine, A alphabet) {
         // region assert input alphabet
         {
@@ -55,7 +51,7 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
         // endregion
 
         inputCount = (int) alphabet.getSymbol(0).stream().count();
-        this.stateIds = machine.stateIDs();
+        StateIDs<S> stateIds = machine.stateIDs();
 
         var states = machine.getStates();
         varCount = (int) Math.max(Math.ceil(Math.log(states.size()) / Math.log(2)), 1); // Log base 2
@@ -89,7 +85,7 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
         return Word.fromList(Bit.byteFromInt(state, varCount));
     }
 
-    public HashMap<String, BDDNode> encode() {
+    public HashMap<String, BDDNode> encodeBDDs() {
         HashMap<String, BDDNode> map = new HashMap<>();
         var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get).toList();
         for (var pair : list) {
@@ -102,10 +98,6 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
         map.values().forEach(BDDNode::reduce);
 
         return map;
-    }
-
-    public List<Optional<Pair<List<String>, List<Pair<String, Bit>>>>> test() {
-        return rows.stream().map(TruthRow::getHighOutputAndStates).toList();
     }
 
     @Override
@@ -165,7 +157,7 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
         }
 
         private Optional<Pair<List<String>, List<Pair<String, Bit>>>> getHighOutputAndStates() {
-            ArrayList<String> outs = new ArrayList(IntStream.range(0, output.length()).boxed()
+            ArrayList<String> outs = new ArrayList<>(IntStream.range(0, output.length()).boxed()
                     .filter(i -> output.getSymbol(i).value).map(i -> String.format("O[%d]", i)).toList());
             outs.addAll(IntStream.range(0, nextState.length()).boxed().filter(i -> nextState.getSymbol(i).value)
                     .map(i -> String.format("S'[%d]", i)).toList());
@@ -180,7 +172,7 @@ public class NewTruthTable<S extends Number, IO extends Word<? extends Comparabl
         }
 
         private List<Pair<String, Bit>> encodeInputAndState() {
-            ArrayList<Pair<String, Bit>> out = new ArrayList(IntStream.range(0, input.length()).boxed()
+            ArrayList<Pair<String, Bit>> out = new ArrayList<>(IntStream.range(0, input.length()).boxed()
                     .map(i -> Pair.of(String.format("I[%d]", i), input.getSymbol(i))).toList());
             out.addAll(IntStream.range(0, state.length()).boxed()
                     .map(i -> Pair.of(String.format("S[%d]", i), state.getSymbol(i))).toList());

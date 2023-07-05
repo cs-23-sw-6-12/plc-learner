@@ -65,8 +65,7 @@ public class SimpleBDDNode extends BDDNode {
 
     @Override
     public boolean equalNodes(BDDNode other) {
-        if (other instanceof SimpleBDDNode) {
-            SimpleBDDNode o = ((SimpleBDDNode) other);
+        if (other instanceof SimpleBDDNode o) {
             System.out.println(label + ": " + label.equals(o.label));
             return label.equals(o.label) &&
                     left == null ? o.left == null : left.equalNodes(o.left) &&
