@@ -108,8 +108,7 @@ public class SimpleBDDNode extends BDDNode {
         } else if (right == null) { // If we only have on the left-branch (false branch)
             return new SimpleRung(label, false, left.makeRung());
         } else {
-
-                return new CompositeRung(label, left.makeRung(), right.makeRung());
+            return new CompositeRung(label, left.makeRung(), right.makeRung());
         }
     }
 
