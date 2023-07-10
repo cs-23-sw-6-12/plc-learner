@@ -20,4 +20,9 @@ public class CompositeRung implements NewRung {
         return "(" + String.format("|/%s|", label) + (left != null ? left : "") + ") OR ("
                 + String.format("|%s|", label) + (right != null ? right : "") + ")";
     }
+
+    @Override
+    public int rungHeight() {
+        return Math.max(left == null ? 0 : left.rungHeight(), right == null ? 0 : right.rungHeight());
+    }
 }

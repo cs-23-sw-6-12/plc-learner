@@ -20,4 +20,9 @@ public class SimpleRung implements NewRung {
         return String.format("|%s%s|", open ? " " : "/", label) + "("
                 + String.join(" OR ", followingRungs.stream().map(Object::toString).toList()) + ")";
     }
+
+    @Override
+    public int rungHeight() {
+        return followingRungs.size() + followingRungs.stream().mapToInt(NewRung::rungHeight).sum();
+    }
 }

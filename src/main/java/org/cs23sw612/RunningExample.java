@@ -88,6 +88,7 @@ public class RunningExample {
         var lad = new NewLadder(m);
         p("LAD:");
         p(lad.gates);
+        lad.gates.forEach((k, v) -> p("Rung " + v + " height: " + v.rungHeight()));
         p(lad.stateUpd);
     }
 }
