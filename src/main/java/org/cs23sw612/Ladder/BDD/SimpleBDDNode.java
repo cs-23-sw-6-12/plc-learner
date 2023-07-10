@@ -11,7 +11,8 @@ public class SimpleBDDNode extends BDDNode {
     public BDDNode left, right;
     public String label;
 
-    private boolean orderable() {
+    @Override
+    boolean isInnerNode() {
         return left instanceof SimpleBDDNode && right instanceof SimpleBDDNode;
     }
     @Override
@@ -21,7 +22,7 @@ public class SimpleBDDNode extends BDDNode {
 
         if (left == right)
             return left;
-        else if (orderable()) { // Checking whether the children have identical sub paths
+        else if (isInnerNode()) { // Checking whether the children have identical sub paths
             // System.out.println("Orderable");
             if (((SimpleBDDNode) left).left == ((SimpleBDDNode) right).left) {
                 SimpleBDDNode replacer = new SimpleBDDNode();

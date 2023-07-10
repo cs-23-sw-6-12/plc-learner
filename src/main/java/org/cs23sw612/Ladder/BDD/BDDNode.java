@@ -16,6 +16,7 @@ public abstract class BDDNode {
     public abstract boolean equalNodes(BDDNode other);
 
     public abstract NewRung makeRung();
+    abstract boolean isInnerNode();
 
     private final static class TrueBDD extends BDDNode {
         @Override
@@ -30,6 +31,11 @@ public abstract class BDDNode {
         @Override
         public NewRung makeRung() {
             return null;
+        }
+
+        @Override
+        boolean isInnerNode() {
+            return false;
         }
 
         @Override
@@ -50,6 +56,11 @@ public abstract class BDDNode {
         @Override
         public NewRung makeRung() {
             return null;
+        }
+
+        @Override
+        boolean isInnerNode() {
+            return false;
         }
 
         @Override
