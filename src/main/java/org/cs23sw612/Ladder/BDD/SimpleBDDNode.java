@@ -111,9 +111,4 @@ public class SimpleBDDNode extends BDDNode {
             return new CompositeRung(label, left.makeRung(), right.makeRung());
         }
     }
-
-    @Override
-    public boolean isTrue() {
-        return left != null && left.isTrue() && right != null && right.isTrue();
-    }
 }
