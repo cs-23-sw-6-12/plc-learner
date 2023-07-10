@@ -8,16 +8,42 @@ import java.util.List;
 
 public class SimpleBDDNode extends BDDNode {
     // Left is false, right is true
-    private BDDNode left, right;
+    public BDDNode left, right;
     public String label;
 
+    private boolean orderable() {
+        return left instanceof SimpleBDDNode && right instanceof SimpleBDDNode;
+    }
     @Override
     public BDDNode reduce() { // TODO: Variable ordering
         left = left == null ? null : left.reduce();
         right = right == null ? null : right.reduce();
 
-        if (left == right) {
+        if (left == right)
             return left;
+        else if (orderable()) { // Checking whether the children have identical sub paths
+            // System.out.println("Orderable");
+            if (((SimpleBDDNode) left).left == ((SimpleBDDNode) right).left) {
+                SimpleBDDNode replacer = new SimpleBDDNode();
+                replacer.label = ((SimpleBDDNode) left).label;
+                SimpleBDDNode copy = new SimpleBDDNode();
+                copy.label = this.label;
+                copy.left = ((SimpleBDDNode) left).right;
+                copy.right = ((SimpleBDDNode) right).right;
+                replacer.left = ((SimpleBDDNode) left).left;
+                replacer.right = copy;
+                return replacer.reduce();
+            } else if (((SimpleBDDNode) left).right == ((SimpleBDDNode) right).right) {
+                SimpleBDDNode replacer = new SimpleBDDNode();
+                replacer.label = ((SimpleBDDNode) left).label;
+                SimpleBDDNode copy = new SimpleBDDNode();
+                copy.label = this.label;
+                copy.left = ((SimpleBDDNode) left).left;
+                copy.right = ((SimpleBDDNode) right).left;
+                replacer.right = ((SimpleBDDNode) left).right;
+                replacer.left = copy;
+                return replacer.reduce();
+            }
         }
 
         return this;
@@ -32,8 +58,8 @@ public class SimpleBDDNode extends BDDNode {
         } else
             label = p.getFirst();
         if (vars.size() == 1) {
-            System.out.println("(" + p.getFirst() + ", " + p.getSecond() + ")");
-            System.out.println(p.getSecond().value);
+            // System.out.println("(" + p.getFirst() + ", " + p.getSecond() + ")");
+            // System.out.println(p.getSecond().value);
             if (p.getSecond().value)
                 right = value ? BDDNode.TRUE : BDDNode.FALSE;
             else
@@ -66,10 +92,9 @@ public class SimpleBDDNode extends BDDNode {
     @Override
     public boolean equalNodes(BDDNode other) {
         if (other instanceof SimpleBDDNode o) {
-            System.out.println(label + ": " + label.equals(o.label));
-            return label.equals(o.label) && left == null
-                    ? o.left == null
-                    : left.equalNodes(o.left) && right == null ? o.right == null : right.equalNodes(o.right);
+            // System.out.println(label + ": " + label.equals(o.label));
+            return label.equals(o.label) && (left == null ? o.left == null : left.equalNodes(o.left))
+                    && (right == null ? o.right == null : right.equalNodes(o.right));
         } else {
             System.out.println(label + ": ");
         }
@@ -83,7 +108,13 @@ public class SimpleBDDNode extends BDDNode {
         } else if (right == null) { // If we only have on the left-branch (false branch)
             return new SimpleRung(label, false, left.makeRung());
         } else {
-            return new CompositeRung(label, left.makeRung(), right.makeRung());
+
+                return new CompositeRung(label, left.makeRung(), right.makeRung());
         }
+    }
+
+    @Override
+    public boolean isTrue() {
+        return left != null && left.isTrue() && right != null && right.isTrue();
     }
 }

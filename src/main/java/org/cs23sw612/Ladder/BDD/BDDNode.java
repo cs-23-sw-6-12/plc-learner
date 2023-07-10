@@ -17,6 +17,8 @@ public abstract class BDDNode {
 
     public abstract NewRung makeRung();
 
+    public abstract boolean isTrue();
+
     private final static class TrueBDD extends BDDNode {
         @Override
         public void insert(List<Pair<String, Bit>> vars, boolean value) {
@@ -30,6 +32,11 @@ public abstract class BDDNode {
         @Override
         public NewRung makeRung() {
             return null;
+        }
+
+        @Override
+        public boolean isTrue() {
+            return true;
         }
 
         @Override
@@ -50,6 +57,11 @@ public abstract class BDDNode {
         @Override
         public NewRung makeRung() {
             return null;
+        }
+
+        @Override
+        public boolean isTrue() {
+            return false;
         }
 
         @Override

@@ -98,7 +98,9 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
                 map.get(gate).insert(pair.getSecond(), true);
             }
         }
-        map.values().forEach(BDDNode::reduce);
+        // map.values().forEach(BDDNode::reduce);
+
+        map.replaceAll((k, v) -> v.reduce());
 
         return map;
     }
