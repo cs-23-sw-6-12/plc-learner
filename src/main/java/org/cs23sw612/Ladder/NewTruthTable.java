@@ -103,12 +103,13 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
         var entries = map.entrySet();
         for (var entry : entries) {
             if (!out.keySet().stream().anyMatch(l -> l.contains(entry.getKey()))) {
-                var other = entries.stream().filter(e -> e.getValue().equalNodes(entry.getValue())).map(Map.Entry::getKey).toList();
+                var other = entries.stream().filter(e -> e.getValue().equalNodes(entry.getValue()))
+                        .map(Map.Entry::getKey).toList();
                 out.put(other, entry.getValue().reduce());
             }
         }
 
-        //map.replaceAll((k, v) -> v.reduce());
+        // map.replaceAll((k, v) -> v.reduce());
 
         return out;
     }

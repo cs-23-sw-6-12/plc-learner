@@ -1,11 +1,9 @@
 package org.cs23sw612.Ladder;
 
-import net.automatalib.commons.util.Pair;
 import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.Rungs.NewRung;
 import org.cs23sw612.Ladder.Rungs.OutGate;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
