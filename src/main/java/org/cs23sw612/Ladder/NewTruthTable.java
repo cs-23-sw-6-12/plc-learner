@@ -87,7 +87,7 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
         return Word.fromList(Bit.byteFromInt(state, varCount));
     }
 
-    public HashMap<OutGate, BDDNode> encodeBDDs() {
+    public HashMap<List<OutGate>, BDDNode> encodeBDDs() {
         HashMap<OutGate, BDDNode> map = new HashMap<>();
         var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get)
                 .toList();
@@ -98,11 +98,19 @@ public class NewTruthTable<IO extends Word<? extends Comparable<Boolean>>> {
                 map.get(gate).insert(pair.getSecond(), true);
             }
         }
-        // map.values().forEach(BDDNode::reduce);
 
-        map.replaceAll((k, v) -> v.reduce());
+        HashMap<List<OutGate>, BDDNode> out = new HashMap<>();
+        var entries = map.entrySet();
+        for (var entry : entries) {
+            if (!out.keySet().stream().anyMatch(l -> l.contains(entry.getKey()))) {
+                var other = entries.stream().filter(e -> e.getValue().equalNodes(entry.getValue())).map(Map.Entry::getKey).toList();
+                out.put(other, entry.getValue().reduce());
+            }
+        }
 
-        return map;
+        //map.replaceAll((k, v) -> v.reduce());
+
+        return out;
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class RunningExample {
     private static void p(Object s) {
@@ -82,7 +83,7 @@ public class RunningExample {
         var nt = new NewTruthTable<>(example, alphabet);
         p(nt.toLatexTabularString());
         p("BDDs:");
-        HashMap<OutGate, BDDNode> m = nt.encodeBDDs();
+        HashMap<List<OutGate>, BDDNode> m = nt.encodeBDDs();
         p(m);
         // p(m.get("O[1]").makeRung());
         var lad = new NewLadder(m);
