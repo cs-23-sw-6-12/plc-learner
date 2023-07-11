@@ -22,7 +22,12 @@ public class CompositeRung implements NewRung {
     }
 
     @Override
-    public int rungHeight() {
-        return Math.max(left == null ? 0 : left.rungHeight(), right == null ? 0 : right.rungHeight());
+    public int verticalHeight() {
+        return Math.max(left == null ? 0 : left.verticalHeight(), right == null ? 0 : right.verticalHeight());
+    }
+
+    @Override
+    public int horizontalHeight() {
+        return Math.max(left == null ? 0 : left.horizontalHeight(), right == null ? 0 : right.horizontalHeight());
     }
 }
