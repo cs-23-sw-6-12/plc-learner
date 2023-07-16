@@ -175,9 +175,8 @@ public class LearnCommand implements Callable<Integer> {
 
             bajerClient.Connect(source.connectionOptions.bajerServerAddress, source.connectionOptions.bajerServerPort);
 
-            // alphabet = AlphabetUtil.createAlphabet(source.connectionOptions.inputCount);
             alphabet = Bit.createAlphabet(source.connectionOptions.inputCount);
-            sul = new SULClient(bajerClient, new BitWordInputAdapter(), new BitWordOutputAdapter(),
+            sul = new SULClient<>(bajerClient, new BitWordInputAdapter(), new BitWordOutputAdapter(),
                     (byte) source.connectionOptions.inputCount, (byte) source.connectionOptions.outputCount);
         }
         return new ExperimentBuilder(sul, alphabet);

@@ -74,22 +74,7 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-        var t = new TruthTable(example, alphabet);
+        var t = new TruthTable<>(example, alphabet);
         p(t.toLatexTabularString());
-        /*
-         * EquationCollection<Integer, Word<Bit>, CompactMealyTransition<Object>,
-         * Word<Bit>, CompactMealy<Word<Bit>, Object>, Alphabet<Word<Bit>>> ec = new
-         * EquationCollection<>( example, alphabet); p("Truth table:");
-         * p(ec.getTabularLatex());
-         * 
-         * p("Equations:"); ec.forEach(e -> p("\\item[]" + e));
-         * 
-         * p("Rungs:"); var ladder = new Ladder(ec);
-         * ladder.outRungs.forEach(System.out::print);
-         * ladder.stateRungs.forEach(System.out::print);
-         * 
-         * var visualizedSvg = Visualizer.layoutSVG(ladder);
-         * Visualizer.showSVG(visualizedSvg);
-         */
     }
 }
