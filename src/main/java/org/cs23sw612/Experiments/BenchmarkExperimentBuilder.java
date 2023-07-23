@@ -3,12 +3,13 @@ package org.cs23sw612.Experiments;
 import de.learnlib.api.SUL;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Util.Bit;
 
 public class BenchmarkExperimentBuilder extends ExperimentBuilder {
     private int runs;
     private int warmup_rounds;
 
-    public BenchmarkExperimentBuilder(SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet) {
+    public BenchmarkExperimentBuilder(SUL<Word<Bit>, Word<Bit>> sul, Alphabet<Word<Bit>> alphabet) {
         super(sul, alphabet);
     }
 

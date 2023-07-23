@@ -7,7 +7,6 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.cs23sw612.Util.AlphabetUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +37,7 @@ import java.util.stream.IntStream;
  * @param <A>
  *            Alphabet over {@code I}
  */
-class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
+public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
     private int inputCount = 0;
     private final List<O> outputs = new ArrayList<>();
     private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
@@ -57,7 +56,7 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
      * @param alphabet
      *            The given input-alphabet
      */
-    TruthTable(M machine, A alphabet) {
+    public TruthTable(M machine, A alphabet) {
         // region assert input alphabet
         {
             var min = alphabet.stream().min(Comparator.comparing(w -> w.stream().count()));
@@ -150,8 +149,7 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
                 + String.join(" " + sep + " ",
                         IntStream.range(0, outputs.get(0).length()).boxed().map(i -> String.format("$O_%d$", i))
                                 .toList())
-                + headerSep + String.join(lineSep,
-                        rows.stream().map(row -> row.asString(sep, catSep, AlphabetUtil::toBinaryString)).toList());
+                + headerSep + String.join(lineSep, rows.stream().map(row -> row.asString(catSep)).toList());
     }
 
     /**
@@ -177,14 +175,14 @@ class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTran
             return String.format("%s | %s | %s || %s", input, state, nextState, output);
         }
 
-        String asString(String sep, String catSep, Function<Object, String> conv) {
+        String asString(String sep) {
             return String.join("",
                     new String[]{
-                            input.stream().map(conv).map(s -> String.format("%s %s ", s, catSep))
+                            input.stream().map(Object::toString).map(s -> String.format("%s %s ", s, sep))
                                     .collect(Collectors.joining()),
-                            conv.apply(state), " " + catSep + " ", conv.apply(nextState), " " + catSep + " ",
-                            String.join(" " + catSep + " ",
-                                    output.stream().map(conv).map(s -> String.format("%s", s)).toList())});
+                            state.toString(), " " + sep + " ", nextState.toString(), " " + sep + " ",
+                            String.join(" " + sep + " ",
+                                    output.stream().map(Object::toString).map(s -> String.format("%s", s)).toList())});
         }
 
         @Override

@@ -11,14 +11,12 @@ import de.learnlib.oracle.equivalence.MealySimulatorEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
 import de.learnlib.util.Experiment;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
-import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.Ladder.EquationCollection;
-import org.cs23sw612.Ladder.Ladder;
-import org.cs23sw612.Ladder.Visualization.Visualizer;
+import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
+import org.cs23sw612.Util.Bit;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -29,29 +27,29 @@ public class RunningExample {
         System.out.println(s);
     }
     public static void main(String[] args) throws IOException {
-        CompactMealy<Word<Boolean>, Object> example = ExampleSUL.createExample();
-        Alphabet<Word<Boolean>> alphabet = ExampleSUL.alphabet;
-        MealySimulatorSUL<Word<Boolean>, Object> sul = ExampleSUL.createExampleSUL();
+        CompactMealy<Word<Bit>, Object> example = ExampleSUL.createExample();
+        Alphabet<Word<Bit>> alphabet = example.getInputAlphabet();
+        MealySimulatorSUL<Word<Bit>, Object> sul = ExampleSUL.createExampleSUL();
 
         // Standard mealy membership oracle.
-        SULOracle<Word<Boolean>, Object> membershipOracle = new SULOracle<>(sul);
+        SULOracle<Word<Bit>, Object> membershipOracle = new SULOracle<>(sul);
 
-        MealySimulatorEQOracle<Word<Boolean>, Object> equivalenceOracle = new MealySimulatorEQOracle<>(example);
+        MealySimulatorEQOracle<Word<Bit>, Object> equivalenceOracle = new MealySimulatorEQOracle<>(example);
 
-        ExtensibleLStarMealy<Word<Boolean>, Object> learnerLstar = new ExtensibleLStarMealyBuilder<Word<Boolean>, Object>()
+        ExtensibleLStarMealy<Word<Bit>, Object> learnerLstar = new ExtensibleLStarMealyBuilder<Word<Bit>, Object>()
                 .withAlphabet(alphabet) // input alphabet
                 .withOracle(membershipOracle) // membership oracle
                 .withInitialSuffixes(Collections.emptyList()) // initial suffixes
                 .create();
-        TTTLearnerMealy<Word<Boolean>, Object> learnerTTT = new TTTLearnerMealy<>(alphabet, membershipOracle,
+        TTTLearnerMealy<Word<Bit>, Object> learnerTTT = new TTTLearnerMealy<>(alphabet, membershipOracle,
                 AcexAnalyzers.BINARY_SEARCH_BWD);
-        MealyDHC<Word<Boolean>, Object> learnerDHC = new MealyDHC<>(alphabet, membershipOracle);
+        MealyDHC<Word<Bit>, Object> learnerDHC = new MealyDHC<>(alphabet, membershipOracle);
 
-        Experiment.MealyExperiment<Word<Boolean>, Object> experimentLstar = new Experiment.MealyExperiment<>(
-                learnerLstar, equivalenceOracle, alphabet);
-        Experiment.MealyExperiment<Word<Boolean>, Object> experimentTTT = new Experiment.MealyExperiment<>(learnerTTT,
+        Experiment.MealyExperiment<Word<Bit>, Object> experimentLstar = new Experiment.MealyExperiment<>(learnerLstar,
                 equivalenceOracle, alphabet);
-        Experiment.MealyExperiment<Word<Boolean>, Object> experimentDHC = new Experiment.MealyExperiment<>(learnerDHC,
+        Experiment.MealyExperiment<Word<Bit>, Object> experimentTTT = new Experiment.MealyExperiment<>(learnerTTT,
+                equivalenceOracle, alphabet);
+        Experiment.MealyExperiment<Word<Bit>, Object> experimentDHC = new Experiment.MealyExperiment<>(learnerDHC,
                 equivalenceOracle, alphabet);
 
         experimentLstar.run();
@@ -76,21 +74,7 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-        EquationCollection<Integer, Word<Boolean>, CompactMealyTransition<Object>, Word<Boolean>, CompactMealy<Word<Boolean>, Object>, Alphabet<Word<Boolean>>> ec = new EquationCollection<>(
-                example, alphabet);
-        p("Truth table:");
-        p(ec.getTabularLatex());
-
-        p("Equations:");
-        ec.forEach(e -> p("\\item[]" + e));
-
-        p("Rungs:");
-        var ladder = new Ladder(ec);
-        ladder.outRungs.forEach(System.out::print);
-        ladder.stateRungs.forEach(System.out::print);
-
-        var visualizedSvg = Visualizer.layoutSVG(ladder);
-
-        Visualizer.showSVG(visualizedSvg);
+        var t = new TruthTable<>(example, alphabet);
+        p(t.toLatexTabularString());
     }
 }

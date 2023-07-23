@@ -9,9 +9,7 @@ import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
-import org.cs23sw612.Ladder.EquationCollection;
-import org.cs23sw612.Ladder.Ladder;
-import org.cs23sw612.Ladder.Visualization.Visualizer;
+import org.cs23sw612.Util.Bit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +19,15 @@ import java.io.IOException;
 
 public class PLCExperimentImpl implements IPLCExperiment {
 
-    private final Alphabet<Word<Boolean>> alphabet;
+    private final Alphabet<Word<Bit>> alphabet;
     private final String outputFileName;
     private final boolean visualizeMachine, visualizeLadder;
     private final Logger logger;
 
     public PLCExperimentImpl(
-            LearningAlgorithm<? extends MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> learningAlgorithm,
-            EquivalenceOracle<? super MealyMachine<?, Word<Boolean>, ?, Word<Boolean>>, Word<Boolean>, Word<Word<Boolean>>> equivalenceOracle,
-            Alphabet<Word<Boolean>> alphabet, String outputFileName, boolean visualizeMachine,
-            boolean visualizeLadder) {
+            LearningAlgorithm<? extends MealyMachine<?, Word<Bit>, ?, Word<Bit>>, Word<Bit>, Word<Word<Bit>>> learningAlgorithm,
+            EquivalenceOracle<? super MealyMachine<?, Word<Bit>, ?, Word<Bit>>, Word<Bit>, Word<Word<Bit>>> equivalenceOracle,
+            Alphabet<Word<Bit>> alphabet, String outputFileName, boolean visualizeMachine, boolean visualizeLadder) {
         this.alphabet = alphabet;
         this.outputFileName = outputFileName;
         this.visualizeMachine = visualizeMachine;
@@ -39,7 +36,7 @@ public class PLCExperimentImpl implements IPLCExperiment {
         this.experiment = new Experiment.MealyExperiment<>(learningAlgorithm, equivalenceOracle, alphabet);
     }
 
-    private final Experiment.MealyExperiment<Word<Boolean>, Word<Boolean>> experiment;
+    private final Experiment.MealyExperiment<Word<Bit>, Word<Bit>> experiment;
 
     @Override
     public void run() {
@@ -52,15 +49,10 @@ public class PLCExperimentImpl implements IPLCExperiment {
 
         if (visualizeMachine)
             Visualization.visualize(result, alphabet);
-
-        if (visualizeLadder) {
-            var ec = new EquationCollection<>(result, alphabet);
-            Visualizer.layoutSVG(new Ladder(ec));
-        }
     }
 
     @SuppressWarnings({"unchecked"})
-    private void saveResultAsDot(MealyMachine<?, Word<Boolean>, ?, Word<Boolean>> result) {
+    private void saveResultAsDot(MealyMachine<?, Word<Bit>, ?, Word<Bit>> result) {
         FileOutputStream outFile;
         try {
             outFile = new FileOutputStream(outputFileName);

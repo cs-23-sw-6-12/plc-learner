@@ -8,22 +8,23 @@ import org.cs23sw612.HashCacheStorage;
 import org.cs23sw612.Interfaces.MealyLearnerFactory;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
-import org.cs23sw612.SUL.BooleanWordCacheSUL;
+import org.cs23sw612.SUL.BitWordCacheSUL;
+import org.cs23sw612.Util.Bit;
 import org.cs23sw612.Util.LearnerFactoryRepository;
 import org.cs23sw612.Util.OracleFactoryRepository;
 
 import java.io.File;
 
 public class ExperimentBuilder {
-    SUL<Word<Boolean>, Word<Boolean>> sul;
-    Alphabet<Word<Boolean>> alphabet;
+    SUL<Word<Bit>, Word<Bit>> sul;
+    Alphabet<Word<Bit>> alphabet;
     OracleConfig EqOracleConfig;
-    MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory;
-    OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory;
+    MealyLearnerFactory<Word<Bit>, Word<Bit>> learnerFactory;
+    OracleFactory<Word<Bit>, Word<Bit>> oracleFactory;
     String dotOutputLocation;
     boolean visualizeMachine, visualizeLadder;
 
-    public ExperimentBuilder(SUL<Word<Boolean>, Word<Boolean>> sul, Alphabet<Word<Boolean>> alphabet) {
+    public ExperimentBuilder(SUL<Word<Bit>, Word<Bit>> sul, Alphabet<Word<Bit>> alphabet) {
         this.sul = sul;
         this.alphabet = alphabet;
     }
@@ -32,28 +33,28 @@ public class ExperimentBuilder {
         return new BenchmarkExperimentBuilder(this);
     }
 
-    public ExperimentBuilder.EQOracleBuilder withOracle(OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory) {
+    public ExperimentBuilder.EQOracleBuilder withOracle(OracleFactory<Word<Bit>, Word<Bit>> oracleFactory) {
         this.oracleFactory = oracleFactory;
         return new ExperimentBuilder.EQOracleBuilder();
     }
 
-    public ExperimentBuilder.EQOracleBuilder withOracle(
-            OracleFactoryRepository<Word<Boolean>, Word<Boolean>> oracleRepository, String oracleName) {
+    public ExperimentBuilder.EQOracleBuilder withOracle(OracleFactoryRepository<Word<Bit>, Word<Bit>> oracleRepository,
+            String oracleName) {
         return withOracle(oracleRepository.getOracleFactory(oracleName));
     }
 
-    public ExperimentBuilder withLearner(MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory) {
+    public ExperimentBuilder withLearner(MealyLearnerFactory<Word<Bit>, Word<Bit>> learnerFactory) {
         this.learnerFactory = learnerFactory;
         return this;
     }
 
-    public ExperimentBuilder withLearner(LearnerFactoryRepository<Word<Boolean>, Word<Boolean>> learnerRepository,
+    public ExperimentBuilder withLearner(LearnerFactoryRepository<Word<Bit>, Word<Bit>> learnerRepository,
             String learnerName) {
         return withLearner(learnerRepository.getLearnerFactory(learnerName));
     }
 
     public ExperimentBuilder withCache(String cachePath) {
-        this.sul = new BooleanWordCacheSUL(new HashCacheStorage(new File(cachePath)), sul);
+        this.sul = new BitWordCacheSUL(new HashCacheStorage(new File(cachePath)), sul);
         return this;
     }
 

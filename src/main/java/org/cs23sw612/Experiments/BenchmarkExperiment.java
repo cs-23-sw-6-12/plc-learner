@@ -10,24 +10,24 @@ import org.cs23sw612.Interfaces.MealyLearnerFactory;
 import org.cs23sw612.Interfaces.OracleFactory;
 import org.cs23sw612.OracleConfig;
 import org.cs23sw612.SUL.PerformanceMetricSUL;
+import org.cs23sw612.Util.Bit;
 import org.cs23sw612.Util.Stopwatch;
 
 public class BenchmarkExperiment implements IPLCExperiment {
 
-    private final SUL<Word<Boolean>, Word<Boolean>> sul;
-    private final MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory;
-    private final OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory;
+    private final SUL<Word<Bit>, Word<Bit>> sul;
+    private final MealyLearnerFactory<Word<Bit>, Word<Bit>> learnerFactory;
+    private final OracleFactory<Word<Bit>, Word<Bit>> oracleFactory;
     private final String outputFileName;
     private final OracleConfig config;
-    Alphabet<Word<Boolean>> alphabet;
+    Alphabet<Word<Bit>> alphabet;
     private final int repetitions;
     private final int warmupRounds;
     private int roundsRun = 0;
 
-    public BenchmarkExperiment(MealyLearnerFactory<Word<Boolean>, Word<Boolean>> learnerFactory,
-            OracleFactory<Word<Boolean>, Word<Boolean>> oracleFactory, OracleConfig config,
-            SUL<Word<Boolean>, Word<Boolean>> sul, String outputFileName, Alphabet<Word<Boolean>> alphabet,
-            int repetitions, int warmupRounds) {
+    public BenchmarkExperiment(MealyLearnerFactory<Word<Bit>, Word<Bit>> learnerFactory,
+            OracleFactory<Word<Bit>, Word<Bit>> oracleFactory, OracleConfig config, SUL<Word<Bit>, Word<Bit>> sul,
+            String outputFileName, Alphabet<Word<Bit>> alphabet, int repetitions, int warmupRounds) {
         this.learnerFactory = learnerFactory;
         this.oracleFactory = oracleFactory;
         this.config = config;
