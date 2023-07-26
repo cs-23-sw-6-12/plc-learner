@@ -8,7 +8,7 @@ public class CompositeRung implements NewRung {
      * (!label AND left)`, it can be reduced to `(!label) OR (right`
      */
     public final String label;
-    NewRung left, right;
+    public NewRung left, right;
     public CompositeRung(String label, NewRung left, NewRung right) {
         this.label = label;
         this.left = left;

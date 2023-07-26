@@ -18,6 +18,7 @@ import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.NewLadder;
 import org.cs23sw612.Ladder.NewTruthTable;
 import org.cs23sw612.Ladder.Rungs.OutGate;
+import org.cs23sw612.Ladder.Visualization.NewVisualizer;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
@@ -92,5 +93,7 @@ public class RunningExample {
         lad.gates.forEach((k, v) -> p("Rung " + v + " height: " + v.verticalHeight()));
         lad.gates.forEach((k, v) -> p("Rung " + v + " width: " + v.horizontalHeight()));
         p(lad.stateUpd);
+        var viz = NewVisualizer.layoutSVG(lad);
+
     }
 }
