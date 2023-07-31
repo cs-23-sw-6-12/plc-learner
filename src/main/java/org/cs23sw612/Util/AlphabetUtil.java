@@ -1,15 +1,11 @@
 package org.cs23sw612.Util;
 
-import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import net.automatalib.words.impl.Alphabets;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AlphabetUtil {
@@ -41,20 +37,5 @@ public class AlphabetUtil {
             return ((Word<?>) obj).stream().map(AlphabetUtil::toBinaryString).collect(Collectors.joining());
         else
             throw new TypeNotPresentException("Not accepted type", new Throwable());
-    }
-
-    public static Pair<@Nullable Word<Boolean>, @Nullable Word<Boolean>> parseBool(Map<String, String> attr) {
-        String label = attr.get("label");
-        if (label == null) {
-            return Pair.of(null, null);
-        } else {
-            String[] tokens = label.split("/");
-            return tokens.length != 2 ? Pair.of(null, null) : Pair.of(getWord(tokens[0]), getWord(tokens[1]));
-        }
-    }
-
-    private static Word<Boolean> getWord(String token) {
-        return Word.fromList(
-                Arrays.stream(token.trim().split(" ")).map(s -> s.equals("true")).collect(Collectors.toList()));
     }
 }

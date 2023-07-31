@@ -18,6 +18,7 @@ import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.NewLadder;
 import org.cs23sw612.Ladder.NewTruthTable;
 import org.cs23sw612.Ladder.Rungs.OutGate;
+import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
@@ -79,11 +80,11 @@ public class RunningExample {
         p("DHC:");
         p(learnerDHC.getGlobalSuffixes());
 
-        p("TruthTable:");
-        var nt = new NewTruthTable<>(example, alphabet);
-        p(nt.toLatexTabularString());
+        var t = new NewTruthTable<>(example, alphabet);
+        p(t.toLatexTabularString());
+
         p("BDDs:");
-        HashMap<List<OutGate>, BDDNode> m = nt.encodeBDDs();
+        HashMap<List<OutGate>, BDDNode> m = t.encodeBDDs();
         p(m);
         // p(m.get("O[1]").makeRung());
         var lad = new NewLadder(m);

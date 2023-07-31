@@ -49,10 +49,6 @@ public class PLCExperimentImpl implements IPLCExperiment {
 
         if (visualizeMachine)
             Visualization.visualize(result, alphabet);
-
-        /*
-         * if (visualizeLadder) { // TODO: Redo with new struct }
-         */
     }
 
     @SuppressWarnings({"unchecked"})
