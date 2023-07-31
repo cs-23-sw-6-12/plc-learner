@@ -18,7 +18,6 @@ import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.NewLadder;
 import org.cs23sw612.Ladder.NewTruthTable;
 import org.cs23sw612.Ladder.Rungs.OutGate;
-import org.cs23sw612.Ladder.TruthTable;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
