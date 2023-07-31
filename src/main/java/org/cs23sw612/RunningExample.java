@@ -94,6 +94,6 @@ public class RunningExample {
         lad.gates.forEach((k, v) -> p("Rung " + v + " width: " + v.horizontalHeight()));
         p(lad.stateUpd);
         var viz = NewVisualizer.layoutSVG(lad);
-
+        NewVisualizer.showSVG(viz);
     }
 }
