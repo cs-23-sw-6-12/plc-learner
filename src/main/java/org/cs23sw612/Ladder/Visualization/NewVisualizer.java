@@ -9,7 +9,6 @@ import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUnits;
 
 import java.awt.*;
-import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,7 +18,59 @@ import java.util.List;
 import java.util.Map;
 
 public class NewVisualizer {
+    public static int outputOffset = 3;
+    private static double currentNumberOfRungs = 0;
     
+
+    public static SVGGraphics2D layoutSVG(NewLadder ladder) {
+
+        ArrayList<NewSVGRung> rungs = new ArrayList<>();
+
+        for (Map.Entry<List<String>, NewRung> listNewRungEntry : ladder.gates.entrySet()) {
+            //construct a list of SVGgates for this rung.
+            NewRung rung = listNewRungEntry.getValue();
+            ArrayList<NewSVGRungElement> gateSequence = new ArrayList<>();
+            addGate(rung, gateSequence, 1, currentNumberOfRungs+1);
+
+            //construct a list of SVGcoils for this rung.
+            ArrayList<NewSVGRungElement> outputSequence = new ArrayList<>();
+            double i = 0;
+            for (String coilLabel : listNewRungEntry.getKey()){
+                i++;
+                outputSequence.add(new NewSVGCoil(ladder.horizontalMaxLength + outputOffset, currentNumberOfRungs+i, coilLabel));
+            }
+
+            //Update current number of rungs.
+            if (gateSequence.get(gateSequence.size()-1).rungNumber < currentNumberOfRungs + i){
+                currentNumberOfRungs += i;
+            }
+            else {
+                currentNumberOfRungs = gateSequence.get(gateSequence.size()-1).rungNumber;
+            }
+
+            rungs.add(new NewSVGRung(outputSequence, gateSequence));
+        }
+
+        for (Map.Entry<String, String> stringEntry : ladder.stateUpd.entrySet()) {
+            ArrayList<NewSVGRungElement> gate = new ArrayList<>();
+            gate.add(new NewSVGGate(1., currentNumberOfRungs+1, stringEntry.getValue(), true));
+
+            ArrayList<NewSVGRungElement> coil = new ArrayList<>();
+            coil.add(new NewSVGCoil(ladder.horizontalMaxLength + outputOffset, currentNumberOfRungs+1, stringEntry.getKey()));
+
+            currentNumberOfRungs += 1;
+            rungs.add(new NewSVGRung(coil, gate));
+        }
+        var svg = GenerateNewSVGFromLadderDimensions(ladder);
+
+        //draw rungs on svg
+        for (var rung: rungs) {
+            rung.draw(svg);
+        }
+
+        return svg;
+    }
+
     public static void addGate(NewRung rung, ArrayList<NewSVGRungElement> gateSequence, double x, double y){
         if (rung instanceof SimpleRung sRung){
             var gate = new NewSVGGate(x,y, sRung.label, sRung.open);
@@ -48,58 +99,10 @@ public class NewVisualizer {
         }
     }
 
-
-    public static SVGGraphics2D layoutSVG(NewLadder ladder) {
-        var svg = new SVGGraphics2D(1000,1500, SVGUnits.PX); //Todo: fix this to generate size based on ladder dimensions
-        double currentNumberOfRungs = 0;
-        ArrayList<NewSVGRung> rungs = new ArrayList<>();
-
-        for (Map.Entry<List<String>, NewRung> listNewRungEntry : ladder.gates.entrySet()) {
-            //construct a list of SVGgates for this rung.
-            NewRung rung = listNewRungEntry.getValue();
-            ArrayList<NewSVGRungElement> gateSequence = new ArrayList<>();
-            addGate(rung, gateSequence, 1, currentNumberOfRungs+1);
-
-            //construct a list of SVGcoils for this rung.
-            ArrayList<NewSVGRungElement> outputSequence = new ArrayList<>();
-            double i = 0;
-            for (String coilLabel : listNewRungEntry.getKey()){
-                i++;
-                outputSequence.add(new NewSVGCoil(6.0, currentNumberOfRungs+i, coilLabel)); //todo fix hvordan vi finder ud af antallet af gates på samme rung
-            }                                                                                       //så vi kan beregne hvornår outputs skal tegnes. ATM harcoded to 6.
-
-            //Update current number of rungs.
-            if (gateSequence.get(gateSequence.size()-1).rungNumber < currentNumberOfRungs + i){
-                currentNumberOfRungs += i;
-            }
-            else {
-                currentNumberOfRungs = gateSequence.get(gateSequence.size()-1).rungNumber;
-            }
-
-            rungs.add(new NewSVGRung(outputSequence, gateSequence));
-        }
-
-        for (Map.Entry<String, String> stringEntry : ladder.stateUpd.entrySet()) {
-            ArrayList<NewSVGRungElement> gate = new ArrayList<>();
-            gate.add(new NewSVGGate(1., currentNumberOfRungs+1, stringEntry.getValue(), true));
-
-            ArrayList<NewSVGRungElement> coil = new ArrayList<>();
-            coil.add(new NewSVGCoil(6., currentNumberOfRungs+1, stringEntry.getKey()));
-
-            currentNumberOfRungs += 1;
-            rungs.add(new NewSVGRung(coil, gate));
-        }
-        drawRungs(rungs, svg);
-
-        return svg;
-    }
-
-    public static void drawRungs(ArrayList<NewSVGRung> rungs, SVGGraphics2D svg){
-        var path = new Path2D.Double();
-        for (var rung: rungs) {
-            rung.draw(svg);
-        }
-
+    private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(NewLadder ladder){
+        var height = (currentNumberOfRungs + 1) * NewSVGRung.rungHeight;
+        var width = (ladder.horizontalMaxLength + outputOffset + 2) * NewSVGRung.gateWidth + NewSVGRung.hSpacing;
+        return new SVGGraphics2D(width,height, SVGUnits.PX);
     }
 
 

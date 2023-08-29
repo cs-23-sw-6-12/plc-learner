@@ -27,7 +27,7 @@ public class SimpleRung implements NewRung {
     }
 
     @Override
-    public int horizontalHeight() {
-        return 1 + followingRungs.stream().mapToInt(NewRung::horizontalHeight).max().orElse(0);
+    public int horizontalLength() {
+        return 1 + followingRungs.stream().mapToInt(NewRung::horizontalLength).max().orElse(0);
     }
 }
