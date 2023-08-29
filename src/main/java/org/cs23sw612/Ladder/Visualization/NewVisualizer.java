@@ -20,7 +20,6 @@ import java.util.Map;
 public class NewVisualizer {
     public static int outputOffset = 3;
     private static double currentNumberOfRungs = 0;
-    
 
     public static SVGGraphics2D layoutSVG(NewLadder ladder) {
 
@@ -51,6 +50,7 @@ public class NewVisualizer {
             rungs.add(new NewSVGRung(outputSequence, gateSequence));
         }
 
+        //Add state update rung
         for (Map.Entry<String, String> stringEntry : ladder.stateUpd.entrySet()) {
             ArrayList<NewSVGRungElement> gate = new ArrayList<>();
             gate.add(new NewSVGGate(1., currentNumberOfRungs+1, stringEntry.getValue(), true));
@@ -104,10 +104,6 @@ public class NewVisualizer {
         var width = (ladder.horizontalMaxLength + outputOffset + 2) * NewSVGRung.gateWidth + NewSVGRung.hSpacing;
         return new SVGGraphics2D(width,height, SVGUnits.PX);
     }
-
-
-
-
 
     /**
      * Show a svg in the browser or, if that fails, your default svg-application.
