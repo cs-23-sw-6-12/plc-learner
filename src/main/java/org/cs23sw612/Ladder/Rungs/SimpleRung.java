@@ -22,12 +22,12 @@ public class SimpleRung implements NewRung {
     }
 
     @Override
-    public int verticalHeight() {
-        return followingRungs.size() + followingRungs.stream().mapToInt(NewRung::verticalHeight).sum();
+    public int rungHeight() {
+        return followingRungs.size() + followingRungs.stream().mapToInt(NewRung::rungHeight).sum();
     }
 
     @Override
-    public int horizontalLength() {
-        return 1 + followingRungs.stream().mapToInt(NewRung::horizontalLength).max().orElse(0);
+    public int rungWidth() {
+        return 1 + followingRungs.stream().mapToInt(NewRung::rungWidth).max().orElse(0);
     }
 }

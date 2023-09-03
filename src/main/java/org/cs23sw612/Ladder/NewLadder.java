@@ -4,9 +4,9 @@ import org.cs23sw612.Ladder.BDD.BDDNode;
 import org.cs23sw612.Ladder.Rungs.NewRung;
 import org.cs23sw612.Ladder.Rungs.OutGate;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class NewLadder {
 
@@ -25,14 +25,10 @@ public class NewLadder {
         horizontalMaxLength = CalculateHorizontalMaxLength();
     }
 
-    private double CalculateHorizontalMaxLength(){
-        var horizontalMaxLength = 0;
-        for (Map.Entry<List<String>, NewRung> listNewRungEntry : this.gates.entrySet()) {
-            NewRung rung = listNewRungEntry.getValue();
-            if(horizontalMaxLength < rung.horizontalLength())
-                horizontalMaxLength = rung.horizontalLength();
+    private double CalculateHorizontalMaxLength() {
+        if (this.horizontalMaxLength == 0.0) {
+            horizontalMaxLength = this.gates.values().stream().map(NewRung::rungWidth).max(Comparator.comparing(w -> w)).orElse(0);
         }
         return horizontalMaxLength;
     }
-
 }

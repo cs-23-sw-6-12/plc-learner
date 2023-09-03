@@ -1,6 +1,6 @@
 package org.cs23sw612.Ladder.Rungs;
 
 public interface NewRung {
-    int verticalHeight();
-    int horizontalLength();
+    int rungHeight();
+    int rungWidth();
 }

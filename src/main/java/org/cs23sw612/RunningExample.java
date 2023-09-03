@@ -90,8 +90,8 @@ public class RunningExample {
         var lad = new NewLadder(m);
         p("LAD:");
         p(lad.gates);
-        lad.gates.forEach((k, v) -> p("Rung " + v + " height: " + v.verticalHeight()));
-        lad.gates.forEach((k, v) -> p("Rung " + v + " width: " + v.horizontalLength()));
+        lad.gates.forEach((k, v) -> p("Rung " + v + " height: " + v.rungHeight()));
+        lad.gates.forEach((k, v) -> p("Rung " + v + " width: " + v.rungWidth()));
         p(lad.stateUpd);
         var viz = NewVisualizer.layoutSVG(lad);
         NewVisualizer.showSVG(viz);
