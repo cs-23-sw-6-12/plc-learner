@@ -3,13 +3,13 @@ package org.cs23sw612.Ladder.Visualization.SVG;
 import java.awt.geom.Path2D;
 
 public abstract class SVGRungElement {
-    public final double x;
-    public final double y;
+    public final double gateNumber;
+    public final double rungNumber;
     public final String text;
 
-    public SVGRungElement(double x, double y, String text) {
-        this.x = x;
-        this.y = y;
+    public SVGRungElement(double gateNumber, double y, String text) {
+        this.gateNumber = gateNumber;
+        this.rungNumber = y;
         this.text = text;
     }
 
@@ -19,5 +19,5 @@ public abstract class SVGRungElement {
      * 
      * @return This element as a Path2D.
      */
-    public abstract Path2D getShape();
+    public abstract Path2D getShape(double x, double y);
 }

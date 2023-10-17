@@ -4,10 +4,16 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.serialization.dot.DOTParsers;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.TruthTable;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.Util.Bit;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "visualize", mixinStandardHelpOptions = true, version = "0.1.0", description = "Visualizes a PLC loaded from a DOT file")
@@ -40,6 +46,28 @@ public class VisualizeCommand implements Callable<Integer> {
             alphabet = parsed.alphabet;
         } catch (Exception ex) {
             System.err.println("Could not parse the given file");
+            System.err.println(ex.getMessage());
+            return 1;
+        }
+        try {
+            var t = new TruthTable<>(model, alphabet);
+            var ladder = new Ladder(t.encodeBDDs());
+            var ladderSvg = Visualizer.layoutSVG(ladder);
+
+            if (svgOutputPath != null) {
+                var f = new File(svgOutputPath);
+                f.getParentFile().mkdirs();
+                try {
+                    Visualizer.saveSVG(ladderSvg, new FileWriter(f));
+                } catch (IOException exception) {
+                    System.err.println("Could not save SVG file");
+                    System.err.println(exception.getMessage());
+                    return 1;
+                }
+            }
+            Visualizer.showSVG(ladderSvg);
+        } catch (Exception ex) {
+            System.err.println("Could not visualize the given model");
             System.err.println(ex.getMessage());
             return 1;
         }

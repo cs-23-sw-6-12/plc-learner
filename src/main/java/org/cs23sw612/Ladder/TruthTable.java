@@ -1,49 +1,33 @@
 package org.cs23sw612.Ladder;
 
 import net.automatalib.automata.concepts.StateIDs;
-import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.TransitionOutputAutomaton;
 import net.automatalib.automata.transducers.impl.compact.CompactMealyTransition;
+import net.automatalib.commons.util.Pair;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.cs23sw612.Ladder.BDD.BDDNode;
+import org.cs23sw612.Ladder.BDD.SimpleBDDNode;
+import org.cs23sw612.Ladder.Rungs.OutGate;
+import org.cs23sw612.Util.Bit;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-// TODO: Transitions for outputs is defined to only be of this type. Maybe be better, lol
-// TODO: Remove next_states
-
 /**
- * A table over the "equations" from a given machine. Generally, it represents a
- * collection of all the transitions (input, state, output, next state).
- *
- * @param <S>
- *            States
- * @param <I>
- *            Input
- * @param <T>
- *            Transitions. Can only be of input/output types, which (currently)
- *            is only {@link CompactMealyTransition}
- * @param <O>
- *            Output
- * @param <M>
- *            Machine. Can only be a {@link MealyMachine}
- * @param <A>
- *            Alphabet over {@code I}
+ * A truth table over the transitions in the mealy machine
+ * 
+ * @param <IO>
+ *            Input/Output
  */
-public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMealyTransition<? super O>, O extends Word<?>, M extends TransitionOutputAutomaton<S, I, T, ? super O>, A extends Alphabet<I>> {
-    private int inputCount = 0;
-    private final List<O> outputs = new ArrayList<>();
-    private final List<TruthRow<S, I, O>> rows = new ArrayList<>();
-    private final StateIDs<S> stateIds;
-    private int varCount = 0;
-    private List<TruthRow<Word<Boolean>, I, O>> equations = null;
+public class TruthTable<IO extends Word<? extends Comparable<Boolean>>> {
+    private int inputCount;
+    private final List<IO> outputs = new ArrayList<>();
+    private final List<TruthRow<Word<Bit>>> rows = new ArrayList<>();
+    private int varCount;
     private final Function<String, String> latexHeader = ph -> new String(new char[inputCount]).replace("\0", "|" + ph)
             + "|" + // Input
             new String(new char[varCount]).replace("\0", "|" + ph) + "|" + // Vars/state
@@ -52,11 +36,12 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
 
     /**
      * @param machine
-     *            The machine to create the equaton table over
+     *            The machine to create the truth table over
      * @param alphabet
      *            The given input-alphabet
      */
-    public TruthTable(M machine, A alphabet) {
+    public <S extends Number, T extends CompactMealyTransition<? super IO>, M extends TransitionOutputAutomaton<S, IO, T, ? super IO>, A extends Alphabet<IO>> TruthTable(
+            M machine, A alphabet) {
         // region assert input alphabet
         {
             var min = alphabet.stream().min(Comparator.comparing(w -> w.stream().count()));
@@ -68,22 +53,24 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
         // endregion
 
         inputCount = (int) alphabet.getSymbol(0).stream().count();
-        this.stateIds = machine.stateIDs();
+        StateIDs<S> stateIds = machine.stateIDs();
 
-        int stateCount = 0;
+        var states = machine.getStates();
+        varCount = (int) Math.max(Math.ceil(Math.log(states.size()) / Math.log(2)), 1); // Log base 2
         for (S state : machine.getStates()) {
-            alphabet.forEach(word -> {
+            for (var word : alphabet) {
+
                 T trans = machine.getTransition(state, word);
                 assert trans != null;
-                O output = (O) trans.getOutput();
+                IO output = (IO) trans.getOutput();
                 if (!this.outputs.contains(output))
                     this.outputs.add(output);
 
-                rows.add(new TruthRow<>(word, state, stateIds.getState(trans.getSuccId()), output));
-            });
-            stateCount += 1;
+                rows.add(new TruthRow<>(Word.fromList(word.stream().map(Bit::fromBool).toList()),
+                        convertState(state.longValue()), convertState(stateIds.getState(trans.getSuccId()).longValue()),
+                        Word.fromList(output.stream().map(Bit::fromBool).toList())));
+            }
         }
-        varCount = (int) Math.max(Math.ceil(Math.log(stateCount) / Math.log(2)), 1); // Log base 2
         // region assert output alphabet
         {
             var min = outputs.stream().min(Comparator.comparing(w -> w.stream().count()));
@@ -96,22 +83,35 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
         // endregion
     }
 
-    /**
-     * @return The raw {@link TruthTable}
-     */
-    List<TruthRow<Word<Boolean>, I, O>> getEquations() {
-        if (equations == null)
-            equations = rows.stream().map(e -> new TruthRow<>(e.input, convertState(e.state.longValue()),
-                    convertState(e.nextState.longValue()), e.output)).toList();
-        return equations;
+    private Word<Bit> convertState(long state) {
+        return Word.fromList(Bit.byteFromInt(state, varCount));
     }
 
-    private Word<Boolean> convertState(long state) {
-        Boolean[] arr = Collections.nCopies(varCount, false).toArray(new Boolean[varCount]);
-        for (int i = Math.toIntExact(varCount - 1); state != 0; state >>= 1, i--)
-            arr[i] = (state & 1) == 1;
+    public HashMap<List<OutGate>, BDDNode> encodeBDDs() {
+        HashMap<OutGate, BDDNode> map = new HashMap<>();
+        var list = rows.stream().map(TruthRow::getHighOutputAndStates).filter(Optional::isPresent).map(Optional::get)
+                .toList();
+        for (var pair : list) {
+            for (OutGate gate : pair.getFirst()) {
+                if (!map.containsKey(gate))
+                    map.put(gate, new SimpleBDDNode());
+                map.get(gate).insert(pair.getSecond(), true);
+            }
+        }
 
-        return Word.fromArray(arr, 0, Math.toIntExact(varCount));
+        HashMap<List<OutGate>, BDDNode> out = new HashMap<>();
+        var entries = map.entrySet();
+        for (var entry : entries) {
+            if (!out.keySet().stream().anyMatch(l -> l.contains(entry.getKey()))) {
+                var other = entries.stream().filter(e -> e.getValue().equalNodes(entry.getValue()))
+                        .map(Map.Entry::getKey).toList();
+                out.put(other, entry.getValue().reduce());
+            }
+        }
+
+        // map.replaceAll((k, v) -> v.reduce());
+
+        return out;
     }
 
     @Override
@@ -119,14 +119,6 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
         return asString("|", "||");
     }
 
-    public String toLatexTabularXString(String width) {
-
-        String lineSep = "\\\\\\hline\n";
-        String headSep = "\\\\\\hline\\hline\n";
-
-        return String.format("\\begin{tabularx}{%s}{%s}\\hline\n%s%s\\end{tabularx}", width, latexHeader.apply("X"),
-                asString("&", "&", lineSep, headSep), lineSep);
-    }
     public String toLatexTabularString() {
         String lineSep = "\\\\\\hline\n";
         String headSep = "\\\\\\hline\\hline\n";
@@ -161,37 +153,46 @@ public class TruthTable<S extends Number, I extends Word<?>, T extends CompactMe
      *            The state following the input
      * @param output
      *            The output
-     * @param <S>
-     *            States
-     * @param <I>
-     *            Input
-     * @param <O>
-     *            Output
+     * @param <T>
+     *            Input/Output/States
      */
-    record TruthRow<S, I extends Word<?>, O extends Word<?>>(@NonNull I input, @NonNull S state, @NonNull S nextState,
-            @NonNull O output) {
+    record TruthRow<T extends Word<Bit>>(@NonNull T input, @NonNull T state, @NonNull T nextState, @NonNull T output) {
         @Override
         public String toString() {
             return String.format("%s | %s | %s || %s", input, state, nextState, output);
         }
 
         String asString(String sep) {
-            return String.join("",
-                    new String[]{
-                            input.stream().map(Object::toString).map(s -> String.format("%s %s ", s, sep))
-                                    .collect(Collectors.joining()),
-                            state.toString(), " " + sep + " ", nextState.toString(), " " + sep + " ",
-                            String.join(" " + sep + " ",
-                                    output.stream().map(Object::toString).map(s -> String.format("%s", s)).toList())});
+            return String.join("", new String[]{
+                    input.stream().map(Object::toString).map(s -> String.format("%s %s ", s, sep))
+                            .collect(Collectors.joining()),
+                    state.toString(), " " + sep + " ", nextState.toString(), " " + sep + " ",
+                    String.join(" " + sep + " ", output.stream().map(Object::toString).toList())});
         }
 
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof Equation && equals((Equation) o);
+        private Optional<Pair<List<OutGate>, List<Pair<String, Bit>>>> getHighOutputAndStates() {
+            ArrayList<OutGate> outs = new ArrayList<>(
+                    IntStream.range(0, output.length()).boxed().filter(i -> output.getSymbol(i).value)
+                            .map(i -> new OutGate(String.format("O[%d]", i), Optional.empty())).toList());
+            outs.addAll(IntStream.range(0, nextState.length()).boxed().filter(i -> nextState.getSymbol(i).value)
+                    .map(i -> new OutGate(String.format("S'[%d]", i), Optional.of(String.format("S[%d]", i))))
+                    .toList());
+
+            if (outs.isEmpty())
+                return Optional.empty();
+            else {
+                // System.out.println(outs + " = " + this.asString(" & "));
+                // System.out.println(this.encodeInputAndState());
+                return Optional.of(Pair.of(outs, this.encodeInputAndState()));
+            }
         }
 
-        private boolean equals(Equation eq) {
-            return output == eq.output;
+        private List<Pair<String, Bit>> encodeInputAndState() {
+            ArrayList<Pair<String, Bit>> out = new ArrayList<>(IntStream.range(0, input.length()).boxed()
+                    .map(i -> Pair.of(String.format("I[%d]", i), input.getSymbol(i))).toList());
+            out.addAll(IntStream.range(0, state.length()).boxed()
+                    .map(i -> Pair.of(String.format("S[%d]", i), state.getSymbol(i))).toList());
+            return out;
         }
     }
 }
