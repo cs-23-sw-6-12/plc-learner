@@ -2,7 +2,7 @@ package org.cs23sw612.Ladder.Visualization;
 
 import org.cs23sw612.Ladder.Ladder;
 import org.cs23sw612.Ladder.Rungs.CompositeRung;
-import org.cs23sw612.Ladder.Rungs.NewRung;
+import org.cs23sw612.Ladder.Rungs.Rung;
 import org.cs23sw612.Ladder.Rungs.SimpleRung;
 import org.cs23sw612.Ladder.Visualization.SVG.*;
 import org.jfree.svg.SVGGraphics2D;
@@ -48,11 +48,12 @@ public class Visualizer {
 
         ArrayList<SVGRung> rungs = new ArrayList<>();
 
-        for (Map.Entry<List<String>, NewRung> listNewRungEntry : ladder.gates.entrySet()) {
+        for (Map.Entry<List<String>, Rung> listNewRungEntry : ladder.gates.entrySet()) {
             // construct a list of SVGgates for this rung.
-            NewRung rung = listNewRungEntry.getValue();
+            Rung rung = listNewRungEntry.getValue();
             ArrayList<SVGRungElement> gateSequence = new ArrayList<>();
-            addGate(rung, gateSequence, 1, currentNumberOfRungs + 1);
+            var d = addGate(rung, gateSequence, 1, currentNumberOfRungs + 1);
+            System.out.println(d);
 
             // construct a list of SVGcoils for this rung.
             ArrayList<SVGRungElement> outputSequence = new ArrayList<>();
@@ -95,32 +96,34 @@ public class Visualizer {
         return svg;
     }
 
-    public static void addGate(NewRung rung, ArrayList<SVGRungElement> gateSequence, double x, double y) {
+    /// Returns how many additional vertical elements were added (the y coordinate) - The results will be the number of or-rungs minus 1
+    public static double addGate(Rung rung, ArrayList<SVGRungElement> gateSequence, double x, double y) {
+        double addedHeight = 0;
         if (rung instanceof SimpleRung sRung) {
             var gate = new SVGGate(x, y, sRung.label, sRung.open);
             gateSequence.add(gate);
 
-            if (sRung.followingRungs.size() == 1) {
-                addGate(sRung.followingRungs.get(0), gateSequence, x + 1, y);
+            for (Rung r : sRung.followingRungs) {
+                addedHeight += addGate(r, gateSequence, x + 1, y + addedHeight);
             }
-
-            if (sRung.followingRungs.size() > 1) {
-                for (var i = 1; i <= sRung.followingRungs.size(); i++) {
-                    addGate(sRung.followingRungs.get(i), gateSequence, x + 1, y + i);
-                }
-            }
-
+            addedHeight = Math.max(addedHeight, sRung.followingRungs.size() - 1);
         } else if (rung instanceof CompositeRung cRung) {
-            var gate1 = new SVGGate(x, y, cRung.label, true);
-            gateSequence.add(gate1);
+            if (cRung.printRightLabel()) {
+                var gate = new SVGGate(x, y, cRung.label, true);
+                gateSequence.add(gate);
+                addedHeight += addGate(cRung.right, gateSequence, x + 1, y);
+            } else
+                addedHeight += addGate(cRung.right, gateSequence, x, y);
 
-            addGate(cRung.right, gateSequence, x + 1, y);
-
-            var gate2 = new SVGGate(x, y + 1, cRung.label, false);
-            gateSequence.add(gate2);
-
-            addGate(cRung.left, gateSequence, x + 1, y + 1);
+            if (cRung.printLeftLabel()) {
+                var gate = new SVGGate(x, y + addedHeight + 1, cRung.label, false);
+                gateSequence.add(gate);
+                addedHeight += addGate(cRung.left, gateSequence, x + 1, y + addedHeight + 1);
+            } else
+                addedHeight += addGate(cRung.left, gateSequence, x, y + addedHeight + 1);
+            addedHeight += 1 ;
         }
+        return addedHeight;
     }
 
     private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder) {

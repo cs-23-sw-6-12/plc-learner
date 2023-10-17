@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class SimpleRung implements NewRung {
+public class SimpleRung implements Rung {
     public final String label;
     public final boolean open;
-    public List<NewRung> followingRungs;
+    public List<Rung> followingRungs;
 
-    public SimpleRung(String label, boolean open, NewRung... followingRungs) {
+    public SimpleRung(String label, boolean open, Rung... followingRungs) {
         this.label = label;
         this.open = open;
         this.followingRungs = Arrays.stream(followingRungs).filter(Objects::nonNull).toList();
@@ -23,11 +23,11 @@ public class SimpleRung implements NewRung {
 
     @Override
     public int rungHeight() {
-        return followingRungs.size() + followingRungs.stream().mapToInt(NewRung::rungHeight).sum();
+        return followingRungs.size() + followingRungs.stream().mapToInt(Rung::rungHeight).sum();
     }
 
     @Override
     public int rungWidth() {
-        return 1 + followingRungs.stream().mapToInt(NewRung::rungWidth).max().orElse(0);
+        return 1 + followingRungs.stream().mapToInt(Rung::rungWidth).max().orElse(0);
     }
 }

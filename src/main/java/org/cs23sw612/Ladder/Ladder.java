@@ -1,7 +1,7 @@
 package org.cs23sw612.Ladder;
 
 import org.cs23sw612.Ladder.BDD.BDDNode;
-import org.cs23sw612.Ladder.Rungs.NewRung;
+import org.cs23sw612.Ladder.Rungs.Rung;
 import org.cs23sw612.Ladder.Rungs.OutGate;
 
 import java.util.Comparator;
@@ -11,7 +11,7 @@ import java.util.List;
 public class Ladder {
 
     // In both maps, the key is the output gate, and values are the rungs
-    public final HashMap<List<String>, NewRung> gates;
+    public final HashMap<List<String>, Rung> gates;
     public final HashMap<String, String> stateUpd;
     public double horizontalMaxLength;
 
@@ -27,7 +27,7 @@ public class Ladder {
 
     private double CalculateHorizontalMaxLength() {
         if (this.horizontalMaxLength == 0.0) {
-            horizontalMaxLength = this.gates.values().stream().map(NewRung::rungWidth).max(Comparator.comparing(w -> w))
+            horizontalMaxLength = this.gates.values().stream().map(Rung::rungWidth).max(Comparator.comparing(w -> w))
                     .orElse(0);
         }
         return horizontalMaxLength;

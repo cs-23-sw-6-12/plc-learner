@@ -22,6 +22,7 @@ import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -95,5 +96,6 @@ public class RunningExample {
         p(lad.stateUpd);
         var viz = Visualizer.layoutSVG(lad);
         Visualizer.showSVG(viz);
+        //Visualizer.saveSVG(viz, new FileWriter("new-ladder2.svg"));
     }
 }

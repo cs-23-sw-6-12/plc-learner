@@ -1,7 +1,7 @@
 package org.cs23sw612.Ladder.BDD;
 
 import net.automatalib.commons.util.Pair;
-import org.cs23sw612.Ladder.Rungs.NewRung;
+import org.cs23sw612.Ladder.Rungs.Rung;
 import org.cs23sw612.Util.Bit;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public abstract class BDDNode {
     public abstract void insert(List<Pair<String, Bit>> vars, boolean value);
     public abstract boolean equalNodes(BDDNode other);
 
-    public abstract NewRung makeRung();
+    public abstract Rung makeRung();
     abstract boolean isInnerNode();
 
     private final static class TrueBDD extends BDDNode {
@@ -29,7 +29,7 @@ public abstract class BDDNode {
         }
 
         @Override
-        public NewRung makeRung() {
+        public Rung makeRung() {
             return null;
         }
 
@@ -54,7 +54,7 @@ public abstract class BDDNode {
         }
 
         @Override
-        public NewRung makeRung() {
+        public Rung makeRung() {
             return null;
         }
 

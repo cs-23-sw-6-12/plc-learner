@@ -16,7 +16,7 @@ public class SimpleBDDNode extends BDDNode {
         return left instanceof SimpleBDDNode && right instanceof SimpleBDDNode;
     }
     @Override
-    public BDDNode reduce() { // TODO: Variable ordering
+    public BDDNode reduce() {
         left = left == null ? null : left.reduce();
         right = right == null ? null : right.reduce();
 
@@ -52,7 +52,7 @@ public class SimpleBDDNode extends BDDNode {
 
     @Override
     public void insert(List<Pair<String, Bit>> vars, boolean value) {
-        assert vars.size() > 0;
+        assert !vars.isEmpty();
         var p = vars.get(0);
         if (label != null) {
             assert label.equals(p.getFirst());
@@ -60,7 +60,8 @@ public class SimpleBDDNode extends BDDNode {
             label = p.getFirst();
         if (vars.size() == 1) {
             // System.out.println("(" + p.getFirst() + ", " + p.getSecond() + ")");
-            // System.out.println(p.getSecond().value);
+            // System.out.println(p.getSecond(
+            // ).value);
             if (p.getSecond().value)
                 right = value ? BDDNode.TRUE : BDDNode.FALSE;
             else
@@ -103,7 +104,7 @@ public class SimpleBDDNode extends BDDNode {
     }
 
     @Override
-    public NewRung makeRung() {
+    public Rung makeRung() {
         if (left == null) { // If we only have on the right-branch (true branch)
             return new SimpleRung(label, true, right.makeRung());
         } else if (right == null) { // If we only have on the left-branch (false branch)
