@@ -8,7 +8,7 @@ public class CompositeRung implements NewRung {
      * (!label AND left)`, it can be reduced to `(!label) OR (right`
      */
     public final String label;
-    NewRung left, right;
+    public NewRung left, right;
     public CompositeRung(String label, NewRung left, NewRung right) {
         this.label = label;
         this.left = left;
@@ -22,12 +22,12 @@ public class CompositeRung implements NewRung {
     }
 
     @Override
-    public int verticalHeight() {
-        return Math.max(left == null ? 0 : left.verticalHeight(), right == null ? 0 : right.verticalHeight());
+    public int rungHeight() {
+        return (left == null ? 0 : left.rungHeight()) + (right == null ? 0 : right.rungHeight());
     }
 
     @Override
-    public int horizontalHeight() {
-        return Math.max(left == null ? 0 : left.horizontalHeight(), right == null ? 0 : right.horizontalHeight());
+    public int rungWidth() {
+        return 1 + Math.max(left == null ? 0 : left.rungWidth(), right == null ? 0 : right.rungWidth());
     }
 }
