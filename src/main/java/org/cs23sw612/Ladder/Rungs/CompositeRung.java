@@ -33,7 +33,8 @@ public class CompositeRung implements Rung {
                 right == null ? 0 : (printRightLabel() ? 1 : 0) + right.rungWidth());
     }
 
-    // TODO: Can check for equivalence (subset) instead of empty to potentially reduce even
+    // TODO: Can check for equivalence (subset) instead of empty to potentially
+    // reduce even
     // more
     public boolean printRightLabel() {
         if (_printRight != null)

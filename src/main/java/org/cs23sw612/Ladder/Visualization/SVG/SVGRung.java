@@ -27,7 +27,7 @@ public class SVGRung {
         this.coils = coils;
         this.initialRungHeight = gates.get(0).rungNumber * rungHeight;
         this.startOutputPointX = getXPos(coils.get(0).gateNumber) + Visualizer.GATE_WIDTH - hSpacing;
-        this.endOutputPointX = startOutputPointX + Visualizer.GATE_WIDTH + hSpacing*2;
+        this.endOutputPointX = startOutputPointX + Visualizer.GATE_WIDTH + hSpacing * 2;
     }
 
     /**
@@ -40,7 +40,7 @@ public class SVGRung {
         var rungNumber = gates.get(0).rungNumber;
         var path = new Path2D.Double();
         path.moveTo(0, initialRungHeight);
-        //path.lineTo(10, initialRungHeight+10);
+        // path.lineTo(10, initialRungHeight+10);
         double outerXPos = 0;
         for (SVGRungElement svgRungElement : gates) {
             // If new rung-level (or-rung)
@@ -63,7 +63,7 @@ public class SVGRung {
                 rungNumber = svgRungElement.rungNumber;
             } else {
                 outerXPos = getXPos(svgRungElement.gateNumber) + Visualizer.GATE_WIDTH;
-                path.lineTo(getXPos(svgRungElement.gateNumber)-hSpacing, getYPos(svgRungElement.rungNumber));
+                path.lineTo(getXPos(svgRungElement.gateNumber) - hSpacing, getYPos(svgRungElement.rungNumber));
             }
 
             // Actually drawing the gate
@@ -73,7 +73,7 @@ public class SVGRung {
                     true);
         }
 
-        var coilStart = startOutputPointX+hSpacing;
+        var coilStart = startOutputPointX + hSpacing;
         var coilY = getYPos(coils.get(0).rungNumber);
         path.moveTo(outerXPos, coilY);
         path.lineTo(startOutputPointX - Visualizer.H_SPACING, coilY);
@@ -91,8 +91,7 @@ public class SVGRung {
                 path.moveTo(startOutputPointX, coilY);
                 path.lineTo(startOutputPointX, getYPos(coils.get(j).rungNumber));
                 path.lineTo(coilStart, getYPos(coils.get(j).rungNumber));
-                path.append(coils.get(j).getShape(coilStart, getYPos(coils.get(j).rungNumber)),
-                        true);
+                path.append(coils.get(j).getShape(coilStart, getYPos(coils.get(j).rungNumber)), true);
                 path.lineTo(endOutputPointX, getYPos(coils.get(j).rungNumber));
                 path.lineTo(endOutputPointX, coilY);
             }

@@ -105,7 +105,8 @@ public class Visualizer {
         return svg;
     }
 
-    /// Returns how many additional vertical elements were added (the y coordinate) - The results will be the number of or-rungs minus 1
+    /// Returns how many additional vertical elements were added (the y coordinate)
+    /// - The results will be the number of or-rungs minus 1
     public static double addGate(Rung rung, ArrayList<SVGRungElement> gateSequence, double x, double y) {
         double addedHeight = 0;
         if (rung instanceof SimpleRung sRung) {
@@ -130,14 +131,14 @@ public class Visualizer {
                 addedHeight += addGate(cRung.left, gateSequence, x + 1, y + addedHeight + 1);
             } else
                 addedHeight += addGate(cRung.left, gateSequence, x, y + addedHeight + 1);
-            addedHeight += 1 ;
+            addedHeight += 1;
         }
         return addedHeight;
     }
 
     private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder) {
         var height = (currentNumberOfRungs + 1) * SVGRung.rungHeight;
-        var width = (ladder.horizontalMaxLength + outputOffset+1) * SVGRung.gateWidth + SVGRung.hSpacing;
+        var width = (ladder.horizontalMaxLength + outputOffset + 1) * SVGRung.gateWidth + SVGRung.hSpacing;
         return new SVGGraphics2D(width, height, SVGUnits.PX);
     }
 
