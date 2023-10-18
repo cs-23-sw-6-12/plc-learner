@@ -9,6 +9,7 @@ import org.jfree.svg.SVGGraphics2D;
 import org.jfree.svg.SVGUnits;
 
 import java.awt.*;
+import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class Visualizer {
      */
     public static double RUNG_HEIGHT = 15d;
 
-    public static int outputOffset = 3;
+    public static int outputOffset = 1;
     private static double currentNumberOfRungs = 0;
 
     public static SVGGraphics2D layoutSVG(Ladder ladder) {
@@ -52,8 +53,7 @@ public class Visualizer {
             // construct a list of SVGgates for this rung.
             Rung rung = listNewRungEntry.getValue();
             ArrayList<SVGRungElement> gateSequence = new ArrayList<>();
-            var d = addGate(rung, gateSequence, 1, currentNumberOfRungs + 1);
-            System.out.println(d);
+            addGate(rung, gateSequence, 1, currentNumberOfRungs + 1);
 
             // construct a list of SVGcoils for this rung.
             ArrayList<SVGRungElement> outputSequence = new ArrayList<>();
@@ -86,12 +86,21 @@ public class Visualizer {
             currentNumberOfRungs += 1;
             rungs.add(new SVGRung(coil, gate));
         }
+
         var svg = GenerateNewSVGFromLadderDimensions(ladder);
 
         // draw rungs on svg
         for (var rung : rungs) {
             rung.draw(svg);
         }
+
+        // Left line
+        var path = new Path2D.Double();
+        path.moveTo(0, 0);
+        path.lineTo(0, svg.getHeight());
+        path.moveTo(svg.getWidth(), 0);
+        path.lineTo(svg.getWidth(), svg.getHeight());
+        svg.draw(path);
 
         return svg;
     }
@@ -128,7 +137,7 @@ public class Visualizer {
 
     private static SVGGraphics2D GenerateNewSVGFromLadderDimensions(Ladder ladder) {
         var height = (currentNumberOfRungs + 1) * SVGRung.rungHeight;
-        var width = (ladder.horizontalMaxLength + outputOffset + 2) * SVGRung.gateWidth + SVGRung.hSpacing;
+        var width = (ladder.horizontalMaxLength + outputOffset+1) * SVGRung.gateWidth + SVGRung.hSpacing;
         return new SVGGraphics2D(width, height, SVGUnits.PX);
     }
 

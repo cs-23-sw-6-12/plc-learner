@@ -4,7 +4,7 @@ import java.awt.geom.Path2D;
 
 public abstract class SVGRungElement {
     public final double gateNumber;
-    public final double rungNumber;
+    public double rungNumber;
     public final String text;
 
     public SVGRungElement(double gateNumber, double y, String text) {

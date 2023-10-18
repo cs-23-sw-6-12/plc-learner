@@ -7,18 +7,18 @@ import java.awt.geom.Path2D;
 import java.util.List;
 
 public class SVGRung {
-    private final double initialRungHeight;
+    public final double initialRungHeight;
     /**
      * Adjusts text position in horizontally.
      */
-    private final static double TEXT_OFFSET = 7d;
+    private final static float TEXT_X_OFFSET = 7;
+    private final static float TEXT_Y_OFFSET = 20;
     public final List<SVGRungElement> gates;
     public final List<SVGRungElement> coils;
 
     public static final double gateWidth = Visualizer.GATE_WIDTH * 2;
     public static final double hSpacing = Visualizer.H_SPACING / 2;
     public static final double rungHeight = Visualizer.V_SPACING * 2 + Visualizer.RUNG_HEIGHT;
-    private final double endAttachmentPointX;
     private final double startOutputPointX;
     private final double endOutputPointX;
 
@@ -26,9 +26,8 @@ public class SVGRung {
         this.gates = gates;
         this.coils = coils;
         this.initialRungHeight = gates.get(0).rungNumber * rungHeight;
-        this.endAttachmentPointX = getXPos(coils.get(0).gateNumber - (Visualizer.outputOffset - 1));
-        this.startOutputPointX = endAttachmentPointX + gateWidth + hSpacing;
-        this.endOutputPointX = getXPos(coils.get(0).gateNumber + 1);
+        this.startOutputPointX = getXPos(coils.get(0).gateNumber) + Visualizer.GATE_WIDTH - hSpacing;
+        this.endOutputPointX = startOutputPointX + Visualizer.GATE_WIDTH + hSpacing*2;
     }
 
     /**
@@ -41,52 +40,70 @@ public class SVGRung {
         var rungNumber = gates.get(0).rungNumber;
         var path = new Path2D.Double();
         path.moveTo(0, initialRungHeight);
-        path.lineTo(Visualizer.H_SPACING, initialRungHeight);
-        int i = 0;
+        //path.lineTo(10, initialRungHeight+10);
+        double outerXPos = 0;
         for (SVGRungElement svgRungElement : gates) {
-            svg.drawString(svgRungElement.text, (float) (getXPos(svgRungElement.gateNumber) + TEXT_OFFSET),
-                    (float) getYPos(svgRungElement.rungNumber) - 20);
-            if (rungNumber != svgRungElement.rungNumber) {
-                path.lineTo(endAttachmentPointX, getYPos(rungNumber));
+            // If new rung-level (or-rung)
 
-                path.moveTo(getXPos(svgRungElement.gateNumber), getYPos(rungNumber));
-                path.lineTo(getXPos(svgRungElement.gateNumber), getYPos(svgRungElement.rungNumber));
-                path.lineTo(getXPos(svgRungElement.gateNumber), getYPos(svgRungElement.rungNumber));
+            if (rungNumber != svgRungElement.rungNumber) {
+                outerXPos = getXPos(svgRungElement.gateNumber) + Visualizer.GATE_WIDTH + hSpacing;
+                var xPos = getXPos(svgRungElement.gateNumber) - hSpacing;
+
+                path.lineTo(outerXPos, getYPos(rungNumber));
+
+                path.moveTo(xPos, getYPos(rungNumber));
+                path.lineTo(xPos, getYPos(svgRungElement.rungNumber));
+                path.lineTo(xPos + hSpacing, getYPos(svgRungElement.rungNumber));
+
+                path.moveTo(outerXPos, getYPos(rungNumber));
+                path.lineTo(outerXPos, getYPos(svgRungElement.rungNumber));
+                path.lineTo(outerXPos - hSpacing, getYPos(svgRungElement.rungNumber));
+
+                path.moveTo(xPos, getYPos(svgRungElement.rungNumber));
                 rungNumber = svgRungElement.rungNumber;
             } else {
-                path.lineTo(getXPos(svgRungElement.gateNumber), getYPos(svgRungElement.rungNumber));
+                outerXPos = getXPos(svgRungElement.gateNumber) + Visualizer.GATE_WIDTH;
+                path.lineTo(getXPos(svgRungElement.gateNumber)-hSpacing, getYPos(svgRungElement.rungNumber));
             }
+
+            // Actually drawing the gate
+            svg.drawString(svgRungElement.text, (float) (getXPos(svgRungElement.gateNumber) + TEXT_X_OFFSET),
+                    (float) getYPos(svgRungElement.rungNumber) - TEXT_Y_OFFSET);
             path.append(svgRungElement.getShape(getXPos(svgRungElement.gateNumber), getYPos(svgRungElement.rungNumber)),
                     true);
-            if (++i == gates.size()) {
-                path.lineTo(endAttachmentPointX, getYPos(rungNumber));
-                path.lineTo(endAttachmentPointX, initialRungHeight);
-            }
         }
 
-        svg.drawString(coils.get(0).text, (float) (getXPos(coils.get(0).gateNumber) + TEXT_OFFSET),
-                (float) getYPos(coils.get(0).rungNumber) - 20);
-        path.lineTo(getXPos(coils.get(0).gateNumber), getYPos(coils.get(0).rungNumber));
-        path.append(coils.get(0).getShape(getXPos(coils.get(0).gateNumber), getYPos(coils.get(0).rungNumber)), true);
-        path.lineTo(endOutputPointX + 10, getYPos(coils.get(0).rungNumber));
+        var coilStart = startOutputPointX+hSpacing;
+        var coilY = getYPos(coils.get(0).rungNumber);
+        path.moveTo(outerXPos, coilY);
+        path.lineTo(startOutputPointX - Visualizer.H_SPACING, coilY);
+
+        svg.drawString(coils.get(0).text, (float) (coilStart + TEXT_X_OFFSET),
+                (float) getYPos(coils.get(0).rungNumber) - TEXT_Y_OFFSET);
+        path.lineTo(startOutputPointX, coilY);
+        path.append(coils.get(0).getShape(coilStart, coilY), true);
+        path.lineTo(endOutputPointX, coilY);
+
         if (coils.size() >= 2) {
             for (int j = 1; j <= coils.size() - 1; j++) {
-                svg.drawString(coils.get(j).text, (float) (getXPos(coils.get(j).gateNumber) + TEXT_OFFSET),
-                        (float) getYPos(coils.get(j).rungNumber) - 20);
-                path.moveTo(startOutputPointX, getYPos(coils.get(0).rungNumber));
+                svg.drawString(coils.get(j).text, (float) (coilStart + TEXT_X_OFFSET),
+                        (float) getYPos(coils.get(j).rungNumber) - TEXT_Y_OFFSET);
+                path.moveTo(startOutputPointX, coilY);
                 path.lineTo(startOutputPointX, getYPos(coils.get(j).rungNumber));
-                path.lineTo(getXPos(coils.get(j).gateNumber), getYPos(coils.get(j).rungNumber));
-                path.append(coils.get(j).getShape(getXPos(coils.get(j).gateNumber), getYPos(coils.get(j).rungNumber)),
+                path.lineTo(coilStart, getYPos(coils.get(j).rungNumber));
+                path.append(coils.get(j).getShape(coilStart, getYPos(coils.get(j).rungNumber)),
                         true);
                 path.lineTo(endOutputPointX, getYPos(coils.get(j).rungNumber));
-                path.lineTo(endOutputPointX, getYPos(coils.get(0).rungNumber));
+                path.lineTo(endOutputPointX, coilY);
             }
         }
+        path.moveTo(startOutputPointX + gateWidth, coilY);
+        path.lineTo(svg.getWidth(), coilY);
         svg.draw(path);
     }
 
     private double getXPos(double gateNumber) {
-        return gateNumber * gateWidth + hSpacing;
+        return gateNumber * gateWidth - Visualizer.H_SPACING;
     }
     private double getYPos(double rungNumber) {
         return rungNumber * rungHeight;
