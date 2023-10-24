@@ -9,6 +9,9 @@ import net.automatalib.serialization.dot.DOTSerializationProvider;
 import net.automatalib.visualization.Visualization;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.Ladder;
+import org.cs23sw612.Ladder.TruthTable;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.Util.Bit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +52,17 @@ public class PLCExperimentImpl implements IPLCExperiment {
 
         if (visualizeMachine)
             Visualization.visualize(result, alphabet);
+
+        if (visualizeLadder) {
+            try {
+                var ladder = new Ladder(new TruthTable<>(result, alphabet).encodeBDDs());
+                var viz = Visualizer.layoutSVG(ladder);
+                Visualizer.showSVG(viz);
+            } catch (IOException e) {
+                System.err.println("Could not show the ladder");
+                System.err.println(e.getMessage());
+            }
+        }
     }
 
     @SuppressWarnings({"unchecked"})

@@ -14,13 +14,19 @@ import net.automatalib.automata.transducers.impl.compact.CompactMealy;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.Word;
+import org.cs23sw612.Ladder.BDD.BDDNode;
+import org.cs23sw612.Ladder.Ladder;
 import org.cs23sw612.Ladder.TruthTable;
+import org.cs23sw612.Ladder.Rungs.OutGate;
+import org.cs23sw612.Ladder.Visualization.Visualizer;
 import org.cs23sw612.SUL.ExampleSUL;
 import org.cs23sw612.Util.Bit;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class RunningExample {
     private static void p(Object s) {
@@ -76,5 +82,19 @@ public class RunningExample {
 
         var t = new TruthTable<>(example, alphabet);
         p(t.toLatexTabularString());
+
+        p("BDDs:");
+        HashMap<List<OutGate>, BDDNode> m = t.encodeBDDs();
+        p(m);
+        // p(m.get("O[1]").makeRung());
+        var lad = new Ladder(m);
+        p("LAD:");
+        p(lad.gates);
+        lad.gates.forEach((k, v) -> p("Rung " + v + " height: " + v.rungHeight()));
+        lad.gates.forEach((k, v) -> p("Rung " + v + " width: " + v.rungWidth()));
+        p(lad.stateUpd);
+        var viz = Visualizer.layoutSVG(lad);
+        Visualizer.showSVG(viz);
+        // Visualizer.saveSVG(viz, new FileWriter("new-ladder2.svg"));
     }
 }
